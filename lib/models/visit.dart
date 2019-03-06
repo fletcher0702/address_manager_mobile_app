@@ -2,16 +2,16 @@
 class Visit {
 
   String _name;
-  String _userUuid;
+  String _teamUuid;
   String _address;
   String _phoneNumber;
   String _zoneUuid;
   String _status;
 
-  Visit(this._userUuid,this._name, this._address,this._zoneUuid, this._status);
+  Visit(this._teamUuid,this._name, this._address,this._zoneUuid, this._status);
 
 
-  String get userUuid => _userUuid;
+  String get teamUuid => _teamUuid;
 
   String get status => _status;
 
