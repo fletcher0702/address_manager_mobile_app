@@ -1,25 +1,34 @@
+import 'dart:convert';
+
+import 'package:address_manager/controller/user_controller.dart';
+import 'package:http/http.dart' as http;
 import 'package:mongo_dart/mongo_dart.dart';
+
 import '../models/zone.dart';
+import '../routes/routes.dart';
 import '../services/zone_service.dart';
-import 'package:geocoder/geocoder.dart';
-import '../helpers/address_helper.dart';
 
 
 class ZoneController {
   final zoneService = ZoneService();
+  final userController = UserController();
+  final header = {"Content-Type": "application/json;charset=utf-8"};
 
-  createOne(Zone zone, String address) async {
-    if (zone.adminId.isNotEmpty && zone.name.isNotEmpty) {
+  createOne(Zone zone) async {
+    if (zone.teamUuid.isNotEmpty && zone.name.isNotEmpty) {
+      var credentials = await userController.getCredentials();
+      print('teamUuid : ' + zone.teamUuid);
+      var response = await http
+          .post(CREATE_ZONE_HTTP_ROUTE, headers: header,
+          body: jsonEncode({
+            'name': zone.name,
+            'teamUuid': zone.teamUuid,
+            'address': zone.address
+          }))
+          .then((res) => res);
 
-      Address addressCoordinates =
-          await AddressHelper.getAddressCoordinates(address);
-
-      zone.latitude = addressCoordinates.coordinates.latitude;
-      zone.longitude = addressCoordinates.coordinates.longitude;
-
-      zoneService.createOne(zone);
+      return jsonDecode(response.body);
     }
-    return;
   }
 
   findOne(id) async {

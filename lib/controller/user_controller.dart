@@ -65,4 +65,8 @@ class UserController {
   getCredentials(){
     return userService.getPreferences();
   }
+
+  destroyCredentials(){
+    userService.destroyCredentials();
+  }
 }

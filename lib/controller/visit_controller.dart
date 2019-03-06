@@ -9,24 +9,21 @@ class VisitController {
   VisitService visitService = VisitService();
 
   createVisit(Visit visit) async {
-    if (visit.userUuid.isEmpty ||
+    if (visit.teamUuid.isEmpty ||
         visit.name.isEmpty ||
         visit.address.isEmpty ||
         visit.status.isEmpty ||
         visit.zoneUuid.isEmpty) return false;
 
-
-//    VisitService().createOne(visit);
-
     var response = await http
-        .post(USER_BASE_URL+visit.userUuid+'/create',
+        .post(CREATE_VISIT_HTTP_ROUTE,
         headers: header,
         body: json.encode({
-          'userUuid': visit.userUuid,
+          'teamUuid': visit.teamUuid,
+          'zoneUuid': visit.zoneUuid,
           'name': visit.name,
           'address': visit.address,
           'phoneNumber': visit.phoneNumber,
-          'zoneUuid': visit.zoneUuid,
           'status': visit.status,
         }))
         .then((res) => res);
@@ -37,7 +34,7 @@ class VisitController {
 
   updateVisit(id, Visit visit, String originalZoneId) async {
     if (
-        visit.userUuid.isEmpty ||
+        visit.teamUuid.isEmpty ||
         visit.name.isEmpty ||
         visit.address.isEmpty ||
         visit.status.isEmpty ||
