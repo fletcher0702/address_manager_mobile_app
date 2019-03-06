@@ -6,6 +6,7 @@ import '../controller/visit_controller.dart';
 import '../models/visit.dart';
 import '../screens/add_person_validation.dart';
 import '../tools/const.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AddPersonDialog extends StatefulWidget {
   @override
@@ -30,7 +31,9 @@ class AddPersonDialogState extends State<AddPersonDialog> {
   }
 
   Future<bool> dialog(
-      context, zones, selectedIndex, actionCallBackAfter) async {
+      context, team,selectedIndex, actionCallBackAfter) async {
+
+    var zones = team["zones"];
     selectedZone = zones[selectedIndex]['name'];
     _selectedZoneIndex = selectedIndex;
     List<DropdownMenuItem<int>> zonesItems = [];
@@ -87,8 +90,8 @@ class AddPersonDialogState extends State<AddPersonDialog> {
                       onTap: () async {
                         Prediction p = await PlacesAutocomplete.show(
                             context: context,
-                            apiKey: kGoogleApiKey,
-                            mode: Mode.overlay,
+                            apiKey: DotEnv().env['GApiKey'],
+                            mode: Mode.fullscreen,
                             language: "fr",
                             components: [Component(Component.country, "fr")]);
                         visitAddressController.text =
@@ -160,15 +163,14 @@ class AddPersonDialogState extends State<AddPersonDialog> {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30)),
                     onPressed: () async {
-                      VisitController visitController = VisitController();
 
                       String name = visitNameController.text;
                       String address = visitAddressController.text;
                       String phoneNumber = visitPhoneNumberController.text;
-                      String zoneId = visitController
-                          .getId(zones[_selectedZoneIndex]['_id']);
+                      String zoneUuid = zones[_selectedZoneIndex]["uuid"];
+                      String teamUuid = team["uuid"];
                       String status = selectedType;
-                      Visit visit = Visit('',name, address, zoneId, status);
+                      Visit visit = Visit(teamUuid,name, address, zoneUuid, status);
 
                       if (phoneNumber.isNotEmpty)
                         visit.phoneNumber = phoneNumber;
