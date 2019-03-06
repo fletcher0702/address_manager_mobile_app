@@ -19,6 +19,12 @@ const ALREADY_SIGNED_HTTP_ROUTE = HOST + '/users/checktoken';
 
 // Zone Routes
 
+const CREATE_ZONE_HTTP_ROUTE = HOST+'/zones/create';
+
 // Visit Routes
 
-const CREATE_VISIT_HTTP_ROUTE = HOST+'/users/{userUuid}/create';
+const CREATE_VISIT_HTTP_ROUTE = HOST+'/users/teams/visits/create';
+
+// Team Routes
+
+const CREATE_TEAM_HTTP_ROUTE = HOST+'/users/teams/create';
