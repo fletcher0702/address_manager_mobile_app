@@ -17,7 +17,7 @@ class VisitService {
     db
         .collection(COLLECTION)
         .insert({
-          'userUuid': visit.userUuid,
+          'userUuid': visit.teamUuid,
           'name': visit.name,
           'address': visit.address,
           'phoneNumber': visit.phoneNumber,
