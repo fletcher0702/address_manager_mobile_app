@@ -1,6 +1,3 @@
-import 'package:address_manager/client/client.dart';
-import 'package:address_manager/models/user.dart';
-import 'package:mongo_dart/mongo_dart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../helpers/file_helper.dart';
 
@@ -39,5 +36,10 @@ class UserService {
 
 
     return credentials;
+  }
+
+  destroyCredentials() async {
+    SharedPreferences prefs= await SharedPreferences.getInstance();
+    await prefs.clear();
   }
 }

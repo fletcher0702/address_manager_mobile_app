@@ -7,8 +7,10 @@ import 'screens/team_panel.dart';
 import 'screens/visit_panel.dart';
 import 'screens/zone_panel_screen.dart';
 import 'screens/home_screen.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+main() async{
+  await DotEnv().load('.env');
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
     title: 'Address Manager',

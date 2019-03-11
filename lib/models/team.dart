@@ -1,16 +1,16 @@
 class Team {
   String _name;
-  String _code;
-  String _adminId;
-  List<String> _users;
+  String _adminUuid;
 
-  Team(this._name, this._code, this._adminId);
+  Team(this._name);
 
-  String get adminId => _adminId;
-
-  String get code => _code;
+  String get adminUuid => _adminUuid;
 
   String get name => _name;
 
-  List<String> get users => _users;
+  set adminUuid(String value) {
+    _adminUuid = value;
+  }
+
+
 }

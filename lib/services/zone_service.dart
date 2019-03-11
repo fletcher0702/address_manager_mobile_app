@@ -14,7 +14,7 @@ class ZoneService {
     db
         .collection(COLLECTION)
         .insert(
-            {'name': zone.name, 'adminId': zone.adminId, 'visits': zone.visits,'latitude':zone.latitude,'longitude':zone.longitude})
+            {'name': zone.name, 'adminUuid': zone.teamUuid})
         .then((success) => success)
         .catchError((onError) => onError);
 

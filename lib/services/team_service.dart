@@ -12,7 +12,7 @@ class TeamService {
 
     db
         .collection(COLLECTION)
-        .insert({'name': team.name, 'adminId': team.adminId, 'code': team.code, 'users': team.users})
+        .insert({'name': team.name, 'adminUuid': team.adminUuid,})
         .then((success) => success)
         .catchError((onError) => onError);
 

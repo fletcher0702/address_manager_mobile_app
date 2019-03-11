@@ -1,29 +1,15 @@
 class Zone {
   final String _name;
-  final String _adminId;
-  double _latitude;
-  double _longitude;
-  List<String> _visits;
+  final String _teamUuid;
+  final String _address;
 
-  Zone(this._name, this._adminId);
+  Zone(this._name, this._teamUuid,this._address);
 
   String get name => _name;
 
-  String get adminId => _adminId;
+  String get teamUuid => _teamUuid;
 
-  List<String> get visits => _visits;
 
-  double get latitude => _latitude;
-
-  double get longitude => _longitude;
-
-  set longitude(double value) {
-    _longitude = value;
-  }
-
-  set latitude(double value) {
-    _latitude = value;
-  }
-
+  String get address => _address;
 
 }
