@@ -82,6 +82,21 @@ class SideMenu extends StatelessWidget {
               ),
               Row(
                 children: <Widget>[
+                  Icon(Icons.pie_chart,color:Colors.indigo),
+                  FlatButton(
+                    onPressed: () => {},
+                    child: Text('Statistics',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                  ),
+                ],
+              ),
+              Row(
+                children: <Widget>[
                   Icon(Icons.settings,color:Colors.grey),
                   FlatButton(
                     onPressed: () => {},

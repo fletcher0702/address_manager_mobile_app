@@ -2,6 +2,7 @@ import 'package:address_manager/screens/add_person_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../components/edit_person_dialog.dart';
 import '../components/side_menu.dart';
@@ -23,8 +24,6 @@ class HomeState extends State<Home> {
   EditPersonDialogState editPersonDialog = EditPersonDialogState();
   AddPersonDialogState addPersonDialog = AddPersonDialogState();
 
-  var currentLocation;
-
   // Toggles trackers
   bool mapToggle = false;
   bool teamToggle = false;
@@ -45,6 +44,7 @@ class HomeState extends State<Home> {
   String selectedTeam;
   int _selectedZoneIndex;
   int _selectTeamIndex;
+  List<double> currentLocation = [48.864716, 2.349014];
 
 
   void loadTeams() async {
@@ -109,9 +109,11 @@ class HomeState extends State<Home> {
           width: 80.0,
           point: LatLng(visit['latitude'], visit['longitude']),
           builder: (context) {
+            Color color = colorType(visit);
             return Center(
               child: IconButton(
                 onPressed: () {
+
                   showModalBottomSheet(
                       context: context,
                       builder: (context) {
@@ -127,7 +129,7 @@ class HomeState extends State<Home> {
                                   children: <Widget>[
                                     Icon(
                                       Icons.person_pin,
-                                      color: Colors.blue,
+                                      color: color,
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.all(8.0),
@@ -159,35 +161,35 @@ class HomeState extends State<Home> {
                                       left: 20, right: 20, top: 40),
                                   child: Column(
                                     mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                    MainAxisAlignment.spaceBetween,
                                     children: <Widget>[
-                                      Row(
-                                        children: <Widget>[
-                                          Icon(
-                                            Icons.place,
-                                            color: Colors.blue,
-                                          ),
-                                          SizedBox(
-                                            width: 10,
-                                          ),
-                                          SingleChildScrollView(
-                                            scrollDirection: Axis.horizontal,
-                                            child: Text(
+                                      SingleChildScrollView(
+                                        scrollDirection: Axis.horizontal,
+                                        child: Row(
+                                          children: <Widget>[
+                                            Icon(
+                                              Icons.place,
+                                              color: color,
+                                            ),
+                                            SizedBox(
+                                              width: 10,
+                                            ),
+                                            Text(
                                               visit['address'],
                                               style: TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 14,
                                               ),
                                             ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
                                       Row(
                                         children: <Widget>[
                                           Icon(
                                             Icons.phone,
                                             color:
-                                                Color.fromRGBO(46, 204, 113, 1),
+                                            Color.fromRGBO(46, 204, 113, 1),
                                           ),
                                           SizedBox(
                                             width: 10,
@@ -233,19 +235,19 @@ class HomeState extends State<Home> {
                       child: Container(
                         width: 10,
                         height: 10,
-                        color: Colors.blue,
+                        color: color,
                       ),
                     ),
                     Icon(
                       Icons.place,
-                      color: Colors.blue,
+                      color: color,
                       size: 40,
                     ),
                     Positioned(
                       top: 8,
                       left: 15,
                       child: Text(
-                        (visitsElements.indexOf(visit) + 1).toString(),
+                        visit['name'],
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 15,
@@ -433,6 +435,8 @@ class HomeState extends State<Home> {
                             setState(() {
                               _selectedZoneIndex = value;
                               selectedZone = zones[value]['name'];
+                              currentLocation[0] = zones[value]['latitude'];
+                              currentLocation[1] = zones[value]['longitude'];
                               loadMarkers(zones[value]["visits"]);
                             });
                           },
@@ -456,7 +460,8 @@ class HomeState extends State<Home> {
                           ? FlutterMap(
                         options: MapOptions(
                           zoom: 14, //48.864716, 2.349014 Paris
-                          center: LatLng(48.864716, 2.349014),
+                          center: LatLng(
+                              currentLocation[0], currentLocation[1]),
                         ),
                         layers: [
                           TileLayerOptions(
@@ -465,7 +470,7 @@ class HomeState extends State<Home> {
                                 "{id}/{z}/{x}/{y}@2x.png?access_token={accessToken}",
                             additionalOptions: {
                               'accessToken':
-                              'pk.eyJ1IjoiZmxldGNoZXIiLCJhIjoiY2pycmw2dWh0MXY5NjQ0cGoxMTdpdHl2eiJ9.0qePOdg3vPbQi_VVA5DL1g',
+                              DotEnv().env['MapBoxApiKey'],
                               'id': 'mapbox.streets',
                             },
                           ),
@@ -557,5 +562,36 @@ class HomeState extends State<Home> {
         ),
       ),
     );
+  }
+
+  Color colorType(element) {
+
+    Color res;
+    switch (element['status']) {
+      case 'Visit':
+        {
+          res= Colors.green;
+        }
+        break;
+        case 'New':
+        {
+          res=Colors.orange;
+        }
+        break;
+        case 'NA':
+        {
+          res= Colors.red;
+        }
+        break;
+        case 'Done':
+        {
+          res= Colors.grey;
+        }
+        break;
+      default:
+        res = Colors.blue;
+        break;
+    }
+    return res;
   }
 }

@@ -1,3 +1,5 @@
+import 'package:address_manager/components/loader.dart';
+import 'package:address_manager/components/team_description.dart';
 import 'package:address_manager/controller/team_controller.dart';
 import 'package:address_manager/helpers/dialog_helper.dart';
 import 'package:address_manager/models/team.dart';
@@ -30,7 +32,9 @@ class TeamPanelScreenState extends State<TeamPanelScreen> {
     super.initState();
     teamController.findAll().then((res) {
       teams = res;
-      teamToggle = true;
+      setState(() {
+        teamToggle = true;
+      });
     });
   }
 
@@ -46,7 +50,7 @@ class TeamPanelScreenState extends State<TeamPanelScreen> {
     teamNameController.clear();
   }
 
-  createZone(){
+  createTeam(){
     List<Widget> content = [
       Padding(
         padding: const EdgeInsets.all(20.0),
@@ -56,7 +60,7 @@ class TeamPanelScreenState extends State<TeamPanelScreen> {
               controller: teamNameController,
               decoration: InputDecoration(
                   hasFloatingPlaceholder: true,
-                  prefixIcon: Icon(Icons.group, color: Colors.black,),
+                  prefixIcon: Icon(Icons.group, color: Colors.brown,),
                   focusedBorder: UnderlineInputBorder(
                       borderSide: BorderSide(
                           color: Colors.black)),
@@ -79,46 +83,12 @@ class TeamPanelScreenState extends State<TeamPanelScreen> {
 
       drawer: SideMenu(),
       appBar: PreferredSize(
-          child: PanelAppBar('Team Panel', Icons.group_add, createZone),
+          child: PanelAppBar('Team Panel', Icons.group_add, createTeam),
           preferredSize: Size(double.infinity, 60.0)),
       body: Padding(
-        child: teamToggle ? ListView(
-          children: _displayTeamsItems(),
-        ) : Text('loading...'), padding: EdgeInsets.only(top:30, left:20),
+        child: teamToggle ? TeamDescription(teams) : ColorLoader(), padding: EdgeInsets.only(top: 30, left: 20),
       ),
     );
   }
 
-  List<ListTile> _displayTeamsItems() {
-    List<ListTile> teamList = List<ListTile>();
-    teams.forEach((team) {
-      print(team);
-
-      ListTile listTile = ListTile(
-        leading: Icon(Icons.group, color: Colors.brown, size: 25),
-        title: Text(
-          '${team['name']}'
-          ,
-          style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold
-          ),
-        ),
-        subtitle: team['zones'] != null ? Text(
-            '${team['zones'].length} zones(s)') : Text('Empty'),
-        onTap: () {
-//                Navigator.push(context, MaterialPageRoute(builder: (context)=>ZoneDetailScreen(zoneItem)));
-          showModalBottomSheet(context: context, builder: (ctx) {
-            return Container(
-              height: 300,
-              width: double.infinity,
-            );
-          });
-        },
-
-      );
-      teamList.add(listTile);
-    });
-    return teamList;
-  }
 }

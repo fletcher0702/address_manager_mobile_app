@@ -36,20 +36,20 @@ class TeamHelper {
     }
   }
 
-  List<DropdownMenuItem> buildDropDownSelection(teamsElements) {
+  List<DropdownMenuItem> buildDropDownSelection(elements) {
 
       List<DropdownMenuItem> tmpList = [];
-        teamsElements.forEach((team) {
+        elements.forEach((element) {
           DropdownMenuItem dropdownMenuItem = DropdownMenuItem(
             child: Text(
-              team['name'],
+              element['name'],
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 15
               ),
               textAlign: TextAlign.center,
             ),
-            value: teamsElements.indexOf(team),
+            value: elements.indexOf(element),
           );
           tmpList.add(dropdownMenuItem);
 
