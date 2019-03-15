@@ -22,7 +22,7 @@ class VisitService {
           'address': visit.address,
           'phoneNumber': visit.phoneNumber,
           'zoneUuid': visit.zoneUuid,
-          'status': visit.status,
+          'status': visit.statusUuid,
         })
         .then((success) => success)
         .catchError((onError) => onError);
@@ -80,7 +80,7 @@ class VisitService {
     visitToUpdate['address'] = visit.address;
     visitToUpdate['zoneUuid'] = visit.zoneUuid;
     visitToUpdate['phoneNumber'] = visit.phoneNumber;
-    visitToUpdate['status'] = visit.status;
+    visitToUpdate['status'] = visit.statusUuid;
     await db.collection(COLLECTION).save(visitToUpdate);
 
     db.close();

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:google_maps_webservice/places.dart';
 
-import '../controller/visit_controller.dart';
+import '../helpers/team_helper.dart';
 import '../models/visit.dart';
 import '../screens/add_person_validation.dart';
 import '../tools/const.dart';
@@ -14,13 +14,17 @@ class AddPersonDialog extends StatefulWidget {
 }
 
 class AddPersonDialogState extends State<AddPersonDialog> {
-  var statusType = ['Visit', 'Done', 'Absent', 'New', 'NA'];
   var selectedZone = '';
+  var selectedTeam = '';
+  var selectedStatusName ='';
   int _selectedZoneIndex;
-  var selectedType;
+  int _selectedTeamIndex;
+  int _selectedStatusIndex;
+
   final visitNameController = TextEditingController();
   final visitAddressController = TextEditingController();
   final visitPhoneNumberController = TextEditingController();
+  final teamHelper = TeamHelper();
 
   @override
   void dispose() {
@@ -30,27 +34,23 @@ class AddPersonDialogState extends State<AddPersonDialog> {
     super.dispose();
   }
 
+
   Future<bool> dialog(
-      context, team,selectedIndex, actionCallBackAfter) async {
+      context, teams,selectedTeamIndex,selectedZoneIndex, actionCallBackAfter) async {
 
-    var zones = team["zones"];
-    selectedZone = zones[selectedIndex]['name'];
-    _selectedZoneIndex = selectedIndex;
+    List<DropdownMenuItem<int>> teamsItems = teamHelper.buildDropDownSelection(teams);
     List<DropdownMenuItem<int>> zonesItems = [];
-    zones.forEach((zone) {
-      DropdownMenuItem<int> dropdownMenuItem = DropdownMenuItem(
-        child: Text(zone['name']),
-        value: zones.indexOf(zone),
-      );
-      zonesItems.add(dropdownMenuItem);
-    });
-
-    List<DropdownMenuItem<String>> statusItems = statusType
-        .map((status) => DropdownMenuItem(
-              child: Text(status),
-              value: status,
-            ))
-        .toList();
+    List<DropdownMenuItem<int>> statusItems = [];
+    if(selectedTeamIndex!=-1 && selectedZoneIndex!=-1){
+      var zones = teams[selectedTeamIndex]["zones"];
+      var status = teams[selectedTeamIndex]["status"];
+      selectedZone = zones[selectedZoneIndex]["name"];
+      selectedTeam = teams[selectedTeamIndex]["name"];
+      _selectedZoneIndex = selectedZoneIndex;
+      _selectedTeamIndex = selectedTeamIndex;
+      zonesItems = teamHelper.buildDropDownSelection(zones);
+      statusItems = teamHelper.buildDropDownSelection(status);
+    }
 
     return showDialog(
       context: context,
@@ -102,6 +102,34 @@ class AddPersonDialogState extends State<AddPersonDialog> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Text(
+                          'Team : ',
+                          style: TextStyle(
+                            fontSize: 20,
+                          ),
+                        ),
+                        DropdownButtonHideUnderline(
+                          child: DropdownButton(
+                            items: teamsItems,
+                            hint: Text(selectedTeam,
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center),
+                            onChanged: (value) {
+                              selectedTeam = teams[value]['name'];
+                              _selectedTeamIndex= value;
+                              selectedZone = '';
+                              zonesItems = teamHelper.buildDropDownSelection(teams[_selectedTeamIndex]["zones"]);
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
                           'Zone : ',
                           style: TextStyle(
                             fontSize: 20,
@@ -117,7 +145,7 @@ class AddPersonDialogState extends State<AddPersonDialog> {
                                 ),
                                 textAlign: TextAlign.center),
                             onChanged: (value) {
-                              selectedZone = zones[value]['name'];
+                              selectedZone = teams[_selectedTeamIndex]["zones"][value]['name'];
                               _selectedZoneIndex = value;
                             },
                           ),
@@ -136,8 +164,8 @@ class AddPersonDialogState extends State<AddPersonDialog> {
                         DropdownButtonHideUnderline(
                           child: DropdownButton(
                             items: statusItems,
-                            hint: selectedType != null
-                                ? Text(selectedType,
+                            hint: selectedStatusName != null
+                                ? Text(selectedStatusName,
                                     style: TextStyle(
                                       color: Colors.black,
                                       fontWeight: FontWeight.bold,
@@ -145,7 +173,8 @@ class AddPersonDialogState extends State<AddPersonDialog> {
                                     textAlign: TextAlign.center)
                                 : Text(''),
                             onChanged: (value) {
-                              selectedType = value;
+                              _selectedStatusIndex = value;
+                              selectedStatusName = teams[_selectedTeamIndex]["status"][value]["name"];
                             },
                           ),
                         ),
@@ -167,10 +196,10 @@ class AddPersonDialogState extends State<AddPersonDialog> {
                       String name = visitNameController.text;
                       String address = visitAddressController.text;
                       String phoneNumber = visitPhoneNumberController.text;
-                      String zoneUuid = zones[_selectedZoneIndex]["uuid"];
-                      String teamUuid = team["uuid"];
-                      String status = selectedType;
-                      Visit visit = Visit(teamUuid,name, address, zoneUuid, status);
+                      String teamUuid = teams[_selectedTeamIndex]["uuid"];
+                      String zoneUuid = teams[_selectedTeamIndex]["zones"][_selectedZoneIndex]["uuid"];
+                      String statusUuid = teams[_selectedTeamIndex]["status"][_selectedStatusIndex]["uuid"];
+                      Visit visit = Visit(teamUuid,name, address, zoneUuid, statusUuid);
 
                       if (phoneNumber.isNotEmpty)
                         visit.phoneNumber = phoneNumber;

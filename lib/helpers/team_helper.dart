@@ -36,24 +36,25 @@ class TeamHelper {
     }
   }
 
-  List<DropdownMenuItem> buildDropDownSelection(elements) {
+  List<DropdownMenuItem<int>> buildDropDownSelection(elements) {
 
-      List<DropdownMenuItem> tmpList = [];
-        elements.forEach((element) {
-          DropdownMenuItem dropdownMenuItem = DropdownMenuItem(
-            child: Text(
-              element['name'],
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15
-              ),
-              textAlign: TextAlign.center,
+      List<DropdownMenuItem<int>> tmpList = [];
+
+      for(int i=0;i<elements.length;i++){
+        DropdownMenuItem<int> dropdownMenuItem = DropdownMenuItem(
+          child: Text(
+            elements[i]['name'],
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 15
             ),
-            value: elements.indexOf(element),
-          );
-          tmpList.add(dropdownMenuItem);
+            textAlign: TextAlign.center,
+          ),
+          value: i,
+        );
+        tmpList.add(dropdownMenuItem);
 
-        });
+      }
 
       return tmpList;
   }
