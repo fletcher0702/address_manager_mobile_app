@@ -1,3 +1,4 @@
+import 'package:address_manager/helpers/team_helper.dart';
 import 'package:address_manager/screens/add_person_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -21,13 +22,13 @@ class HomeState extends State<Home> {
   ZoneController zoneController = ZoneController();
   VisitController visitController = VisitController();
   TeamController teamController = TeamController();
+  TeamHelper teamHelper = TeamHelper();
   EditPersonDialogState editPersonDialog = EditPersonDialogState();
   AddPersonDialogState addPersonDialog = AddPersonDialogState();
 
   // Toggles trackers
   bool mapToggle = false;
   bool teamToggle = false;
-  bool zoneToggle = false;
   bool activeBottomSheet = false;
   bool visitsToggle = false;
   bool markersToggle = false;
@@ -37,66 +38,37 @@ class HomeState extends State<Home> {
   List<dynamic> teamsElements = [];
   List<dynamic> visitsElements = [];
   List<dynamic> zonesElements = [];
-  List<DropdownMenuItem<dynamic>> teams = [];
-  List<DropdownMenuItem<dynamic>> locations = [];
+  List<dynamic> statusElements = [];
+  List<DropdownMenuItem<int>> teams = [];
+  List<DropdownMenuItem<int>> locations = [];
+  List<DropdownMenuItem<int>> status = [];
   List<Marker> markersList = [];
   String selectedZone;
+  String selectedStatus;
   String selectedTeam;
   int _selectedZoneIndex;
-  int _selectTeamIndex;
+  int _selectedStatusIndex;
+  int _selectedTeamIndex;
   List<double> currentLocation = [48.864716, 2.349014];
 
 
-  void loadTeams() async {
-    if (!teamToggle) {
-      List<DropdownMenuItem> tmpList = [];
-      teamController.findAll().then((res) {
+  void loadTeams() {
+    teamController.findAll().then((data){
+      setState(() {
+        teamsElements = data;
         teamToggle = true;
-        teamsElements = res;
-
-        teamsElements.forEach((team) {
-          DropdownMenuItem dropdownMenuItem = DropdownMenuItem(
-            child: Text(
-              team['name'],
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15
-              ),
-              textAlign: TextAlign.center,
-            ),
-            value: teamsElements.indexOf(team),
-          );
-          tmpList.add(dropdownMenuItem);
-          setState(() {
-            teams = tmpList;
-          });
-        });
+        teams = teamHelper.buildDropDownSelection(teamsElements);
       });
-    }
+    });
   }
   /*
   Fetch data from API
   * */
   void loadZones() async {
     setState(() {
-      if (teamToggle) {
         locations.clear();
-        zones.forEach((zone) {
-            DropdownMenuItem dropdownMenuItem = DropdownMenuItem(
-              child: Text(
-                zone['name'],
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                    fontSize: 15
-                ),
-                textAlign: TextAlign.center,
-              ),
-              value: zones.indexOf(zone),
-            );
-            locations.add(dropdownMenuItem);
-          });
-          zoneToggle = true;
-        }
+        locations = teamHelper.buildDropDownSelection(zones);
+        status = teamHelper.buildDropDownSelection(statusElements);
     });
   }
 
@@ -211,7 +183,7 @@ class HomeState extends State<Home> {
                                             width: 10,
                                           ),
                                           Text(
-                                            visit['status'],
+                                            visit['status']['name'],
                                             style: TextStyle(
                                               fontWeight: FontWeight.bold,
                                             ),
@@ -269,8 +241,9 @@ class HomeState extends State<Home> {
 
   void initState() {
     super.initState();
-    mapToggle = true;
     loadTeams();
+    mapToggle = true;
+//    loadTeams();
   }
 
   @override
@@ -311,9 +284,11 @@ class HomeState extends State<Home> {
                           onChanged: (value) {
                             setState(() {
                               selectedZone = '';
-                              _selectTeamIndex = value;
+                              selectedStatus ='';
+                              _selectedTeamIndex = value;
                               selectedTeam = teamsElements[value]['name'];
                               zones = teamsElements[value]["zones"];
+                              statusElements = teamsElements[value]["status"];
                               loadZones();
                             });
                           },
@@ -332,13 +307,9 @@ class HomeState extends State<Home> {
               icon: Icon(Icons.refresh, size: 25, color: Colors.orangeAccent,),
               color: green_custom_color,
               onPressed: () async {
-                teamToggle = false;
                 loadTeams();
-
-                print(
-                    teamsElements[_selectTeamIndex]["zones"][_selectedZoneIndex]["visits"]);
                 loadMarkers(
-                    teamsElements[_selectTeamIndex]["zones"][_selectedZoneIndex]["visits"]);
+                    teamsElements[_selectedTeamIndex]["zones"][_selectedZoneIndex]["visits"]);
               },
 
             ),
@@ -347,10 +318,12 @@ class HomeState extends State<Home> {
               color: green_custom_color,
               onPressed: () {
                 if (selectedZone != null && selectedTeam != null) {
+                  print('selected team test : ' + _selectedTeamIndex.toString());
+                  print('selected zone test : ' + _selectedZoneIndex.toString());
                   addPersonDialog
-                      .dialog(context, teamsElements[_selectTeamIndex],
+                      .dialog(context, teamsElements,_selectedTeamIndex,
                       _selectedZoneIndex, () {
-                        print('Person added !');
+                        loadTeams();
                       });
                 } else {
                   showDialog(
@@ -430,10 +403,12 @@ class HomeState extends State<Home> {
                               textAlign: TextAlign.center)
                               : Text(''),
                           elevation: 0,
-                          items: teamToggle ? locations : [],
+                          items: locations,
                           onChanged: (value) {
                             setState(() {
+
                               _selectedZoneIndex = value;
+                              print('selected zone index : ' + _selectedZoneIndex.toString());
                               selectedZone = zones[value]['name'];
                               currentLocation[0] = zones[value]['latitude'];
                               currentLocation[1] = zones[value]['longitude'];
@@ -441,7 +416,31 @@ class HomeState extends State<Home> {
                             });
                           },
                         ),
-                      )
+                      ),
+                      Icon(Icons.filter_list),
+                      DropdownButtonHideUnderline(
+                        child: DropdownButton(
+                          hint: selectedStatus != null
+                              ? Text(selectedStatus,
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center)
+                              : Text(''),
+                          elevation: 0,
+                          items: status,
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedStatusIndex = value;
+                              selectedStatus = statusElements[value]['name'];
+                              currentLocation[0] = zones[value]['latitude'];
+                              currentLocation[1] = zones[value]['longitude'];
+//                              loadMarkers(zones[value]["visits"]);
+                            });
+                          },
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -565,33 +564,7 @@ class HomeState extends State<Home> {
   }
 
   Color colorType(element) {
-
-    Color res;
-    switch (element['status']) {
-      case 'Visit':
-        {
-          res= Colors.green;
-        }
-        break;
-        case 'New':
-        {
-          res=Colors.orange;
-        }
-        break;
-        case 'NA':
-        {
-          res= Colors.red;
-        }
-        break;
-        case 'Done':
-        {
-          res= Colors.grey;
-        }
-        break;
-      default:
-        res = Colors.blue;
-        break;
-    }
+    Color res = Color(element['status']['color']=Colors.blue.value);
     return res;
   }
 }

@@ -6,14 +6,14 @@ class Visit {
   String _address;
   String _phoneNumber;
   String _zoneUuid;
-  String _status;
+  String _statusUuid;
 
-  Visit(this._teamUuid,this._name, this._address,this._zoneUuid, this._status);
+  Visit(this._teamUuid,this._name, this._address,this._zoneUuid, this._statusUuid);
 
 
   String get teamUuid => _teamUuid;
 
-  String get status => _status;
+  String get statusUuid => _statusUuid;
 
   String get zoneUuid => _zoneUuid;
 

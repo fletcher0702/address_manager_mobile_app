@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../components/edit_person_dialog.dart';
 import '../components/loader.dart';
+import 'package:address_manager/screens/add_person_dialog.dart';
 import '../components/panel_app_bar.dart';
 import '../components/side_menu.dart';
 import '../controller/visit_controller.dart';
@@ -30,6 +31,9 @@ class VisitPanelScreenState extends State<VisitPanelScreen> {
 
   var selectedZone;
   var selectedTeam;
+
+  var teamToAddInto;
+  var zoneToAddInto;
   bool zoneToggle = false;
   bool visitToggle = false;
   bool onChangedZoneToggle = false;
@@ -39,53 +43,31 @@ class VisitPanelScreenState extends State<VisitPanelScreen> {
   List<dynamic> zonesElements = [];
   List<dynamic> visitsElements = [];
   List<Widget> visitsRows = [];
-  int _selectedZoneIndex;
-  int _selectedTeamIndex;
+  int _selectedZoneIndex = -1;
+  int _selectedTeamIndex = -1;
 
 
   @override
   void initState() {
     super.initState();
     teamController.findAll().then((res) {
-      teams = res;
-      teamsDropDownItems = teamHelper.buildDropDownSelection(teams);
-      teamToggle = true;
+
+      setState(() {
+        teams = res;
+        teamsDropDownItems = teamHelper.buildDropDownSelection(teams);
+        teamToggle = true;
+      });
+
     });
   }
 
   addVisit() {
-    addPersonDialog.dialog(context, zonesElements, _selectedZoneIndex, (){});
-  }
-
-  void loadZones() async {
-    zones = zoneController.findAll();
-    zones.then((zonesItems) {
-      setState(() {
-        if (!zoneToggle) {
-          zonesItems.forEach((zone) async {
-            DropdownMenuItem dropdownMenuItem = DropdownMenuItem(
-              child: Text(
-                zone['name'],
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              value: zonesItems.indexOf(zone),
-            );
-            locations.add(dropdownMenuItem);
-            zonesElements.add(zone);
-          });
-          zoneToggle = true;
-        }
-      });
-    });
+    addPersonDialog.dialog(this.context, teams, _selectedTeamIndex,_selectedZoneIndex, (){});
   }
 
   @override
   Widget build(BuildContext context) {
     this.context = context;
-    loadZones();
     return Scaffold(
       drawer: SideMenu(),
       appBar: PreferredSize(

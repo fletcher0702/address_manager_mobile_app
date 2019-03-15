@@ -12,7 +12,7 @@ class VisitController {
     if (visit.teamUuid.isEmpty ||
         visit.name.isEmpty ||
         visit.address.isEmpty ||
-        visit.status.isEmpty ||
+        visit.statusUuid.isEmpty ||
         visit.zoneUuid.isEmpty) return false;
 
     var response = await http
@@ -24,7 +24,7 @@ class VisitController {
           'name': visit.name,
           'address': visit.address,
           'phoneNumber': visit.phoneNumber,
-          'status': visit.status,
+          'statusUuid': visit.statusUuid,
         }))
         .then((res) => res);
     print(response.body);
@@ -37,7 +37,7 @@ class VisitController {
         visit.teamUuid.isEmpty ||
         visit.name.isEmpty ||
         visit.address.isEmpty ||
-        visit.status.isEmpty ||
+        visit.statusUuid.isEmpty ||
         visit.zoneUuid.isEmpty) return false;
 
     VisitService().updateOne(id, visit, originalZoneId);
