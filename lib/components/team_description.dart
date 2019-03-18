@@ -1,4 +1,8 @@
+import 'package:address_manager/controller/team_controller.dart';
+import 'package:address_manager/helpers/team_helper.dart';
+import 'package:address_manager/models/status.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import '../tools/colors.dart';
 
 class TeamDescription extends StatefulWidget {
@@ -12,14 +16,176 @@ class TeamDescription extends StatefulWidget {
 }
 
 class TeamDescriptionState extends State<TeamDescription> {
+
+  BuildContext context;
+  final statusNameController = TextEditingController();
+  TeamHelper teamHelper = TeamHelper();
+  TeamController teamController = TeamController();
+  Color pickerColor = Color(0xff443a49);
+  Color currentColor = Color(0xff443a49);
+
+  String selectedTeam = '';
+
+  int _selectedTeamIndex;
+
+
+  @override
+  void dispose() {
+    super.dispose();
+    statusNameController.dispose();
+  }
+
+  void changeColor(Color color){
+    setState(() {
+      pickerColor = color;
+    });
+  }
+
+  void pickerAction(){
+    setState(() {
+      currentColor = pickerColor;
+    });
+    Navigator.of(context).pop();
+  }
   @override
   Widget build(BuildContext context) {
+    this.context = context;
     return Padding(
       padding: EdgeInsets.only(left: 20,right: 20),
       child: SingleChildScrollView(
         child: Column(
 
           children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text('Add status',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.add_circle,color: green_custom_color),
+                  onPressed: (){
+                    List<DropdownMenuItem<int>> teamsItems = teamHelper.buildDropDownSelection(widget.teams);
+                    showDialog(
+                        context: context,
+                        child: AlertDialog(
+                          title: Center(child: Text('Add Status',style: TextStyle(
+                            fontWeight: FontWeight.bold
+                          ),)),
+                          content: SingleChildScrollView(
+                            child: Column(
+                              children: <Widget>[
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    Icon(Icons.group,color:Colors.brown),
+                                    SizedBox(width: 5,),
+                                    DropdownButtonHideUnderline(
+                                      child: DropdownButton(
+                                        items: teamsItems,
+                                        hint: Text(selectedTeam,
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                            textAlign: TextAlign.center),
+                                        onChanged: (value) {
+                                          selectedTeam = widget.teams[value]['name'];
+                                          _selectedTeamIndex= value;
+                                        },
+                                      ),
+                                    ),
+                                    IconButton(
+                                      icon: Icon(Icons.color_lens,color:pickerColor),
+                                      onPressed: (){
+                                        showDialog(
+                                            context: context,
+                                            child: AlertDialog(
+                                              title: Center(child: Text('Choose status color',style: TextStyle(
+                                                fontWeight: FontWeight.bold
+                                              ),)),
+                                              content: SingleChildScrollView(
+                                                child:  ColorPicker(
+                                                    pickerColor: Colors.blue,
+                                                    enableLabel: true,
+                                                    pickerAreaHeightPercent: 0.8,
+                                                    onColorChanged: changeColor
+                                                ),
+                                              ),
+                                              actions: <Widget>[
+                                                IconButton(icon: Icon(Icons.colorize,color: pickerColor,), onPressed: pickerAction)
+                                              ],
+                                            )
+                                        );
+                                      },
+                                    )
+                                  ],
+                                ),
+                                Row(
+                                  children: <Widget>[
+                                    Expanded(
+                                      child: TextField(
+                                        decoration: InputDecoration(
+                                            prefixIcon: Icon(
+                                              Icons.filter_list,
+                                              color: Colors.black,
+                                            ),
+                                            focusedBorder: UnderlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    color: Colors.black)),
+                                            alignLabelWithHint: true,
+                                            hintText: 'New, Visit..',
+                                            hintStyle:
+                                            TextStyle(color: Colors.black)),
+                                        cursorColor: Colors.black,
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        controller: statusNameController,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 20,),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center
+                                  ,
+                                  children: <Widget>[
+                                    FlatButton(onPressed: (){Navigator.of(context).pop();}, child: Text('CANCEL',style: TextStyle(
+                                        color: Colors.white
+                                    ),),color: green_custom_color,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),),
+                                    SizedBox(width: 10,),
+                                    FlatButton(onPressed: (){
+
+                                      if(statusNameController.text.isNotEmpty){
+                                        Status status = Status(widget.teams[_selectedTeamIndex]["uuid"],statusNameController.text,pickerColor.value);
+                                        teamController.createStatus(status);
+                                      }
+
+                                    }, child: Text('SAVE',style: TextStyle(
+                                        color: Colors.white
+                                    )),color: green_custom_color,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),),
+
+                                  ],
+                                )
+
+                              ],
+                            ),
+
+                          ),
+                          actions: <Widget>[
+
+                          ],
+                        )
+                    );
+                  },
+                ),
+              ],
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[

@@ -564,7 +564,7 @@ class HomeState extends State<Home> {
   }
 
   Color colorType(element) {
-    Color res = Color(element['status']['color']=Colors.blue.value);
+    Color res = Color(element['status']['color']);
     return res;
   }
 }

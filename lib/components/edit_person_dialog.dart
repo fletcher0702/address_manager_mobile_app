@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
-
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../controller/visit_controller.dart';
 import '../models/visit.dart';
 import '../screens/delete_person_validation.dart';
 import '../screens/edit_person_validation.dart';
-import '../tools/const.dart';
 
 class EditPersonDialog extends StatefulWidget {
   @override
@@ -91,7 +90,7 @@ class EditPersonDialogState extends State<EditPersonDialog> {
                       ),
                       controller: visitAddressController,
                       onTap: () async {
-                        Prediction p = await PlacesAutocomplete.show(context: context, apiKey: kGoogleApiKey,mode: Mode.overlay,language: "fr",components: [Component(Component.country, "fr")]);
+                        Prediction p = await PlacesAutocomplete.show(context: context, apiKey: DotEnv().env['GApiKey'],mode: Mode.overlay,language: "fr",components: [Component(Component.country, "fr")]);
                         visitAddressController.text = p.description;
                       },
                     ),
