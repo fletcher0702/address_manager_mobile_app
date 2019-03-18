@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:address_manager/models/status.dart';
 import 'package:address_manager/models/team.dart';
 import 'package:http/http.dart' as http;
 import '../controller/user_controller.dart';
@@ -25,6 +26,18 @@ class TeamController {
     var response = await http
         .post(CREATE_TEAM_HTTP_ROUTE, headers: header ,body: jsonEncode({'name': team.name, 'adminUuid': team.adminUuid}))
         .then((res) => res);
+
+    return jsonDecode(response.body);
+
+  }
+
+  Future<dynamic> createStatus(Status status) async {
+    var credentials = await userController.getCredentials();
+    var response = await http
+        .post(CREATE_TEAM_STATUS_HTTP_ROUTE, headers: header ,body: jsonEncode({'userUuid': credentials["uuid"], 'teamUuid': status.teamUuid, 'status':[{'name':status.name,'color':status.color}]}))
+        .then((res) => res);
+
+    print(jsonEncode(response.body));
 
     return jsonDecode(response.body);
 

@@ -5,7 +5,6 @@ import 'package:google_maps_webservice/places.dart';
 import '../helpers/team_helper.dart';
 import '../models/visit.dart';
 import '../screens/add_person_validation.dart';
-import '../tools/const.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AddPersonDialog extends StatefulWidget {

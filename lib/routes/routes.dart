@@ -28,3 +28,7 @@ const CREATE_VISIT_HTTP_ROUTE = HOST+'/users/teams/visits/create';
 // Team Routes
 
 const CREATE_TEAM_HTTP_ROUTE = HOST+'/users/teams/create';
+
+// Status Routes
+
+const CREATE_TEAM_STATUS_HTTP_ROUTE = HOST + '/users/teams/status/create';
