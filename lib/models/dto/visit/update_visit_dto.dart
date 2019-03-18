@@ -8,10 +8,14 @@ class UpdateVisitDto {
   String _visitUuid;
   String _statusUuid;
   String _name;
+  String _address;
   String _phoneNumber;
 
   UpdateVisitDto(this._userUuid, this._teamUuid, this._zoneUuid, this._visitUuid,
-      this._statusUuid, this._name, this._phoneNumber);
+      this._statusUuid, this._name, this._address,this._phoneNumber);
+
+
+  String get address => _address;
 
   String get phoneNumber => _phoneNumber;
 

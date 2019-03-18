@@ -21,7 +21,7 @@ class _EditPersonValidationScreenState extends State<EditPersonValidationScreen>
   registerVisit()async{
     if(!visitUpdateToggle){
       Future.delayed(Duration(seconds: 2), ()async{
-        await visitController.updateVisit(widget.id,widget.visit,widget.originalZoneId);
+//        await visitController.updateVisit(widget.id,widget.visit,widget.originalZoneId);
         setState(() {
           visitUpdateToggle = true;
         });

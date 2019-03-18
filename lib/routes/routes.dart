@@ -1,5 +1,5 @@
 const HOST = 'http://10.0.2.2:3000';
-final header = {"Content-Type": "application/json;charset=utf-8"};
+Map<String,String> header = {"Content-Type": "application/json;charset=utf-8"};
 
 // APP ROUTES
 const LOGIN_ROUTE ='/login';
@@ -24,6 +24,8 @@ const CREATE_ZONE_HTTP_ROUTE = HOST+'/zones/create';
 // Visit Routes
 
 const CREATE_VISIT_HTTP_ROUTE = HOST+'/users/teams/visits/create';
+const UPDATE_VISIT_HTTP_ROUTE = HOST + '/users/teams/zones/visits/update';
+const DELETE_VISIT_HTTP_ROUTE = HOST + '/users/teams/zones/visits/delete';
 
 // Team Routes
 

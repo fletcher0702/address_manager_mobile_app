@@ -117,10 +117,10 @@ class HomeState extends State<Home> {
                                       icon: Icon(Icons.edit),
                                       onPressed: () {
                                         editPersonDialog.dialog(
-                                            context,
-                                            zonesElements,
-                                            _selectedZoneIndex,
-                                            visit);
+                                            context, teamsElements,_selectedTeamIndex,
+                                            _selectedZoneIndex,visit, () {
+                                          loadTeams();
+                                        });
                                       },
                                       color: orange_custom_color,
                                     )
@@ -523,10 +523,10 @@ class HomeState extends State<Home> {
                                                 ),
                                                 onPressed: () {
                                                   editPersonDialog.dialog(
-                                                      context,
-                                                      zonesElements,
-                                                      _selectedZoneIndex,
-                                                      visitsElements[index]);
+                                                      context, teamsElements,_selectedTeamIndex,
+                                                      _selectedZoneIndex,visitsElements[index], () {
+                                                    loadTeams();
+                                                  });
                                                 }),
                                             title: Text(
                                               visitsElements[index]['name'],
