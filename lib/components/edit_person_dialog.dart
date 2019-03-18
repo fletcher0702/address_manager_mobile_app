@@ -1,3 +1,7 @@
+import 'package:address_manager/controller/user_controller.dart';
+import 'package:address_manager/helpers/team_helper.dart';
+import 'package:address_manager/models/dto/visit/delete_visit_dto.dart';
+import 'package:address_manager/models/dto/visit/update_visit_dto.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
@@ -15,13 +19,19 @@ class EditPersonDialog extends StatefulWidget {
 
 class EditPersonDialogState extends State<EditPersonDialog> {
   VisitController visitController = VisitController();
+  UserController  userController = UserController();
   var statusType = ['Visit', 'Done', 'Absent', 'New', 'NA'];
   var selectedZone = '';
   int _selectedZoneIndex;
   var selectedType;
+  var selectedTeam = '';
+  var selectedStatusName ='';
+  int _selectedTeamIndex;
+  int _selectedStatusIndex=-1;
   final visitNameController = TextEditingController();
   final visitAddressController = TextEditingController();
   final visitPhoneNumberController = TextEditingController();
+  final teamHelper = TeamHelper();
 
   @override
   void dispose() {
@@ -31,28 +41,26 @@ class EditPersonDialogState extends State<EditPersonDialog> {
     super.dispose();
   }
 
-  Future<bool> dialog(context, zones, currentZoneIndex, visitOriginal) {
-    visitNameController.text = visitOriginal['name'];
-    visitPhoneNumberController.text = visitOriginal['phoneNumber'];
-    visitAddressController.text = visitOriginal['address'];
-    selectedType = visitOriginal['status'];
-    selectedZone = zones[currentZoneIndex]['name'];
-    _selectedZoneIndex = currentZoneIndex;
-    List<DropdownMenuItem<int>> zonesItems = [];
-    zones.forEach((zone) {
-      DropdownMenuItem<int> dropdownMenuItem = DropdownMenuItem(
-        child: Text(zone['name']),
-        value: zones.indexOf(zone),
-      );
-      zonesItems.add(dropdownMenuItem);
-    });
+  Future<bool> dialog(
+      context, teams,selectedTeamIndex,selectedZoneIndex,person, actionCallBackAfter) async {
 
-    List<DropdownMenuItem<String>> statusItems = statusType
-        .map((status) => DropdownMenuItem(
-              child: Text(status),
-              value: status,
-            ))
-        .toList();
+    List<DropdownMenuItem<int>> teamsItems = teamHelper.buildDropDownSelection(teams);
+    List<DropdownMenuItem<int>> zonesItems = [];
+    List<DropdownMenuItem<int>> statusItems = [];
+    if(selectedTeamIndex!=-1 && selectedZoneIndex!=-1){
+      visitNameController.text = person['name'];
+      visitAddressController.text = person['address'];
+      visitPhoneNumberController.text = person['phoneNumber'];
+      selectedStatusName = person['status']['name'];
+      var zones = teams[selectedTeamIndex]["zones"];
+      var status = teams[selectedTeamIndex]["status"];
+      selectedZone = zones[selectedZoneIndex]["name"];
+      selectedTeam = teams[selectedTeamIndex]["name"];
+      _selectedZoneIndex = selectedZoneIndex;
+      _selectedTeamIndex = selectedTeamIndex;
+      zonesItems = teamHelper.buildDropDownSelection(zones);
+      statusItems = teamHelper.buildDropDownSelection(status);
+    }
 
     return showDialog(
       context: context,
@@ -60,7 +68,7 @@ class EditPersonDialogState extends State<EditPersonDialog> {
       builder: (BuildContext context) {
         return SimpleDialog(
           shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.all(20.0),
@@ -90,9 +98,43 @@ class EditPersonDialogState extends State<EditPersonDialog> {
                       ),
                       controller: visitAddressController,
                       onTap: () async {
-                        Prediction p = await PlacesAutocomplete.show(context: context, apiKey: DotEnv().env['GApiKey'],mode: Mode.overlay,language: "fr",components: [Component(Component.country, "fr")]);
-                        visitAddressController.text = p.description;
+                        Prediction p = await PlacesAutocomplete.show(
+                            context: context,
+                            apiKey: DotEnv().env['GApiKey'],
+                            mode: Mode.fullscreen,
+                            language: "fr",
+                            components: [Component(Component.country, "fr")]);
+                        visitAddressController.text =
+                        p != null ? p.description : '';
                       },
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          'Team : ',
+                          style: TextStyle(
+                            fontSize: 20,
+                          ),
+                        ),
+                        DropdownButtonHideUnderline(
+                          child: DropdownButton(
+                            items: teamsItems,
+                            hint: Text(selectedTeam,
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center),
+                            onChanged: (value) {
+                              selectedTeam = teams[value]['name'];
+                              _selectedTeamIndex= value;
+                              selectedZone = '';
+                              zonesItems = teamHelper.buildDropDownSelection(teams[_selectedTeamIndex]["zones"]);
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -113,7 +155,7 @@ class EditPersonDialogState extends State<EditPersonDialog> {
                                 ),
                                 textAlign: TextAlign.center),
                             onChanged: (value) {
-                              selectedZone = zones[value]['name'];
+                              selectedZone = teams[_selectedTeamIndex]["zones"][value]['name'];
                               _selectedZoneIndex = value;
                             },
                           ),
@@ -132,14 +174,17 @@ class EditPersonDialogState extends State<EditPersonDialog> {
                         DropdownButtonHideUnderline(
                           child: DropdownButton(
                             items: statusItems,
-                            hint: Text(selectedType,
+                            hint: selectedStatusName != null
+                                ? Text(selectedStatusName,
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.bold,
                                 ),
-                                textAlign: TextAlign.center),
+                                textAlign: TextAlign.center)
+                                : Text(''),
                             onChanged: (value) {
-                              selectedType = value;
+                              _selectedStatusIndex = value;
+                              selectedStatusName = teams[_selectedTeamIndex]["status"][value]["name"];
                             },
                           ),
                         ),
@@ -157,41 +202,33 @@ class EditPersonDialogState extends State<EditPersonDialog> {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30)),
                     onPressed: () async {
-                      try {
-                        VisitController visitController = VisitController();
-                        String name = visitNameController.text;
-                        String address = visitAddressController.text;
-                        String phoneNumber = visitPhoneNumberController.text;
-                        String zoneId = visitController
-                            .getId(zones[_selectedZoneIndex]['_id']);
-                        String status = selectedType;
-                        Visit visit = Visit('',name, address, zoneId, status);
-                        String originalZoneId = visitOriginal['zoneId'];
 
-                        if (phoneNumber.isNotEmpty)
-                          visit.phoneNumber = phoneNumber;
+                      print('update request ! ');
+                      var userCredntials = await userController.getCredentials();
+                      String userUuid = userCredntials['uuid'].toString();
+                      String name = visitNameController.text;
+                      String address = visitAddressController.text;
+                      String phoneNumber = visitPhoneNumberController.text;
+                      String visitUuid = person['uuid'];
+                      String teamUuid = teams[_selectedTeamIndex]["uuid"];
+                      String zoneUuid = teams[_selectedTeamIndex]["zones"][_selectedZoneIndex]["uuid"];
+                      String statusUuid = _selectedStatusIndex!=-1?teams[_selectedTeamIndex]["status"][_selectedStatusIndex]["uuid"]:person['status']['uuid'];
+                      UpdateVisitDto visitDto = UpdateVisitDto(userUuid,teamUuid,zoneUuid,visitUuid,statusUuid,name,address,phoneNumber);
 
-                        Navigator.pop(context);
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    EditPersonValidationScreen(
-                                        visitController
-                                            .getId(visitOriginal['_id']),
-                                        visit,
-                                        originalZoneId)));
-                      } catch (e) {
-                        print('Error');
-                        print(e);
-                      }
+                      visitController.updateVisit(visitDto);
+//                      Navigator.pop(context);
+//                      Navigator.push(
+//                          context,
+//                          MaterialPageRoute(
+//                              builder: (context) =>
+//                                  AddPersonValidationScreen(visit)));
                     },
                     child: Text(
                       'UPDATE',
                       style: TextStyle(
                           color: Colors.white, fontWeight: FontWeight.bold),
                     ),
-                    color: Color.fromRGBO(255, 87, 0, 1)),
+                    color: Colors.deepOrangeAccent),
                 FlatButton(
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30)),
@@ -203,7 +240,7 @@ class EditPersonDialogState extends State<EditPersonDialog> {
                     style: TextStyle(
                         color: Colors.white, fontWeight: FontWeight.bold),
                   ),
-                  color: Color.fromRGBO(255, 87, 0, 1),
+                  color: Colors.deepOrangeAccent,
                 ),
               ],
             ),
@@ -213,7 +250,7 @@ class EditPersonDialogState extends State<EditPersonDialog> {
     );
   }
 
-  showDeleteDialog(context, visit) {
+  showDeleteDialog(context, visit,zoneUuid) {
     return showDialog(
         context: context,
         builder: (context) {
@@ -253,15 +290,16 @@ class EditPersonDialogState extends State<EditPersonDialog> {
                       width: 10,
                     ),
                     FlatButton(
-                      onPressed: () {
+                      onPressed: () async {
+                        var userCredentials = await userController.getCredentials();
+                        DeleteVisitDto visitDto = DeleteVisitDto(userCredentials['uuid'],zoneUuid,visit['uuid']);
                         Navigator.pop(context);
                         Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) =>
                                     DeletePersonValidationScreen(
-                                        visitController.getId(visit['_id']),
-                                        visit['zoneId'])));
+                                        visitDto)));
                       },
                       child: Text(
                         'DELETE',

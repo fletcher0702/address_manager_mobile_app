@@ -180,15 +180,18 @@ class VisitPanelScreenState extends State<VisitPanelScreen> {
                           ),
 
                           IconButton(icon: Icon(Icons.edit, color: Colors.orangeAccent, size: 15 ), onPressed: (){
-                            editPersonDialog.dialog(context, zonesElements, _selectedZoneIndex, element);
+                            editPersonDialog.dialog(context, teams,_selectedTeamIndex,
+                                _selectedZoneIndex,element, () {
+
+                                });
                           }),
-                          IconButton(icon: Icon(Icons.delete, color: Colors.red,size: 15), onPressed: (){editPersonDialog.showDeleteDialog(context,element);})
+                          IconButton(icon: Icon(Icons.delete, color: Colors.red,size: 15), onPressed: (){editPersonDialog.showDeleteDialog(context,element,teams[_selectedTeamIndex]["zones"][_selectedZoneIndex]["uuid"]);})
                         ],
                       ),
                     ),
                     SingleChildScrollView(
                         scrollDirection: Axis.horizontal,child: Text(element['address'])),
-                    Text(element['status']),
+                    Text(element['status']['name']),
                     Padding(
                       padding: EdgeInsets.only(top:5.0),
                       child: Container(color: Colors.black,height: 1,width: double.maxFinite,),

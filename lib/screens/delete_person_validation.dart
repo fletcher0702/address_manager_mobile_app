@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import '../controller/visit_controller.dart';
 import '../components/loader.dart';
 class DeletePersonValidationScreen extends StatefulWidget {
-  final String id;
-  final String originalZoneId;
+  final visit;
 
-  DeletePersonValidationScreen(this.id,this.originalZoneId);
+  DeletePersonValidationScreen(this.visit);
 
   @override
   _DeletePersonValidationScreenState createState() => _DeletePersonValidationScreenState();
@@ -19,10 +18,16 @@ class _DeletePersonValidationScreenState extends State<DeletePersonValidationScr
   deletePerson()async{
     if(!visitDeletedToggle){
       Future.delayed(Duration(seconds: 2), ()async{
-        await visitController.deleteOne(widget.id,widget.originalZoneId);
-        setState(() {
-          visitDeletedToggle = true;
-        });
+        var res = await visitController.deleteOne(widget.visit);
+
+          setState(() {
+            visitDeletedToggle = true;
+          });
+//        {
+//          //Error UI Handling
+//          Navigator.pop(context);
+//        }
+
       });
 
     }
