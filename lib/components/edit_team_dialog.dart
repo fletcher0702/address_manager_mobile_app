@@ -18,7 +18,7 @@ class EditTeamDialogState extends State<EditTeamDialog> {
     return null;
   }
 
-  showDeleteDialog(context, team) {
+  showDeleteDialog(context, team, action) {
     return showDialog(
         context: context,
         builder: (context) {
@@ -61,8 +61,7 @@ class EditTeamDialogState extends State<EditTeamDialog> {
                       onPressed: () async {
 
                         //TODO: Animation transition
-                        DeleteTeamDto teamDto = DeleteTeamDto(team['uuid']);
-                        teamController.deleteOne(teamDto);
+                        action();
                       },
                       child: Text(
                         'DELETE',

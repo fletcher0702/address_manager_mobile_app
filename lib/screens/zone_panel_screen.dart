@@ -1,5 +1,8 @@
+import 'package:address_manager/components/edit_team_dialog.dart';
 import 'package:address_manager/controller/team_controller.dart';
 import 'package:address_manager/helpers/team_helper.dart';
+import 'package:address_manager/models/dto/zone/delete_zone_dto.dart';
+import 'package:address_manager/models/dto/zone/update_zone_dto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:google_maps_webservice/places.dart';
@@ -19,11 +22,13 @@ class ZonePanelScreen extends StatefulWidget {
 
 class ZonePanelScreenState extends State<ZonePanelScreen> {
   final TeamHelper teamHelper = TeamHelper();
+  EditTeamDialogState editTeamDialogState = EditTeamDialogState();
   final zoneController = ZoneController();
   final teamController = TeamController();
   BuildContext context;
   var zones;
   var selectedTeam;
+  var selectedZone;
   var teamToAddInto;
   int _selectedTeamIndex = -1;
   final zoneNameController = TextEditingController();
@@ -90,6 +95,16 @@ class ZonePanelScreenState extends State<ZonePanelScreen> {
   saveAction() {
     Zone zone = Zone(zoneNameController.text,teamsData[_selectedTeamIndex]["uuid"],zoneAddressController.text);
     zoneController.createOne(zone);
+  }
+
+  editAction(){
+    UpdateZoneDto updateZoneDto = UpdateZoneDto();
+    updateZoneDto.name = zoneNameController.text;
+    updateZoneDto.teamUuid = teamsData[_selectedTeamIndex]["uuid"];
+    updateZoneDto.zoneUuid = selectedZone['uuid'];
+    updateZoneDto.address = zoneAddressController.text;
+    zoneController.updateOne(updateZoneDto);
+
   }
 
   addZone() {
@@ -175,6 +190,97 @@ class ZonePanelScreenState extends State<ZonePanelScreen> {
         this.context, 'Add Zone', content, saveAction,true);
   }
 
+  editZone(zone){
+    selectedZone  = zone;
+    teamToAddInto = selectedTeam;
+    zoneNameController.text = selectedZone['name'];
+    zoneAddressController.text = selectedZone['address'];
+    List<Widget> content = [
+      Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  'Team : ',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                DropdownButtonHideUnderline(
+                  child: DropdownButton(
+                    items: teamToggle ? teams : [],
+                    hint: teamToAddInto != null
+                        ? Text(teamToAddInto,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center)
+                        : Text(''),
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedTeamIndex = value;
+                        teamToAddInto = teamsData[value]['name'];
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
+            TextField(
+              controller: zoneNameController,
+              decoration: InputDecoration(
+                prefixIcon: Icon(Icons.place, color: Colors.blue),
+                focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Colors.black)),
+                alignLabelWithHint: true,
+                hintText: 'Name',
+              ),
+              cursorColor: Colors.black,
+            ),
+            TextField(
+              decoration: InputDecoration(
+                prefixIcon: Icon(Icons.find_replace, color: Colors.green),
+                focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Colors.black)),
+                alignLabelWithHint: true,
+                hintText: 'Location',
+              ),
+              cursorColor: Colors.black,
+              controller: zoneAddressController,
+              onTap: () async {
+                Prediction p = await PlacesAutocomplete.show(
+                    context: context,
+                    apiKey: DotEnv().env['GApiKey'],
+                    mode: Mode.fullscreen,
+                    logo: Text(''),
+                    hint: "Location...",
+                    language: "fr",
+                    components: [Component(Component.country, "fr")]);
+                zoneAddressController.text =
+                p != null ? p.description : '';
+              },
+            )
+          ],
+        ),
+      )
+    ];
+
+    DialogHelperState.showDialogBox(
+        this.context, 'Edit Zone', content, editAction,false);
+  }
+
+  deleteZoneAction(){
+    DeleteZoneDto deleteZoneDto = DeleteZoneDto(teamsData[_selectedTeamIndex]['uuid'],selectedZone['uuid']);
+    zoneController.deleteOne(deleteZoneDto);
+  }
+
   @override
   Widget build(BuildContext context) {
     this.context = context;
@@ -239,16 +345,6 @@ class ZonePanelScreenState extends State<ZonePanelScreen> {
               fontSize: 20
           ),
         ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: <Widget>[
-            IconButton(
-                icon: Icon(Icons.edit, color: Colors.orange, size: 18,),
-                onPressed: () {}),
-            IconButton(icon: Icon(Icons.close, color: Colors.red, size: 18,),
-                onPressed: () {}),
-          ],
-        )
       ],
     );
     Divider divider = Divider(color: Colors.black, height: 5,);
@@ -273,6 +369,21 @@ class ZonePanelScreenState extends State<ZonePanelScreen> {
                   fontWeight: FontWeight.bold,
                   color: Colors.grey,
                 ),)
+            ],
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: <Widget>[
+              IconButton(
+                  icon: Icon(Icons.edit, color: Colors.orange, size: 18,),
+                  onPressed: () {
+                    editZone(zone);
+                  }),
+              IconButton(icon: Icon(Icons.close, color: Colors.red, size: 18,),
+                  onPressed: () {
+                    selectedZone = zone;
+                    editTeamDialogState.showDeleteDialog(context, selectedZone, deleteZoneAction);
+                  }),
             ],
           )
         ],

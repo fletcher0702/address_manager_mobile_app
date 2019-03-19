@@ -20,6 +20,8 @@ const ALREADY_SIGNED_HTTP_ROUTE = HOST + '/users/checktoken';
 // Zone Routes
 
 const CREATE_ZONE_HTTP_ROUTE = HOST+'/zones/create';
+const UPDATE_ZONE_HTTP_ROUTE = HOST+'/users/teams/zones/update';
+const DELETE_ZONE_HTTP_ROUTE = HOST+'/users/teams/zones/delete';
 
 // Visit Routes
 
