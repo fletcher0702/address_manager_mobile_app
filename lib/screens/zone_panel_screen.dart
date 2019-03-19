@@ -172,7 +172,7 @@ class ZonePanelScreenState extends State<ZonePanelScreen> {
     ];
 
     DialogHelperState.showDialogBox(
-        this.context, 'Add Zone', content, saveAction);
+        this.context, 'Add Zone', content, saveAction,true);
   }
 
   @override

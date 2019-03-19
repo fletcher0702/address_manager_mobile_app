@@ -1,5 +1,10 @@
+import 'package:address_manager/components/edit_person_dialog.dart';
+import 'package:address_manager/components/edit_team_dialog.dart';
 import 'package:address_manager/controller/team_controller.dart';
+import 'package:address_manager/helpers/dialog_helper.dart';
 import 'package:address_manager/helpers/team_helper.dart';
+import 'package:address_manager/models/dto/team/delete_team_dto.dart';
+import 'package:address_manager/models/dto/team/update_team_dto.dart';
 import 'package:address_manager/models/status.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -21,6 +26,8 @@ class TeamDescriptionState extends State<TeamDescription> {
   final statusNameController = TextEditingController();
   TeamHelper teamHelper = TeamHelper();
   TeamController teamController = TeamController();
+  TextEditingController teamEditNameController = TextEditingController();
+  EditTeamDialogState editTeamDialogState = EditTeamDialogState();
   Color pickerColor = Color(0xff443a49);
   Color currentColor = Color(0xff443a49);
 
@@ -227,8 +234,15 @@ class TeamDescriptionState extends State<TeamDescription> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: <Widget>[
-              IconButton(icon: Icon(Icons.edit, color: Colors.orange,size: 18,), onPressed: (){}),
-              IconButton(icon: Icon(Icons.close, color: Colors.red,size: 18,), onPressed: (){}),
+              IconButton(icon: Icon(Icons.edit, color: Colors.orange,size: 18,), onPressed: (){
+                _selectedTeamIndex = widget.teams.indexOf(team);
+                editTeam();
+              }),
+              IconButton(icon: Icon(Icons.close, color: Colors.red,size: 18,), onPressed: (){
+                _selectedTeamIndex = widget.teams.indexOf(team);
+                deleteTeam();
+
+              }),
             ],
           )
         ],
@@ -269,5 +283,47 @@ class TeamDescriptionState extends State<TeamDescription> {
 
     });
     return content;
+  }
+
+  editTeam(){
+    teamEditNameController.text = widget.teams[_selectedTeamIndex]['name'];
+    List<Widget> content = [
+      Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          children: <Widget>[
+            TextField(
+              controller: teamEditNameController,
+              decoration: InputDecoration(
+                  hasFloatingPlaceholder: true,
+                  prefixIcon: Icon(Icons.group, color: Colors.brown,),
+                  focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                          color: Colors.black)),
+                  alignLabelWithHint: true,
+                  hintText: 'Name'
+              ),
+            ),
+          ],
+        ),
+      )
+    ];
+    DialogHelperState.showDialogBox(
+        this.context, 'Edit Team', content, editAction,false);
+  }
+
+  deleteTeam(){
+    editTeamDialogState.showDeleteDialog(context, widget.teams[_selectedTeamIndex]);
+  }
+
+  editAction(){
+    UpdateTeamDto team = UpdateTeamDto(widget.teams[_selectedTeamIndex]['uuid'],teamEditNameController.text);
+    teamController.updateOne(team);
+    teamEditNameController.clear();
+  }
+
+  deleteAction(){
+    DeleteTeamDto team = DeleteTeamDto(widget.teams[_selectedTeamIndex]['uuid']);
+    teamController.deleteOne(team);
   }
 }

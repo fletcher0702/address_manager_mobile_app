@@ -73,7 +73,7 @@ class TeamPanelScreenState extends State<TeamPanelScreen> {
       )
     ];
     DialogHelperState.showDialogBox(
-        this.context, 'Add Team', content, saveAction);
+        this.context, 'Add Team', content, saveAction,true);
   }
 
   @override
