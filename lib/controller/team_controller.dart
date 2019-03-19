@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:address_manager/models/dto/team/update_team_dto.dart';
 import 'package:address_manager/models/status.dart';
 import 'package:address_manager/models/team.dart';
 import 'package:http/http.dart' as http;
@@ -25,6 +26,17 @@ class TeamController {
     team.adminUuid = credentials["uuid"];
     var response = await http
         .post(CREATE_TEAM_HTTP_ROUTE, headers: header ,body: jsonEncode({'name': team.name, 'adminUuid': team.adminUuid}))
+        .then((res) => res);
+
+    return jsonDecode(response.body);
+
+  }
+
+  Future<dynamic> updateOne(UpdateTeamDto team) async {
+    var credentials = await userController.getCredentials();
+    team.userUuid = credentials["uuid"];
+    var response = await http
+        .patch(UPDATE_TEAM_HTTP_ROUTE, headers: header ,body: jsonEncode({'name': team.name, 'teamUuid': team.teamUuid ,'userUuid': team.userUuid}))
         .then((res) => res);
 
     return jsonDecode(response.body);

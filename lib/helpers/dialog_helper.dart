@@ -9,7 +9,7 @@ class DialogHelper extends StatefulWidget{
 class DialogHelperState extends State<DialogHelper> {
 
 
-  static Future<bool> showDialogBox(context, title, content, saveAction) {
+  static Future<bool> showDialogBox(context, title, content, saveAction,saveBool) {
     return showDialog(
       context: context,
       barrierDismissible: false,
@@ -38,13 +38,13 @@ class DialogHelperState extends State<DialogHelper> {
                         borderRadius: BorderRadius.circular(30)),
                     onPressed: saveAction,
                     child: Text(
-                      'SAVE',
+                      saveBool?'SAVE':'UPDATE',
                       style: TextStyle(
                         color: Colors.white,
                           fontWeight: FontWeight.bold
                       ),
                     ),
-                    color: Color.fromRGBO(46, 204, 113, 1)),
+                    color: saveBool?Color.fromRGBO(46, 204, 113, 1):Colors.deepOrangeAccent),
                 FlatButton(
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30)),
@@ -58,7 +58,7 @@ class DialogHelperState extends State<DialogHelper> {
                       fontWeight: FontWeight.bold
                     ),
                   ),
-                  color: Color.fromRGBO(46, 204, 113, 1),
+                  color: saveBool?Color.fromRGBO(46, 204, 113, 1):Colors.deepOrangeAccent,
                 ),
               ],
             ),
