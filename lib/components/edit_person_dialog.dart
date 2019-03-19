@@ -250,14 +250,14 @@ class EditPersonDialogState extends State<EditPersonDialog> {
     );
   }
 
-  showDeleteDialog(context, visit,zoneUuid) {
+  showDeleteDialog(context, element,zoneUuid) {
     return showDialog(
         context: context,
         builder: (context) {
           return SimpleDialog(
             title: Center(
                 child: Text(
-              visit['name'],
+              element['name'],
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
             )),
             shape: RoundedRectangleBorder(
@@ -292,7 +292,7 @@ class EditPersonDialogState extends State<EditPersonDialog> {
                     FlatButton(
                       onPressed: () async {
                         var userCredentials = await userController.getCredentials();
-                        DeleteVisitDto visitDto = DeleteVisitDto(userCredentials['uuid'],zoneUuid,visit['uuid']);
+                        DeleteVisitDto visitDto = DeleteVisitDto(userCredentials['uuid'],zoneUuid,element['uuid']);
                         Navigator.pop(context);
                         Navigator.push(
                             context,
