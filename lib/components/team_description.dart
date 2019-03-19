@@ -313,7 +313,7 @@ class TeamDescriptionState extends State<TeamDescription> {
   }
 
   deleteTeam(){
-    editTeamDialogState.showDeleteDialog(context, widget.teams[_selectedTeamIndex]);
+    editTeamDialogState.showDeleteDialog(context, widget.teams[_selectedTeamIndex], deleteAction());
   }
 
   editAction(){
