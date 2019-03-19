@@ -17,11 +17,12 @@ class ZoneController {
   createOne(Zone zone) async {
     if (zone.teamUuid.isNotEmpty && zone.name.isNotEmpty) {
       var credentials = await userController.getCredentials();
-      print('teamUuid : ' + zone.teamUuid);
+      zone.userUuid = credentials['uuid'];
       var response = await http
           .post(CREATE_ZONE_HTTP_ROUTE, headers: header,
           body: jsonEncode({
             'name': zone.name,
+            'userUuid': zone.userUuid,
             'teamUuid': zone.teamUuid,
             'address': zone.address
           }))
