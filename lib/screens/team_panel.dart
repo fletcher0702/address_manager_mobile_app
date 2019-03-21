@@ -3,9 +3,12 @@ import 'package:address_manager/components/team_description.dart';
 import 'package:address_manager/controller/team_controller.dart';
 import 'package:address_manager/helpers/dialog_helper.dart';
 import 'package:address_manager/models/team.dart';
+import 'package:address_manager/screens/team_invitation_screen.dart';
+import 'package:address_manager/screens/team_status_screen.dart';
 import 'package:flutter/material.dart';
 
-import '../components/panel_app_bar.dart';
+import '../tools/colors.dart';
+import '../components/panel_app_bar_with_tabs.dart';
 import '../components/side_menu.dart';
 
 
@@ -79,14 +82,27 @@ class TeamPanelScreenState extends State<TeamPanelScreen> {
   @override
   Widget build(BuildContext context) {
     this.context = context;
-    return Scaffold(
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
 
-      drawer: SideMenu(),
-      appBar: PreferredSize(
-          child: PanelAppBar('Team Panel', Icons.group_add, createTeam),
-          preferredSize: Size(double.infinity, 60.0)),
-      body: Padding(
-        child: teamToggle ? TeamDescription(teams) : ColorLoader(), padding: EdgeInsets.only(top: 30, left: 20),
+        drawer: SideMenu(),
+        appBar: PreferredSize(
+            child: PanelAppBarWithTabs('Team Panel', Icons.group_add, createTeam,
+                [
+                  Tab(icon: Icon(Icons.group, color: Colors.brown,)),
+                  Tab(icon: Icon(Icons.person_add,color: green_custom_color,)),
+                  Tab(icon: Icon(Icons.filter_list,color: Colors.black,)),
+                ]),
+            preferredSize: Size(double.infinity, 80.0)
+        ),
+        body: TabBarView(children: [
+          Padding(
+            child: teamToggle ? TeamDescription(teams) : ColorLoader(), padding: EdgeInsets.only(top: 30, left: 20),
+          ),
+          TeamInvitationScreen(),
+          teamToggle ?TeamStatusScreen(teams):Container(),
+        ])
       ),
     );
   }

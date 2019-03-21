@@ -38,3 +38,4 @@ const DELETE_TEAM_HTTP_ROUTE = HOST+'/users/teams/delete';
 // Status Routes
 
 const CREATE_TEAM_STATUS_HTTP_ROUTE = HOST + '/users/teams/status/create';
+const DELETE_TEAM_STATUS_HTTP_ROUTE = HOST + '/users/teams/status';
