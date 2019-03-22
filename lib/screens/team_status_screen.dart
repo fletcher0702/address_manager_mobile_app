@@ -215,7 +215,7 @@ class _TeamStatusScreenState extends State<TeamStatusScreen> {
                   onChanged: (value) {
                     selectedTeam = widget.teams[value]['name'];
                     _selectedTeamIndex= value;
-
+                    selectedTeamStatus = [];
                     setState(() {
                       selectedTeamStatus = buildStatusDescription();
                     });
@@ -239,7 +239,10 @@ class _TeamStatusScreenState extends State<TeamStatusScreen> {
           Padding(
             padding: EdgeInsets.all(20.0),
             child: Column(
-              children: selectedTeamStatus.length==0?[Center(child: Text('Empty...Please create status...'),)]:selectedTeamStatus,
+              children: selectedTeamStatus.length==0?[Center(child: Text('Empty... Please create status...',style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18
+              ),),)]:selectedTeamStatus,
             ),
           )
 
@@ -251,130 +254,126 @@ class _TeamStatusScreenState extends State<TeamStatusScreen> {
   buildStatusDescription(){
 
     List<Widget> rows = [];
+    var team = widget.teams[_selectedTeamIndex];
+    List<dynamic> status = team["status"];
 
-    widget.teams.forEach((team){
+    status.forEach((statusItem){
 
-      List<dynamic> status = team["status"];
+      Padding row  = Padding(padding: EdgeInsets.only(top: 1,bottom: 1),child:
+      Row(
 
-      status.forEach((statusItem){
+        children: <Widget>[
+          Container(
+            height: 20,
+            width: 20,
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(20),color: Color(statusItem["color"]),),
 
-        Padding row  = Padding(padding: EdgeInsets.only(top: 1,bottom: 1),child:
-        Row(
-
-          children: <Widget>[
-            Container(
-              height: 20,
-              width: 20,
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(20),color: Color(statusItem["color"]),),
-
-            ),
-            SizedBox(width: 20,),
-            Text(statusItem['name'],style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 15
-            ),),
-            IconButton(icon: Icon(Icons.edit,color: Colors.deepOrangeAccent,size: 18,), onPressed: (){
-              _selectedTeamIndex = widget.teams.indexOf(team);
-              _selectedStatusIndex = status.indexOf(statusItem);
-              statusNameController.text = widget.teams[_selectedTeamIndex]["status"][_selectedStatusIndex]['name'];
-              Color selectedStatusColor = Color(widget.teams[_selectedTeamIndex]["status"][_selectedStatusIndex]['color']);
-              pickerColor = selectedStatusColor;
-              showDialog(
-                  context: context,
-                  child: AlertDialog(
-                    title: Center(child: Text('Edit Status',style: TextStyle(
-                        fontWeight: FontWeight.bold
-                    ),)),
-                    content: SingleChildScrollView(
-                      child: Column(
-                        children: <Widget>[
-                          Row(
-                            children: <Widget>[
-                              Expanded(
-                                child: TextField(
-                                  decoration: InputDecoration(
-                                      prefixIcon: Icon(
-                                        Icons.filter_list,
-                                        color: Colors.black,
-                                      ),
-                                      focusedBorder: UnderlineInputBorder(
-                                          borderSide: BorderSide(
-                                              color: Colors.black)),
-                                      alignLabelWithHint: true,
-                                      hintText: 'New, Visit..',
-                                      hintStyle:
-                                      TextStyle(color: Colors.black)),
-                                  cursorColor: Colors.black,
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  controller: statusNameController,
+          ),
+          SizedBox(width: 20,),
+          Text(statusItem['name'],style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 15
+          ),),
+          IconButton(icon: Icon(Icons.edit,color: Colors.deepOrangeAccent,size: 18,), onPressed: (){
+            _selectedTeamIndex = widget.teams.indexOf(team);
+            _selectedStatusIndex = status.indexOf(statusItem);
+            statusNameController.text = widget.teams[_selectedTeamIndex]["status"][_selectedStatusIndex]['name'];
+            Color selectedStatusColor = Color(widget.teams[_selectedTeamIndex]["status"][_selectedStatusIndex]['color']);
+            pickerColor = selectedStatusColor;
+            showDialog(
+                context: context,
+                child: AlertDialog(
+                  title: Center(child: Text('Edit Status',style: TextStyle(
+                      fontWeight: FontWeight.bold
+                  ),)),
+                  content: SingleChildScrollView(
+                    child: Column(
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: TextField(
+                                decoration: InputDecoration(
+                                    prefixIcon: Icon(
+                                      Icons.filter_list,
+                                      color: Colors.black,
+                                    ),
+                                    focusedBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Colors.black)),
+                                    alignLabelWithHint: true,
+                                    hintText: 'New, Visit..',
+                                    hintStyle:
+                                    TextStyle(color: Colors.black)),
+                                cursorColor: Colors.black,
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
                                 ),
+                                controller: statusNameController,
                               ),
-                              IconButton(
-                                icon: Icon(Icons.color_lens,color:selectedStatusColor),
-                                onPressed: (){
-                                  showDialog(
-                                      context: context,
-                                      child: AlertDialog(
-                                        title: Center(child: Text('Choose status color',style: TextStyle(
-                                            fontWeight: FontWeight.bold
-                                        ),)),
-                                        content: SingleChildScrollView(
-                                          child:  ColorPicker(
-                                              pickerColor: Colors.blue,
-                                              enableLabel: true,
-                                              pickerAreaHeightPercent: 0.8,
-                                              onColorChanged: changeColor
-                                          ),
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.color_lens,color:selectedStatusColor),
+                              onPressed: (){
+                                showDialog(
+                                    context: context,
+                                    child: AlertDialog(
+                                      title: Center(child: Text('Choose status color',style: TextStyle(
+                                          fontWeight: FontWeight.bold
+                                      ),)),
+                                      content: SingleChildScrollView(
+                                        child:  ColorPicker(
+                                            pickerColor: Colors.blue,
+                                            enableLabel: true,
+                                            pickerAreaHeightPercent: 0.8,
+                                            onColorChanged: changeColor
                                         ),
-                                        actions: <Widget>[
-                                          IconButton(icon: Icon(Icons.colorize,color: pickerColor,), onPressed: pickerAction)
-                                        ],
-                                      )
-                                  );
-                                },
-                              )
-                            ],
-                          ),
-                          SizedBox(height: 20,),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center
-                            ,
-                            children: <Widget>[
-                              FlatButton(onPressed: (){Navigator.of(context).pop();}, child: Text('CANCEL',style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold
-                              ),),color: orange_custom_color,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),),
-                              SizedBox(width: 10,),
-                              FlatButton(onPressed: updateStatus, child: Text('UPDATE',style: TextStyle(
-                                  color: Colors.white,
+                                      ),
+                                      actions: <Widget>[
+                                        IconButton(icon: Icon(Icons.colorize,color: pickerColor,), onPressed: pickerAction)
+                                      ],
+                                    )
+                                );
+                              },
+                            )
+                          ],
+                        ),
+                        SizedBox(height: 20,),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center
+                          ,
+                          children: <Widget>[
+                            FlatButton(onPressed: (){Navigator.of(context).pop();}, child: Text('CANCEL',style: TextStyle(
+                                color: Colors.white,
                                 fontWeight: FontWeight.bold
-                              )),color: orange_custom_color,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),),
+                            ),),color: orange_custom_color,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),),
+                            SizedBox(width: 10,),
+                            FlatButton(onPressed: updateStatus, child: Text('UPDATE',style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold
+                            )),color: orange_custom_color,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),),
 
-                            ],
-                          )
+                          ],
+                        )
 
-                        ],
-                      ),
-
+                      ],
                     ),
-                  )
-              );
-            }),
-            IconButton(icon: Icon(Icons.clear,color: Colors.red,size: 18), onPressed: (){
-              _selectedTeamIndex = widget.teams.indexOf(team);
-              _selectedStatusIndex = status.indexOf(statusItem);
-              editTeamDialogState.showDeleteDialog(context, statusItem, deleteStatus);
-            })
-          ],
 
-        )
-        );
-        rows.add(row);
+                  ),
+                )
+            );
+          }),
+          IconButton(icon: Icon(Icons.clear,color: Colors.red,size: 18), onPressed: (){
+            _selectedTeamIndex = widget.teams.indexOf(team);
+            _selectedStatusIndex = status.indexOf(statusItem);
+            editTeamDialogState.showDeleteDialog(context, statusItem, deleteStatus);
+          })
+        ],
 
-      });
+      )
+      );
+      rows.add(row);
 
     });
 
