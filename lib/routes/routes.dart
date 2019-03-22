@@ -19,7 +19,7 @@ const ALREADY_SIGNED_HTTP_ROUTE = HOST + '/users/checktoken';
 
 // Zone Routes
 
-const CREATE_ZONE_HTTP_ROUTE = HOST+'/zones/create';
+const CREATE_ZONE_HTTP_ROUTE = HOST+'/users/teams/zones/create';
 const UPDATE_ZONE_HTTP_ROUTE = HOST+'/users/teams/zones/update';
 const DELETE_ZONE_HTTP_ROUTE = HOST+'/users/teams/zones/delete';
 
@@ -40,4 +40,4 @@ const INVITE_USERS_TEAM_HTTP_ROUTE = HOST+'/users/teams/invite';
 
 const CREATE_TEAM_STATUS_HTTP_ROUTE = HOST + '/users/teams/status/create';
 const UPDATE_TEAM_STATUS_HTTP_ROUTE = HOST + '/users/teams/status/update';
-const DELETE_TEAM_STATUS_HTTP_ROUTE = HOST + '/users/teams/status';
+const DELETE_TEAM_STATUS_HTTP_ROUTE = HOST + '/users/teams/status/delete';
