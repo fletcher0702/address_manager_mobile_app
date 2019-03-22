@@ -8,6 +8,7 @@ const HOME_ROUTE = '/';
 const ZONE_PANEL_ROUTE = '/zonepanel';
 const TEAM_PANEL_ROUTE = '/teampanel';
 const VISITS_PANEL_ROUTE = '/visitpanel';
+const STATISTICS_PANEL_ROUTE = '/statisticspanel';
 
 // HTTP ROUTES
 

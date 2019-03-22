@@ -84,7 +84,7 @@ class SideMenu extends StatelessWidget {
                 children: <Widget>[
                   Icon(Icons.pie_chart,color:Colors.indigo),
                   FlatButton(
-                    onPressed: () => {},
+                    onPressed: () {Navigator.pushNamed(context, STATISTICS_PANEL_ROUTE);},
                     child: Text('Statistics',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
