@@ -91,7 +91,7 @@ class TeamPanelScreenState extends State<TeamPanelScreen> {
             child: PanelAppBarWithTabs('Team Panel', Icons.group_add, createTeam,
                 [
                   Tab(icon: Icon(Icons.group, color: Colors.brown,)),
-                  Tab(icon: Icon(Icons.person_add,color: green_custom_color,)),
+                  Tab(icon: Icon(Icons.person_outline,color: green_custom_color,)),
                   Tab(icon: Icon(Icons.filter_list,color: Colors.black,)),
                 ]),
             preferredSize: Size(double.infinity, 80.0)
