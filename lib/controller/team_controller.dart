@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:address_manager/models/dto/status/delete_status_dto.dart';
+import 'package:address_manager/models/dto/status/update_status_dto.dart';
 import 'package:address_manager/models/dto/team/delete_team_dto.dart';
 import 'package:address_manager/models/dto/team/update_team_dto.dart';
 import 'package:address_manager/models/status.dart';
@@ -69,6 +71,36 @@ class TeamController {
         .then((res) => res);
 
     print(jsonEncode(response.body));
+
+    return jsonDecode(response.body);
+
+  }
+
+  Future<dynamic> deleteStatus(DeleteStatusDto status) async {
+
+    //TODO : Check if admin of the Team
+    try{
+      var credentials = await userController.getCredentials();
+      status.userUuid = credentials["uuid"];
+      var rq = http.Request('DELETE', Uri.parse(DELETE_TEAM_STATUS_HTTP_ROUTE));
+      rq.headers.putIfAbsent('Content-Type', ()=>header['Content-Type']);
+      rq.body = jsonEncode({'userUuid': status.userUuid,'teamUuid':status.teamUuid, 'statusUuid':status.statusUuid});
+
+      var response = await http.Client().send(rq).then((response)=> response);
+      return response.stream;
+
+    }catch(e){
+      print(e);
+    }
+
+  }
+
+  Future<dynamic> updateStatus(UpdateStatusDto status) async {
+    var credentials = await userController.getCredentials();
+    status.userUuid = credentials["uuid"];
+    var response = await http
+        .patch(UPDATE_TEAM_STATUS_HTTP_ROUTE, headers: header ,body: jsonEncode({'status': {'name': status.name, 'color': status.color},'statusUuid':status.statusUuid, 'teamUuid': status.teamUuid ,'userUuid': status.userUuid}))
+        .then((res) => res);
 
     return jsonDecode(response.body);
 
