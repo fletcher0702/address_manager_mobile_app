@@ -76,6 +76,16 @@ class TeamController {
 
   }
 
+  Future<dynamic> invitePeople(teamUuid,tags) async {
+    var credentials = await userController.getCredentials();
+    var response = await http
+        .post(INVITE_USERS_TEAM_HTTP_ROUTE, headers: header ,body: jsonEncode({'emails': tags,'teamUuid': teamUuid ,'userUuid': credentials['uuid']}))
+        .then((res) => res);
+
+    return jsonDecode(response.body);
+
+  }
+
   Future<dynamic> deleteStatus(DeleteStatusDto status) async {
 
     //TODO : Check if admin of the Team
