@@ -34,6 +34,7 @@ const DELETE_VISIT_HTTP_ROUTE = HOST + '/users/teams/zones/visits/delete';
 const CREATE_TEAM_HTTP_ROUTE = HOST+'/users/teams/create';
 const UPDATE_TEAM_HTTP_ROUTE = HOST+'/users/teams/update';
 const DELETE_TEAM_HTTP_ROUTE = HOST+'/users/teams/delete';
+const INVITE_USERS_TEAM_HTTP_ROUTE = HOST+'/users/teams/invite';
 
 // Status Routes
 
