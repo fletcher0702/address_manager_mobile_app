@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:address_manager/models/dto/visit/delete_visit_dto.dart';
 import 'package:address_manager/models/dto/visit/update_visit_dto.dart';
+import 'package:address_manager/services/user_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:dio/dio.dart';
 import 'package:mongo_dart/mongo_dart.dart';
@@ -10,6 +11,7 @@ import '../routes/routes.dart';
 
 class VisitController {
   VisitService visitService = VisitService();
+  UserService userService = UserService();
   Dio dio = Dio();
 
   createVisit(Visit visit) async {
@@ -38,7 +40,7 @@ class VisitController {
 
   updateVisit(UpdateVisitDto visit) async {
     var response = await http
-        .patch(UPDATE_VISIT_HTTP_ROUTE, headers: header ,body: jsonEncode({'userUuid': visit.userUuid,'teamUuid':visit.teamUuid,'zoneUuid':visit.zoneUuid,'visitUuid':visit.visitUuid,'name': visit.name, 'address': visit.address,'phoneNumber':visit.phoneNumber}))
+        .patch(UPDATE_VISIT_HTTP_ROUTE, headers: header ,body: jsonEncode({'userUuid': visit.userUuid,'teamUuid':visit.teamUuid,'zoneUuid':visit.zoneUuid,'visitUuid':visit.visitUuid,'name': visit.name, 'address': visit.address,'phoneNumber':visit.phoneNumber,'statusUuid': visit.statusUuid}))
         .then((res) => res);
 
     return jsonDecode(response.body);
