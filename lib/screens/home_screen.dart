@@ -73,8 +73,8 @@ class HomeState extends State<Home> {
   }
 
   loadMarkers(visitsElements) async {
-    setState(() {
-      markersList.clear();
+
+      List<Marker> tmpMarkers = [];
       visitsElements.forEach((visit) {
         Marker marker = Marker(
           height: 80.0,
@@ -234,16 +234,196 @@ class HomeState extends State<Home> {
           },
         );
 
-        markersList.add(marker);
+        tmpMarkers.add(marker);
       });
-    });
+
+      setState(() {
+        markersList = tmpMarkers;
+      });
+  }
+
+  loadMarkersByStatus(visitsElements,type) async {
+
+      markersList.clear();
+      List<Marker> tmpMarkers = [];
+      visitsElements.forEach((visit) {
+
+        print('visit uuid '+ visit['status']['uuid']);
+        print('type uuid '+ type);
+        if(visit['status']['uuid'].toString()==type.toString()){
+          print('Equals');
+          Marker marker = Marker(
+            height: 80.0,
+            width: 80.0,
+            point: LatLng(visit['latitude'], visit['longitude']),
+            builder: (context) {
+              Color color = colorType(visit);
+              return Center(
+                child: IconButton(
+                  onPressed: () {
+
+                    showModalBottomSheet(
+                        context: context,
+                        builder: (context) {
+                          return Container(
+                            height: 300,
+                            width: double.infinity,
+                            child: Column(
+                              children: <Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 15.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      Icon(
+                                        Icons.person_pin,
+                                        color: color,
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
+                                          visit['name'],
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 25,
+                                          ),
+                                        ),
+                                      ),
+                                      IconButton(
+                                        icon: Icon(Icons.edit),
+                                        onPressed: () {
+                                          editPersonDialog.dialog(
+                                              context, teamsElements,_selectedTeamIndex,
+                                              _selectedZoneIndex,visit, () {
+                                            loadTeams();
+                                          });
+                                        },
+                                        color: orange_custom_color,
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  child: Padding(
+                                    padding: EdgeInsets.only(
+                                        left: 20, right: 20, top: 40),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                      children: <Widget>[
+                                        SingleChildScrollView(
+                                          scrollDirection: Axis.horizontal,
+                                          child: Row(
+                                            children: <Widget>[
+                                              Icon(
+                                                Icons.place,
+                                                color: color,
+                                              ),
+                                              SizedBox(
+                                                width: 10,
+                                              ),
+                                              Text(
+                                                visit['address'],
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 14,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Row(
+                                          children: <Widget>[
+                                            Icon(
+                                              Icons.phone,
+                                              color:
+                                              Color.fromRGBO(46, 204, 113, 1),
+                                            ),
+                                            SizedBox(
+                                              width: 10,
+                                            ),
+                                            Text(
+                                              visit['phoneNumber'],
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                        Row(
+                                          children: <Widget>[
+                                            Icon(Icons.help,
+                                                color: Color.fromRGBO(
+                                                    255, 87, 0, 1)),
+                                            SizedBox(
+                                              width: 10,
+                                            ),
+                                            Text(
+                                              visit['status']['name'],
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            )
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                          );
+                        });
+                  },
+                  icon: Stack(
+                    children: <Widget>[
+                      Positioned(
+                        top: 10,
+                        left: 15,
+                        child: Container(
+                          width: 10,
+                          height: 10,
+                          color: color,
+                        ),
+                      ),
+                      Icon(
+                        Icons.place,
+                        color: color,
+                        size: 40,
+                      ),
+                      Positioned(
+                        top: 8,
+                        left: 15,
+                        child: Text(
+                          visit['name'],
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+
+          tmpMarkers.add(marker);
+        }else print('Not Equals');
+
+      });
+
+      setState(() {
+        markersList = tmpMarkers;
+      });
   }
 
   void initState() {
     super.initState();
     loadTeams();
     mapToggle = true;
-//    loadTeams();
   }
 
   @override
@@ -434,9 +614,9 @@ class HomeState extends State<Home> {
                             setState(() {
                               _selectedStatusIndex = value;
                               selectedStatus = statusElements[value]['name'];
-                              currentLocation[0] = zones[value]['latitude'];
-                              currentLocation[1] = zones[value]['longitude'];
-//                              loadMarkers(zones[value]["visits"]);
+                              currentLocation[0] = zones[_selectedZoneIndex]['latitude'];
+                              currentLocation[1] = zones[_selectedZoneIndex]['longitude'];
+                              loadMarkersByStatus(zones[_selectedZoneIndex]["visits"],statusElements[_selectedStatusIndex]['uuid']);
                             });
                           },
                         ),
