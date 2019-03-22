@@ -132,28 +132,31 @@ class HomeState extends State<Home> {
                                   padding: EdgeInsets.only(
                                       left: 20, right: 20, top: 40),
                                   child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                     children: <Widget>[
                                       SingleChildScrollView(
                                         scrollDirection: Axis.horizontal,
-                                        child: Row(
-                                          children: <Widget>[
-                                            Icon(
-                                              Icons.place,
-                                              color: color,
-                                            ),
-                                            SizedBox(
-                                              width: 10,
-                                            ),
-                                            Text(
-                                              visit['address'],
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 14,
+                                        child: SingleChildScrollView(
+                                          child: Row(
+                                            children: <Widget>[
+                                              Icon(
+                                                Icons.place,
+                                                color: color,
                                               ),
-                                            ),
-                                          ],
+                                              SizedBox(
+                                                width: 10,
+                                              ),
+                                              Text(
+                                                visit['address'],
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 14,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                       Row(
@@ -247,11 +250,7 @@ class HomeState extends State<Home> {
       markersList.clear();
       List<Marker> tmpMarkers = [];
       visitsElements.forEach((visit) {
-
-        print('visit uuid '+ visit['status']['uuid']);
-        print('type uuid '+ type);
         if(visit['status']['uuid'].toString()==type.toString()){
-          print('Equals');
           Marker marker = Marker(
             height: 80.0,
             width: 80.0,
@@ -498,8 +497,6 @@ class HomeState extends State<Home> {
               color: green_custom_color,
               onPressed: () {
                 if (selectedZone != null && selectedTeam != null) {
-                  print('selected team test : ' + _selectedTeamIndex.toString());
-                  print('selected zone test : ' + _selectedZoneIndex.toString());
                   addPersonDialog
                       .dialog(context, teamsElements,_selectedTeamIndex,
                       _selectedZoneIndex, () {
@@ -588,10 +585,10 @@ class HomeState extends State<Home> {
                             setState(() {
 
                               _selectedZoneIndex = value;
-                              print('selected zone index : ' + _selectedZoneIndex.toString());
                               selectedZone = zones[value]['name'];
                               currentLocation[0] = zones[value]['latitude'];
                               currentLocation[1] = zones[value]['longitude'];
+                              visitsElements = zones[value]["visits"];
                               loadMarkers(zones[value]["visits"]);
                             });
                           },
@@ -721,7 +718,7 @@ class HomeState extends State<Home> {
                                                 Text(visitsElements[index]
                                                 ['address']),
                                                 Text(visitsElements[index]
-                                                ['status'])
+                                                ['status']['name'])
                                               ],
                                             ),
                                             onTap: () {},
