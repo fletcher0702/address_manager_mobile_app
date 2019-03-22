@@ -1,4 +1,5 @@
 
+import 'package:address_manager/screens/statistics_panel.dart';
 import 'package:flutter/material.dart';
 import 'routes/routes.dart';
 import 'screens/login_screen.dart';
@@ -23,6 +24,7 @@ main() async{
       ZONE_PANEL_ROUTE: (context) => ZonePanelScreen(),
       TEAM_PANEL_ROUTE: (context) => TeamPanelScreen(),
       VISITS_PANEL_ROUTE: (context) => VisitPanelScreen(),
+      STATISTICS_PANEL_ROUTE: (context) => StatisticsScreen(),
     },
   ));
 }
