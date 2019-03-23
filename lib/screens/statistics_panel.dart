@@ -219,6 +219,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 ],
               ),
               Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   AnimatedCircularChart(
                     key: _chartKey,
