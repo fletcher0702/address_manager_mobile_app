@@ -435,127 +435,195 @@ class HomeState extends State<Home> {
         preferredSize: Size(double.infinity, 50),
         child: AppBar(
           iconTheme: IconThemeData(color: Colors.grey),
-          actions: <Widget>[
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                SizedBox(
-                  height: 20,
-                  child: Row(
-                    children: <Widget>[
-                      Icon(
-                        Icons.group,
-                        color: Colors.brown,
-                      ),
-                      SizedBox(width: 5),
-                      DropdownButtonHideUnderline(
-                        child: DropdownButton(
-                          hint: selectedTeam != null
-                              ? Text(selectedTeam,
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              textAlign: TextAlign.center)
-                              : Text(''),
-                          elevation: 0,
-                          items: teams,
-                          onChanged: (value) {
-                            setState(() {
-                              selectedZone = '';
-                              selectedStatus ='';
-                              _selectedTeamIndex = value;
-                              selectedTeam = teamsElements[value]['name'];
-                              zones = teamsElements[value]["zones"];
-                              statusElements = teamsElements[value]["status"];
-                              loadZones();
-                            });
-                          },
-                        ),
-                      ),
-                    ],
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Row(),
+              Row(
+                children: <Widget>[
+                  Icon(
+                    Icons.group,
+                    color: Colors.brown,
                   ),
-                ),
-
-              ],
-            ),
-            SizedBox(
-              width: 30,
-            ),
-            IconButton(
-              icon: Icon(Icons.refresh, size: 25, color: Colors.orangeAccent,),
-              color: green_custom_color,
-              onPressed: () async {
-                loadTeams();
-                loadMarkers(
-                    teamsElements[_selectedTeamIndex]["zones"][_selectedZoneIndex]["visits"]);
-              },
-
-            ),
-            IconButton(
-              icon: Icon(Icons.person_add, size: 25,),
-              color: green_custom_color,
-              onPressed: () {
-                if (selectedZone != null && selectedTeam != null) {
-                  addPersonDialog
-                      .dialog(context, teamsElements,_selectedTeamIndex,
-                      _selectedZoneIndex, () {
-                        loadTeams();
-                      });
-                } else {
-                  showDialog(
-                      context: context,
-                      builder: (context) {
-                        return SimpleDialog(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
+                  SizedBox(width: 5),
+                  DropdownButtonHideUnderline(
+                    child: DropdownButton(
+                      hint: selectedTeam != null
+                          ? Text(selectedTeam,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
                           ),
-                          children: <Widget>[
-                            Container(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(20.0),
-                                  child: Text(
-                                    'Please select a zone...',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 25,
-                                    ),
-                                  ),
-                                )),
-                            Padding(
-                              padding:
-                              const EdgeInsets.only(left: 80.0, right: 80.0),
-                              child: FlatButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                child: Text(
-                                  'OKAY',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                      fontSize: 25),
-                                ),
-                                color: green_custom_color,
+                          textAlign: TextAlign.center)
+                          : Text(''),
+                      elevation: 0,
+                      items: teams,
+                      onChanged: (value) {
+                        setState(() {
+                          selectedZone = '';
+                          selectedStatus ='';
+                          _selectedTeamIndex = value;
+                          selectedTeam = teamsElements[value]['name'];
+                          zones = teamsElements[value]["zones"];
+                          statusElements = teamsElements[value]["status"];
+                          loadZones();
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                children: <Widget>[
+                  IconButton(
+                    icon: Icon(Icons.refresh, size: 25, color: Colors.orangeAccent,),
+                    color: green_custom_color,
+                    onPressed: () async {
+                      loadTeams();
+                      loadMarkers(
+                          teamsElements[_selectedTeamIndex]["zones"][_selectedZoneIndex]["visits"]);
+                    },
+
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.person_add, size: 25,),
+                    color: green_custom_color,
+                    onPressed: () {
+                      if (selectedZone != null && selectedTeam != null) {
+                        addPersonDialog
+                            .dialog(context, teamsElements,_selectedTeamIndex,
+                            _selectedZoneIndex, () {
+                              loadTeams();
+                            });
+                      } else {
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return SimpleDialog(
                                 shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(50)),
-                              ),
-                            )
-                          ],
-                        );
-                      });
-                }
-              },
-              iconSize: 30.0,
-            )
-          ],
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                children: <Widget>[
+                                  Container(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(20.0),
+                                        child: Text(
+                                          'Please select a zone...',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 25,
+                                          ),
+                                        ),
+                                      )),
+                                  Padding(
+                                    padding:
+                                    const EdgeInsets.only(left: 80.0, right: 80.0),
+                                    child: FlatButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: Text(
+                                        'OKAY',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                            fontSize: 25),
+                                      ),
+                                      color: green_custom_color,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(50)),
+                                    ),
+                                  )
+                                ],
+                              );
+                            });
+                      }
+                    },
+                    iconSize: 30.0,
+                  )
+                ],
+              )
+            ],
+          ),
           elevation: 0.0,
           backgroundColor: Colors.transparent,
         ),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+      floatingActionButton:  FlatButton(
+        child: Icon(
+          Icons.arrow_upward,
+          color: Colors.white,
+          size: 20,
+        ),
+        color: Color.fromRGBO(46, 204, 113, 1),
+        onPressed: () {
+          showModalBottomSheet(
+              context: context,
+              builder: (ctx) {
+                return Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Container(
+                    height: 800,
+                    child: visitsElements.length == 0
+                        ? Center(
+                      child: Text(
+                          'Empty...Please add some persons or change the zone...'),
+                    )
+                        : ListView.builder(
+                        itemCount: visitsElements.length,
+                        itemBuilder: (ctx, index) {
+                          return Padding(
+                            padding: EdgeInsets.only(
+                                top: 10, bottom: 10),
+                            child: ListTile(
+                              leading: IconButton(
+                                  icon: Icon(
+                                    Icons.edit,
+                                    color: Color.fromRGBO(
+                                        255, 87, 0, 1),
+                                  ),
+                                  onPressed: () {
+                                    editPersonDialog.dialog(
+                                        context, teamsElements,_selectedTeamIndex,
+                                        _selectedZoneIndex,visitsElements[index], () {
+                                      loadTeams();
+                                    });
+                                  }),
+                              title: Text(
+                                visitsElements[index]['name'],
+                                style: TextStyle(
+                                    fontWeight:
+                                    FontWeight.bold),
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment:
+                                CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(visitsElements[index]
+                                  ['address']),
+                                  Text(visitsElements[index]
+                                  ['status']['name'])
+                                ],
+                              ),
+                              onTap: () {},
+                            ),
+                          );
+                        }),
+                  ),
+                );
+              });
+        },
+        shape: CircleBorder(side: BorderSide(color: Colors.white,width: 2)),
+        
+      ),
       body: SingleChildScrollView(
         child: Container(
-          height: 570,
+          color: Colors.transparent,
+          height: MediaQuery
+              .of(context)
+              .size
+              .height-60,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
@@ -629,7 +697,7 @@ class HomeState extends State<Home> {
                     height: MediaQuery
                         .of(context)
                         .size
-                        .height - 200,
+                        .height - 150 ,
                     width: double.infinity,
                     child: Center(
                       child: mapToggle
@@ -662,77 +730,77 @@ class HomeState extends State<Home> {
                   ),
                 ),
               ),
-              SizedBox(height: 10,),
-              Expanded(
-                  child: Align(
-                    alignment: FractionalOffset.bottomCenter,
-                    child: FlatButton(
-                      child: Icon(
-                        Icons.arrow_upward,
-                        color: Colors.white,
-                      ),
-                      color: Color.fromRGBO(46, 204, 113, 1),
-                      onPressed: () {
-                        showModalBottomSheet(
-                            context: context,
-                            builder: (ctx) {
-                              return Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: Container(
-                                  height: 800,
-                                  child: visitsElements.length == 0
-                                      ? Center(
-                                    child: Text(
-                                        'Empty...Please add some persons or change the zone...'),
-                                  )
-                                      : ListView.builder(
-                                      itemCount: visitsElements.length,
-                                      itemBuilder: (ctx, index) {
-                                        return Padding(
-                                          padding: EdgeInsets.only(
-                                              top: 10, bottom: 10),
-                                          child: ListTile(
-                                            leading: IconButton(
-                                                icon: Icon(
-                                                  Icons.edit,
-                                                  color: Color.fromRGBO(
-                                                      255, 87, 0, 1),
-                                                ),
-                                                onPressed: () {
-                                                  editPersonDialog.dialog(
-                                                      context, teamsElements,_selectedTeamIndex,
-                                                      _selectedZoneIndex,visitsElements[index], () {
-                                                    loadTeams();
-                                                  });
-                                                }),
-                                            title: Text(
-                                              visitsElements[index]['name'],
-                                              style: TextStyle(
-                                                  fontWeight:
-                                                  FontWeight.bold),
-                                            ),
-                                            subtitle: Column(
-                                              crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                              children: <Widget>[
-                                                Text(visitsElements[index]
-                                                ['address']),
-                                                Text(visitsElements[index]
-                                                ['status']['name'])
-                                              ],
-                                            ),
-                                            onTap: () {},
-                                          ),
-                                        );
-                                      }),
-                                ),
-                              );
-                            });
-                      },
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0)),
-                    ),
-                  )),
+
+//              Expanded(
+//                  child: Align(
+//                    alignment: FractionalOffset.bottomCenter,
+//                    child: FlatButton(
+//                      child: Icon(
+//                        Icons.arrow_upward,
+//                        color: Colors.white,
+//                      ),
+//                      color: Color.fromRGBO(46, 204, 113, 1),
+//                      onPressed: () {
+//                        showModalBottomSheet(
+//                            context: context,
+//                            builder: (ctx) {
+//                              return Padding(
+//                                padding: const EdgeInsets.all(10.0),
+//                                child: Container(
+//                                  height: 800,
+//                                  child: visitsElements.length == 0
+//                                      ? Center(
+//                                    child: Text(
+//                                        'Empty...Please add some persons or change the zone...'),
+//                                  )
+//                                      : ListView.builder(
+//                                      itemCount: visitsElements.length,
+//                                      itemBuilder: (ctx, index) {
+//                                        return Padding(
+//                                          padding: EdgeInsets.only(
+//                                              top: 10, bottom: 10),
+//                                          child: ListTile(
+//                                            leading: IconButton(
+//                                                icon: Icon(
+//                                                  Icons.edit,
+//                                                  color: Color.fromRGBO(
+//                                                      255, 87, 0, 1),
+//                                                ),
+//                                                onPressed: () {
+//                                                  editPersonDialog.dialog(
+//                                                      context, teamsElements,_selectedTeamIndex,
+//                                                      _selectedZoneIndex,visitsElements[index], () {
+//                                                    loadTeams();
+//                                                  });
+//                                                }),
+//                                            title: Text(
+//                                              visitsElements[index]['name'],
+//                                              style: TextStyle(
+//                                                  fontWeight:
+//                                                  FontWeight.bold),
+//                                            ),
+//                                            subtitle: Column(
+//                                              crossAxisAlignment:
+//                                              CrossAxisAlignment.start,
+//                                              children: <Widget>[
+//                                                Text(visitsElements[index]
+//                                                ['address']),
+//                                                Text(visitsElements[index]
+//                                                ['status']['name'])
+//                                              ],
+//                                            ),
+//                                            onTap: () {},
+//                                          ),
+//                                        );
+//                                      }),
+//                                ),
+//                              );
+//                            });
+//                      },
+//                      shape: RoundedRectangleBorder(
+//                          borderRadius: BorderRadius.circular(10.0)),
+//                    ),
+//                  )),
             ],
           ),
         ),
