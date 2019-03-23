@@ -615,7 +615,7 @@ class HomeState extends State<Home> {
               });
         },
         shape: CircleBorder(side: BorderSide(color: Colors.white,width: 2)),
-        
+
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -623,71 +623,69 @@ class HomeState extends State<Home> {
           height: MediaQuery
               .of(context)
               .size
-              .height-60,
+              .height-100,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               SizedBox(
                 height: 20,
-                child: Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Icon(
-                        Icons.place,
-                        color: Color.fromRGBO(52, 152, 219, 1),
-                      ),
-                      DropdownButtonHideUnderline(
-                        child: DropdownButton(
-                          hint: selectedZone != null
-                              ? Text(selectedZone,
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              textAlign: TextAlign.center)
-                              : Text(''),
-                          elevation: 0,
-                          items: locations,
-                          onChanged: (value) {
-                            setState(() {
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(
+                      Icons.place,
+                      color: Color.fromRGBO(52, 152, 219, 1),
+                    ),
+                    DropdownButtonHideUnderline(
+                      child: DropdownButton(
+                        hint: selectedZone != null
+                            ? Text(selectedZone,
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center)
+                            : Text(''),
+                        elevation: 0,
+                        items: locations,
+                        onChanged: (value) {
+                          setState(() {
 
-                              _selectedZoneIndex = value;
-                              selectedZone = zones[value]['name'];
-                              currentLocation[0] = zones[value]['latitude'];
-                              currentLocation[1] = zones[value]['longitude'];
-                              visitsElements = zones[value]["visits"];
-                              loadMarkers(zones[value]["visits"]);
-                            });
-                          },
-                        ),
+                            _selectedZoneIndex = value;
+                            selectedZone = zones[value]['name'];
+                            currentLocation[0] = zones[value]['latitude'];
+                            currentLocation[1] = zones[value]['longitude'];
+                            visitsElements = zones[value]["visits"];
+                            loadMarkers(zones[value]["visits"]);
+                          });
+                        },
                       ),
-                      Icon(Icons.filter_list),
-                      DropdownButtonHideUnderline(
-                        child: DropdownButton(
-                          hint: selectedStatus != null
-                              ? Text(selectedStatus,
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              textAlign: TextAlign.center)
-                              : Text(''),
-                          elevation: 0,
-                          items: status,
-                          onChanged: (value) {
-                            setState(() {
-                              _selectedStatusIndex = value;
-                              selectedStatus = statusElements[value]['name'];
-                              currentLocation[0] = zones[_selectedZoneIndex]['latitude'];
-                              currentLocation[1] = zones[_selectedZoneIndex]['longitude'];
-                              loadMarkersByStatus(zones[_selectedZoneIndex]["visits"],statusElements[_selectedStatusIndex]['uuid']);
-                            });
-                          },
-                        ),
+                    ),
+                    Icon(Icons.filter_list),
+                    DropdownButtonHideUnderline(
+                      child: DropdownButton(
+                        hint: selectedStatus != null
+                            ? Text(selectedStatus,
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center)
+                            : Text(''),
+                        elevation: 0,
+                        items: status,
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedStatusIndex = value;
+                            selectedStatus = statusElements[value]['name'];
+                            currentLocation[0] = zones[_selectedZoneIndex]['latitude'];
+                            currentLocation[1] = zones[_selectedZoneIndex]['longitude'];
+                            loadMarkersByStatus(zones[_selectedZoneIndex]["visits"],statusElements[_selectedStatusIndex]['uuid']);
+                          });
+                        },
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
               Padding(
@@ -730,77 +728,6 @@ class HomeState extends State<Home> {
                   ),
                 ),
               ),
-
-//              Expanded(
-//                  child: Align(
-//                    alignment: FractionalOffset.bottomCenter,
-//                    child: FlatButton(
-//                      child: Icon(
-//                        Icons.arrow_upward,
-//                        color: Colors.white,
-//                      ),
-//                      color: Color.fromRGBO(46, 204, 113, 1),
-//                      onPressed: () {
-//                        showModalBottomSheet(
-//                            context: context,
-//                            builder: (ctx) {
-//                              return Padding(
-//                                padding: const EdgeInsets.all(10.0),
-//                                child: Container(
-//                                  height: 800,
-//                                  child: visitsElements.length == 0
-//                                      ? Center(
-//                                    child: Text(
-//                                        'Empty...Please add some persons or change the zone...'),
-//                                  )
-//                                      : ListView.builder(
-//                                      itemCount: visitsElements.length,
-//                                      itemBuilder: (ctx, index) {
-//                                        return Padding(
-//                                          padding: EdgeInsets.only(
-//                                              top: 10, bottom: 10),
-//                                          child: ListTile(
-//                                            leading: IconButton(
-//                                                icon: Icon(
-//                                                  Icons.edit,
-//                                                  color: Color.fromRGBO(
-//                                                      255, 87, 0, 1),
-//                                                ),
-//                                                onPressed: () {
-//                                                  editPersonDialog.dialog(
-//                                                      context, teamsElements,_selectedTeamIndex,
-//                                                      _selectedZoneIndex,visitsElements[index], () {
-//                                                    loadTeams();
-//                                                  });
-//                                                }),
-//                                            title: Text(
-//                                              visitsElements[index]['name'],
-//                                              style: TextStyle(
-//                                                  fontWeight:
-//                                                  FontWeight.bold),
-//                                            ),
-//                                            subtitle: Column(
-//                                              crossAxisAlignment:
-//                                              CrossAxisAlignment.start,
-//                                              children: <Widget>[
-//                                                Text(visitsElements[index]
-//                                                ['address']),
-//                                                Text(visitsElements[index]
-//                                                ['status']['name'])
-//                                              ],
-//                                            ),
-//                                            onTap: () {},
-//                                          ),
-//                                        );
-//                                      }),
-//                                ),
-//                              );
-//                            });
-//                      },
-//                      shape: RoundedRectangleBorder(
-//                          borderRadius: BorderRadius.circular(10.0)),
-//                    ),
-//                  )),
             ],
           ),
         ),
