@@ -25,13 +25,11 @@ class HomeState extends State<Home> {
   TeamHelper teamHelper = TeamHelper();
   EditPersonDialogState editPersonDialog = EditPersonDialogState();
   AddPersonDialogState addPersonDialog = AddPersonDialogState();
+  MapController mapController;
 
   // Toggles trackers
   bool mapToggle = false;
   bool teamToggle = false;
-  bool activeBottomSheet = false;
-  bool visitsToggle = false;
-  bool markersToggle = false;
 
   var zones;
   var visits;
@@ -49,6 +47,8 @@ class HomeState extends State<Home> {
   int _selectedZoneIndex;
   int _selectedStatusIndex;
   int _selectedTeamIndex;
+  String _currentTeamUuidAfterCallBackReload = '';
+  String _currentZoneUuidAfterCallBackReload = '';
   List<double> currentLocation = [48.864716, 2.349014];
 
 
@@ -58,6 +58,9 @@ class HomeState extends State<Home> {
         teamsElements = data;
         teamToggle = true;
         teams = teamHelper.buildDropDownSelection(teamsElements);
+        if(_currentTeamUuidAfterCallBackReload.isNotEmpty && _currentZoneUuidAfterCallBackReload.isNotEmpty){
+          _refreshMarkersAfterAdd();
+        }
       });
     });
   }
@@ -422,7 +425,27 @@ class HomeState extends State<Home> {
   void initState() {
     super.initState();
     loadTeams();
+    mapController = MapController();
     mapToggle = true;
+  }
+
+  _refreshMarkersAfterAdd(){
+    teamsElements.forEach((team){
+      if(team['uuid'].toString()==_currentTeamUuidAfterCallBackReload){
+        List<dynamic> tmpZones = team["zones"];
+        tmpZones.forEach((z){
+          if(z['uuid'].toString()==_currentZoneUuidAfterCallBackReload){
+           setState(() {
+             _selectedTeamIndex = teamsElements.indexOf(team);
+             _selectedZoneIndex = tmpZones.indexOf(z);
+             zones = team['zones'];
+             loadZones();
+             loadMarkers(z['visits']);
+           });
+          }
+        });
+      }
+    });
   }
 
   @override
@@ -464,6 +487,8 @@ class HomeState extends State<Home> {
                           selectedStatus ='';
                           _selectedTeamIndex = value;
                           selectedTeam = teamsElements[value]['name'];
+                          _currentTeamUuidAfterCallBackReload = teamsElements[value]['uuid'];
+                          _currentZoneUuidAfterCallBackReload ='';
                           zones = teamsElements[value]["zones"];
                           statusElements = teamsElements[value]["status"];
                           status.clear();
@@ -482,8 +507,6 @@ class HomeState extends State<Home> {
                     color: green_custom_color,
                     onPressed: () async {
                       loadTeams();
-                      loadMarkers(
-                          teamsElements[_selectedTeamIndex]["zones"][_selectedZoneIndex]["visits"]);
                     },
 
                   ),
@@ -494,9 +517,7 @@ class HomeState extends State<Home> {
                       if (selectedZone != null && selectedTeam != null) {
                         addPersonDialog
                             .dialog(context, teamsElements,_selectedTeamIndex,
-                            _selectedZoneIndex, () {
-                              loadTeams();
-                            });
+                            _selectedZoneIndex, loadTeams);
                       } else {
                         showDialog(
                             context: context,
@@ -656,12 +677,17 @@ class HomeState extends State<Home> {
                             _selectedZoneIndex = value;
                             selectedZone = zones[value]['name'];
                             selectedStatus ='';
+                            _currentZoneUuidAfterCallBackReload = zones[value]['uuid'];
                             currentLocation[0] = zones[value]['latitude'];
                             currentLocation[1] = zones[value]['longitude'];
                             visitsElements = zones[value]["visits"];
                             status = teamHelper.buildDropDownSelection(statusElements);
                             loadMarkers(zones[value]["visits"]);
+//                            _animatedMapMove(LatLng(currentLocation[0], currentLocation[1]),12);
+                            mapController.move(LatLng(currentLocation[0], currentLocation[1]),12);
                           });
+
+
                         },
                       ),
                     ),
@@ -704,10 +730,12 @@ class HomeState extends State<Home> {
                     child: Center(
                       child: mapToggle
                           ? FlutterMap(
+                        mapController: mapController,
                         options: MapOptions(
                           zoom: 14, //48.864716, 2.349014 Paris
                           center: LatLng(
                               currentLocation[0], currentLocation[1]),
+
                         ),
                         layers: [
                           TileLayerOptions(
