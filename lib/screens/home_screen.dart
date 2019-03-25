@@ -44,9 +44,9 @@ class HomeState extends State<Home> {
   String selectedZone;
   String selectedStatus;
   String selectedTeam;
-  int _selectedZoneIndex;
+  int _selectedZoneIndex=-1;
   int _selectedStatusIndex;
-  int _selectedTeamIndex;
+  int _selectedTeamIndex=-1;
   String _currentTeamUuidAfterCallBackReload = '';
   String _currentZoneUuidAfterCallBackReload = '';
   List<double> currentLocation = [48.864716, 2.349014];
@@ -514,55 +514,10 @@ class HomeState extends State<Home> {
                     icon: Icon(Icons.person_add, size: 25,),
                     color: green_custom_color,
                     onPressed: () {
-                      if (selectedZone != null && selectedTeam != null) {
                         addPersonDialog
                             .dialog(context, teamsElements,_selectedTeamIndex,
                             _selectedZoneIndex, loadTeams);
-                      } else {
-                        showDialog(
-                            context: context,
-                            builder: (context) {
-                              return SimpleDialog(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                children: <Widget>[
-                                  Container(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(20.0),
-                                        child: Text(
-                                          'Please select a zone...',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 25,
-                                          ),
-                                        ),
-                                      )),
-                                  Padding(
-                                    padding:
-                                    const EdgeInsets.only(left: 80.0, right: 80.0),
-                                    child: FlatButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
-                                      child: Text(
-                                        'OKAY',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                            fontSize: 25),
-                                      ),
-                                      color: green_custom_color,
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(50)),
-                                    ),
-                                  )
-                                ],
-                              );
-                            });
-                      }
-                    },
-                    iconSize: 30.0,
+                    }
                   )
                 ],
               )
@@ -641,127 +596,116 @@ class HomeState extends State<Home> {
 
       ),
       body: SingleChildScrollView(
-        child: Container(
-          color: Colors.transparent,
-          height: MediaQuery
-              .of(context)
-              .size
-              .height-100,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              SizedBox(
-                height: 20,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Icon(
-                      Icons.place,
-                      color: Color.fromRGBO(52, 152, 219, 1),
-                    ),
-                    DropdownButtonHideUnderline(
-                      child: DropdownButton(
-                        hint: selectedZone != null
-                            ? Text(selectedZone,
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center)
-                            : Text(''),
-                        elevation: 0,
-                        items: locations,
-                        onChanged: (value) {
-                          setState(() {
-
-                            _selectedZoneIndex = value;
-                            selectedZone = zones[value]['name'];
-                            selectedStatus ='';
-                            _currentZoneUuidAfterCallBackReload = zones[value]['uuid'];
-                            currentLocation[0] = zones[value]['latitude'];
-                            currentLocation[1] = zones[value]['longitude'];
-                            visitsElements = zones[value]["visits"];
-                            status = teamHelper.buildDropDownSelection(statusElements);
-                            loadMarkers(zones[value]["visits"]);
-//                            _animatedMapMove(LatLng(currentLocation[0], currentLocation[1]),12);
-                            mapController.move(LatLng(currentLocation[0], currentLocation[1]),12);
-                          });
-
-
-                        },
-                      ),
-                    ),
-                    Icon(Icons.filter_list),
-                    DropdownButtonHideUnderline(
-                      child: DropdownButton(
-                        hint: selectedStatus != null
-                            ? Text(selectedStatus,
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center)
-                            : Text(''),
-                        elevation: 0,
-                        items: status,
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedStatusIndex = value;
-                            selectedStatus = statusElements[value]['name'];
-                            currentLocation[0] = zones[_selectedZoneIndex]['latitude'];
-                            currentLocation[1] = zones[_selectedZoneIndex]['longitude'];
-                            loadMarkersByStatus(zones[_selectedZoneIndex]["visits"],statusElements[_selectedStatusIndex]['uuid']);
-                          });
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: 20.0),
-                child: Container(
-                  child: SizedBox(
-                    height: MediaQuery
-                        .of(context)
-                        .size
-                        .height - 150 ,
-                    width: double.infinity,
-                    child: Center(
-                      child: mapToggle
-                          ? FlutterMap(
-                        mapController: mapController,
-                        options: MapOptions(
-                          zoom: 14, //48.864716, 2.349014 Paris
-                          center: LatLng(
-                              currentLocation[0], currentLocation[1]),
-
-                        ),
-                        layers: [
-                          TileLayerOptions(
-                            urlTemplate:
-                            "https://api.tiles.mapbox.com/v4/"
-                                "{id}/{z}/{x}/{y}@2x.png?access_token={accessToken}",
-                            additionalOptions: {
-                              'accessToken':
-                              DotEnv().env['MapBoxApiKey'],
-                              'id': 'mapbox.streets',
-                            },
+        child: Column(
+          children: <Widget>[
+            SizedBox(
+              height: 20,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Icon(
+                    Icons.place,
+                    color: Color.fromRGBO(52, 152, 219, 1),
+                  ),
+                  DropdownButtonHideUnderline(
+                    child: DropdownButton(
+                      hint: selectedZone != null
+                          ? Text(selectedZone,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
                           ),
-                          MarkerLayerOptions(
-                            markers: markersList,
-                          ),
-                        ],
-                      )
-                          : Center(
-                        child: Text('Loading Map...Please Wait...'),
-                      ),
+                          textAlign: TextAlign.center)
+                          : Text(''),
+                      elevation: 0,
+                      items: locations,
+                      onChanged: (value) {
+                        setState(() {
+
+                          _selectedZoneIndex = value;
+                          selectedZone = zones[value]['name'];
+                          selectedStatus ='';
+                          _currentZoneUuidAfterCallBackReload = zones[value]['uuid'];
+                          currentLocation[0] = zones[value]['latitude'];
+                          currentLocation[1] = zones[value]['longitude'];
+                          visitsElements = zones[value]["visits"];
+                          status = teamHelper.buildDropDownSelection(statusElements);
+                          loadMarkers(zones[value]["visits"]);
+                          mapController.move(LatLng(currentLocation[0], currentLocation[1]),13);
+                        });
+
+
+                      },
                     ),
                   ),
-                ),
+                  SizedBox(width: 10,),
+                  Icon(Icons.filter_list),
+                  SizedBox(width: 5,),
+                  DropdownButtonHideUnderline(
+                    child: DropdownButton(
+                      hint: selectedStatus != null
+                          ? Text(selectedStatus,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center)
+                          : Text(''),
+                      elevation: 0,
+                      items: status,
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedStatusIndex = value;
+                          selectedStatus = statusElements[value]['name'];
+                          currentLocation[0] = zones[_selectedZoneIndex]['latitude'];
+                          currentLocation[1] = zones[_selectedZoneIndex]['longitude'];
+                          loadMarkersByStatus(zones[_selectedZoneIndex]["visits"],statusElements[_selectedStatusIndex]['uuid']);
+                        });
+                      },
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+            SizedBox(height: 25,),
+            SingleChildScrollView(
+              child: SizedBox(
+                height: MediaQuery
+                    .of(context)
+                    .size
+                    .height - 120 ,
+                width: double.infinity,
+                child: mapToggle
+                    ? FlutterMap(
+                  mapController: mapController,
+                  options: MapOptions(
+                    zoom: 14, //48.864716, 2.349014 Paris
+                    center: LatLng(
+                        currentLocation[0], currentLocation[1]),
+
+                  ),
+                  layers: [
+                    TileLayerOptions(
+                      urlTemplate:
+                      "https://api.tiles.mapbox.com/v4/"
+                          "{id}/{z}/{x}/{y}@2x.png?access_token={accessToken}",
+                      additionalOptions: {
+                        'accessToken':
+                        DotEnv().env['MapBoxApiKey'],
+                        'id': 'mapbox.streets',
+                      },
+                    ),
+                    MarkerLayerOptions(
+                      markers: markersList,
+                    ),
+                  ],
+                )
+                    : Center(
+                  child: Text('Loading Map...Please Wait...'),
+                ),
+              )
+            )
+          ],
         ),
       ),
     );

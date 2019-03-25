@@ -33,6 +33,10 @@ class TeamPanelScreenState extends State<TeamPanelScreen> {
   @override
   void initState() {
     super.initState();
+    loadTeams();
+  }
+
+  loadTeams(){
     teamController.findAll().then((res) {
       teams = res;
       setState(() {
@@ -93,8 +97,8 @@ class TeamPanelScreenState extends State<TeamPanelScreen> {
                   Tab(icon: Icon(Icons.group, color: Colors.brown,)),
                   Tab(icon: Icon(Icons.person_outline,color: green_custom_color,)),
                   Tab(icon: Icon(Icons.filter_list,color: Colors.black,)),
-                ]),
-            preferredSize: Size(double.infinity, 80.0)
+                ],loadTeams),
+            preferredSize: Size(double.infinity, 90.0)
         ),
         body: TabBarView(children: [
           Padding(

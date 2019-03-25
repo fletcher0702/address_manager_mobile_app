@@ -45,15 +45,7 @@ class ZonePanelScreenState extends State<ZonePanelScreen> {
   void initState() {
     super.initState();
 
-    teamController.findAll().then((data) {
-
-      setState(() {
-        teamsData = data;
-        teams = teamHelper.buildDropDownSelection(teamsData);
-        teamToggle = true;
-      });
-
-    });
+    loadTeamsData();
 
   }
 
@@ -64,6 +56,17 @@ class ZonePanelScreenState extends State<ZonePanelScreen> {
     super.dispose();
   }
 
+  loadTeamsData(){
+    teamController.findAll().then((data) {
+
+      setState(() {
+        teamsData = data;
+        teams = teamHelper.buildDropDownSelection(teamsData);
+        teamToggle = true;
+      });
+
+    });
+  }
   void loadTeams() async {
     if (!teamToggle) {
       List<DropdownMenuItem> tmpList = [];
@@ -287,7 +290,7 @@ class ZonePanelScreenState extends State<ZonePanelScreen> {
     return Scaffold(
       drawer: SideMenu(),
       appBar: PreferredSize(
-        child: PanelAppBar('Zone Panel', Icons.add_location, addZone),
+        child: PanelAppBar('Zone Panel', Icons.add_location, addZone,loadTeamsData),
         preferredSize: Size(double.infinity, 100.0),
       ),
       body: teamToggle ? Column(

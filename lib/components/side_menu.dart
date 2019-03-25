@@ -7,15 +7,12 @@ class SideMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: Container(
-        height: 200,
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Center(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              SizedBox(
-                height: 150,
-              ),
               Row(
                 children: <Widget>[
                   Icon(Icons.home, color: Colors.green),

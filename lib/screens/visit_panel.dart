@@ -50,6 +50,10 @@ class VisitPanelScreenState extends State<VisitPanelScreen> {
   @override
   void initState() {
     super.initState();
+    loadTeams();
+  }
+
+  loadTeams(){
     teamController.findAll().then((res) {
 
       setState(() {
@@ -71,7 +75,7 @@ class VisitPanelScreenState extends State<VisitPanelScreen> {
     return Scaffold(
       drawer: SideMenu(),
       appBar: PreferredSize(
-        child: PanelAppBar('Visits Panel', Icons.person_add, addVisit),
+        child: PanelAppBar('Visits Panel', Icons.person_add, addVisit,loadTeams),
         preferredSize: Size(double.infinity, 50.0),
       ),
       body: SingleChildScrollView(

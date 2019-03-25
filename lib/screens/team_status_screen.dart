@@ -239,7 +239,7 @@ class _TeamStatusScreenState extends State<TeamStatusScreen> {
           Padding(
             padding: EdgeInsets.all(20.0),
             child: Column(
-              children: selectedTeamStatus.length==0?[Center(child: Text('Empty... Please create status...',style: TextStyle(
+              children: selectedTeamStatus.length==0?[Center(child: Text('Empty... Please create status or select team...',style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 18
               ),),)]:selectedTeamStatus,

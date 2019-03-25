@@ -27,6 +27,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   @override
   void initState() {
     super.initState();
+    loadTeams();
+  }
+  loadTeams(){
     teamController.findAll().then((res) {
       setState(() {
         teams = res;
@@ -188,6 +191,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
           elevation: 0,
           backgroundColor: Colors.transparent, 
           iconTheme: IconThemeData(color: Colors.grey),
+          actions: <Widget>[
+            IconButton(icon: Icon(Icons.refresh,color: Colors.orangeAccent,), onPressed: loadTeams)
+          ],
         ),
         body: Column(
             mainAxisAlignment: MainAxisAlignment.center,
