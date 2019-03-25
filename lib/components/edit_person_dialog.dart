@@ -2,10 +2,12 @@ import 'package:address_manager/controller/user_controller.dart';
 import 'package:address_manager/helpers/team_helper.dart';
 import 'package:address_manager/models/dto/visit/delete_visit_dto.dart';
 import 'package:address_manager/models/dto/visit/update_visit_dto.dart';
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:intl/intl.dart';
 
 import '../controller/visit_controller.dart';
 import '../models/visit.dart';
@@ -20,7 +22,18 @@ class EditPersonDialog extends StatefulWidget {
 class EditPersonDialogState extends State<EditPersonDialog> {
   VisitController visitController = VisitController();
   UserController  userController = UserController();
-  var statusType = ['Visit', 'Done', 'Absent', 'New', 'NA'];
+
+  final formats = {
+    InputType.both: DateFormat("EEEE, MMMM d, yyyy 'at' h:mma"),
+    InputType.date: DateFormat('yyyy-MM-dd'),
+    InputType.time: DateFormat("HH:mm"),
+  };
+
+  // Changeable in demo
+  InputType inputType = InputType.both;
+  bool editable = true;
+  DateTime date;
+
   var selectedZone = '';
   int _selectedZoneIndex;
   var selectedType;
@@ -107,6 +120,15 @@ class EditPersonDialogState extends State<EditPersonDialog> {
                         visitAddressController.text =
                         p != null ? p.description : '';
                       },
+                    ),
+                    DateTimePickerFormField(
+                      inputType: inputType,
+                      format: formats[inputType],
+                      editable: editable,
+                      decoration: InputDecoration(
+                          prefixIcon: Icon(Icons.calendar_today)
+                      ),
+                      onChanged: (dt) => setState(() => date = dt),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -196,8 +218,20 @@ class EditPersonDialogState extends State<EditPersonDialog> {
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              textDirection: TextDirection.rtl,
               children: <Widget>[
+                FlatButton(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30)),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(
+                    'CANCEL',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                  color: Colors.deepOrangeAccent,
+                ),
                 FlatButton(
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30)),
@@ -229,19 +263,7 @@ class EditPersonDialogState extends State<EditPersonDialog> {
                           color: Colors.white, fontWeight: FontWeight.bold),
                     ),
                     color: Colors.deepOrangeAccent),
-                FlatButton(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30)),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text(
-                    'CANCEL',
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
-                  ),
-                  color: Colors.deepOrangeAccent,
-                ),
+
               ],
             ),
           ],

@@ -39,6 +39,8 @@ dependencies:
   flutter_colorpicker: any
   dio: ^2.1.0
   flutter_circular_chart: ^0.1.0
+  datetime_picker_formfield: ^0.1.8
+  intl: ^0.15.8
 
 dev_dependencies:
   flutter_test:
