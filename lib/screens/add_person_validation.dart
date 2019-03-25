@@ -4,8 +4,9 @@ import '../controller/visit_controller.dart';
 import '../components/loader.dart';
 class AddPersonValidationScreen extends StatefulWidget {
   final Visit visit;
+  Function _callBackEnd;
 
-  AddPersonValidationScreen(this.visit);
+  AddPersonValidationScreen(this.visit,this._callBackEnd);
 
   @override
   _AddPersonValidationScreenState createState() => _AddPersonValidationScreenState();
@@ -19,10 +20,15 @@ class _AddPersonValidationScreenState extends State<AddPersonValidationScreen> {
   registerVisit()async{
     if(!visitRegisterToggle){
       Future.delayed(Duration(seconds: 2), ()async{
-        await visitController.createVisit(widget.visit);
-        setState(() {
-          visitRegisterToggle = true;
-        });
+        var response = await visitController.createVisit(widget.visit);
+
+        if(response!=null){
+          setState(() {
+            widget._callBackEnd();
+            visitRegisterToggle = true;
+          });
+        }
+
       });
     }
   }

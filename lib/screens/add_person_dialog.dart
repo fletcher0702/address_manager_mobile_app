@@ -207,7 +207,7 @@ class AddPersonDialogState extends State<AddPersonDialog> {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  AddPersonValidationScreen(visit)));
+                                  AddPersonValidationScreen(visit,actionCallBackAfter)));
                     },
                     child: Text(
                       'SAVE',
