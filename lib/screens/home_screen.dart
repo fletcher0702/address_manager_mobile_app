@@ -68,7 +68,6 @@ class HomeState extends State<Home> {
     setState(() {
         locations.clear();
         locations = teamHelper.buildDropDownSelection(zones);
-        status = teamHelper.buildDropDownSelection(statusElements);
     });
   }
 
@@ -265,7 +264,7 @@ class HomeState extends State<Home> {
                         context: context,
                         builder: (context) {
                           return Container(
-                            height: 300,
+                            height: 400,
                             width: double.infinity,
                             child: Column(
                               children: <Widget>[
@@ -307,6 +306,7 @@ class HomeState extends State<Home> {
                                     padding: EdgeInsets.only(
                                         left: 20, right: 20, top: 40),
                                     child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                       children: <Widget>[
@@ -466,6 +466,8 @@ class HomeState extends State<Home> {
                           selectedTeam = teamsElements[value]['name'];
                           zones = teamsElements[value]["zones"];
                           statusElements = teamsElements[value]["status"];
+                          status.clear();
+                          markersList.clear();
                           loadZones();
                         });
                       },
@@ -653,9 +655,11 @@ class HomeState extends State<Home> {
 
                             _selectedZoneIndex = value;
                             selectedZone = zones[value]['name'];
+                            selectedStatus ='';
                             currentLocation[0] = zones[value]['latitude'];
                             currentLocation[1] = zones[value]['longitude'];
                             visitsElements = zones[value]["visits"];
+                            status = teamHelper.buildDropDownSelection(statusElements);
                             loadMarkers(zones[value]["visits"]);
                           });
                         },
