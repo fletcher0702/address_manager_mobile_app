@@ -49,167 +49,166 @@ class _LoginScreenState extends State<LoginScreen> {
         child: alreadySignedToggle
             ? (alreadySigned
                 ? Home()
-                : Container(
-                    child: SingleChildScrollView(
+                : Center(
+          child: Container(
+            child: SingleChildScrollView(
+              child: Column(
+                children: <Widget>[
+                  Center(
+                      child: Text(
+                        'Welcome,',
+                        style: TextStyle(
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      )),
+                  Center(
+                      child: Text(
+                        'sign to continue',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey),
+                      )),
+                  Padding(
+                    padding: const EdgeInsets.all(40.0),
+                    child: Container(
                       child: Column(
                         children: <Widget>[
-                          SizedBox(
-                            height: MediaQuery.of(context).size.height - 550,
-                          ),
-                          Center(
-                              child: Text(
-                            'Welcome,',
+                          TextField(
+                            decoration: InputDecoration(
+                                prefixIcon: Icon(
+                                  Icons.person,
+                                  color: Colors.black,
+                                ),
+                                focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: Colors.black)),
+                                alignLabelWithHint: true,
+                                hintText: 'email',
+                                hintStyle:
+                                TextStyle(color: Colors.black)),
+                            cursorColor: Colors.black,
                             style: TextStyle(
-                              fontSize: 25,
+                              color: Colors.black,
                               fontWeight: FontWeight.bold,
                             ),
-                          )),
-                          Center(
-                              child: Text(
-                            'sign to continue',
+                            keyboardType: TextInputType.emailAddress,
+                            controller: emailController,
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          TextField(
+                            cursorColor: Colors.black,
+                            obscureText: true,
+                            decoration: InputDecoration(
+                                prefixIcon: Icon(
+                                  Icons.lock,
+                                  color: Colors.black,
+                                ),
+                                focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: Colors.black)),
+                                alignLabelWithHint: true,
+                                hintText: 'password',
+                                hintStyle:
+                                TextStyle(color: Colors.black)),
                             style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey),
-                          )),
-                          Padding(
-                            padding: const EdgeInsets.all(40.0),
-                            child: Container(
-                              child: Column(
-                                children: <Widget>[
-                                  TextField(
-                                    decoration: InputDecoration(
-                                        prefixIcon: Icon(
-                                          Icons.person,
-                                          color: Colors.black,
-                                        ),
-                                        focusedBorder: UnderlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Colors.black)),
-                                        alignLabelWithHint: true,
-                                        hintText: 'email',
-                                        hintStyle:
-                                            TextStyle(color: Colors.black)),
-                                    cursorColor: Colors.black,
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    keyboardType: TextInputType.emailAddress,
-                                    controller: emailController,
-                                  ),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  TextField(
-                                    cursorColor: Colors.black,
-                                    obscureText: true,
-                                    decoration: InputDecoration(
-                                        prefixIcon: Icon(
-                                          Icons.lock,
-                                          color: Colors.black,
-                                        ),
-                                        focusedBorder: UnderlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Colors.black)),
-                                        alignLabelWithHint: true,
-                                        hintText: 'password',
-                                        hintStyle:
-                                            TextStyle(color: Colors.black)),
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    controller: passwordController,
-                                  ),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  FlatButton(
-                                    onPressed: () {},
-                                    child: Text(
-                                      'I forgot password ?',
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            controller: passwordController,
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          FlatButton(
+                            onPressed: () {},
+                            child: Text(
+                              'I forgot password ?',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                  color: Colors.grey),
+                            ),
+                            color: Colors.transparent,
+                          ),
+                          Material(
+                            elevation: 6,
+                            color: Colors.transparent,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(20),
+                                    topRight: Radius.circular(20),
+                                    bottomLeft: Radius.circular(20),
+                                    bottomRight: Radius.circular(20))),
+                            child: FlatButton(
+                              onPressed: () async {
+                                if (emailController.text.isEmpty ||
+                                    passwordController.text.isEmpty)
+                                  return false;
+                                bool res = await _loginRequest(
+                                    emailController.text,
+                                    passwordController.text);
+                                if (res)
+                                  Navigator.pushNamed(
+                                      context, HOME_ROUTE);
+                              },
+                              child: Container(
+                                width: 200,
+                                child: Row(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    Text(
+                                      'login',
                                       style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 14,
-                                          color: Colors.grey),
-                                    ),
-                                    color: Colors.transparent,
-                                  ),
-                                  Material(
-                                    elevation: 6,
-                                    color: Colors.transparent,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.only(
-                                            topLeft: Radius.circular(20),
-                                            topRight: Radius.circular(20),
-                                            bottomLeft: Radius.circular(20),
-                                            bottomRight: Radius.circular(20))),
-                                    child: FlatButton(
-                                      onPressed: () async {
-                                        if (emailController.text.isEmpty ||
-                                            passwordController.text.isEmpty)
-                                          return false;
-                                        bool res = await _loginRequest(
-                                            emailController.text,
-                                            passwordController.text);
-                                        if (res)
-                                          Navigator.pushNamed(
-                                              context, HOME_ROUTE);
-                                      },
-                                      child: Container(
-                                        width: 200,
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: <Widget>[
-                                            Text(
-                                              'login',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            Icon(Icons.chevron_right)
-                                          ],
-                                        ),
+                                        fontWeight: FontWeight.bold,
                                       ),
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(30)),
-                                      color: green_custom_color,
-                                      textColor: Colors.white,
                                     ),
-                                  ),
-                                  SizedBox(
-                                    height: 50,
-                                  ),
-                                  Container(
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: <Widget>[
-                                        Text('Don\'t have an account?'),
-                                        FlatButton(
-                                            onPressed: () {
-                                              Navigator.of(context)
-                                                  .pushNamed(SIGN_UP_ROUTE);
-                                            },
-                                            child: Text(
-                                              'Signup',
-                                              style: TextStyle(
-                                                  color: green_custom_color,
-                                                  fontWeight: FontWeight.bold),
-                                            ))
-                                      ],
-                                    ),
-                                  )
-                                ],
+                                    Icon(Icons.chevron_right)
+                                  ],
+                                ),
                               ),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius:
+                                  BorderRadius.circular(30)),
+                              color: green_custom_color,
+                              textColor: Colors.white,
                             ),
                           ),
+                          SizedBox(
+                            height: 50,
+                          ),
+                          Container(
+                            child: Row(
+                              mainAxisAlignment:
+                              MainAxisAlignment.center,
+                              children: <Widget>[
+                                Text('Don\'t have an account?'),
+                                FlatButton(
+                                    onPressed: () {
+                                      Navigator.of(context)
+                                          .pushNamed(SIGN_UP_ROUTE);
+                                    },
+                                    child: Text(
+                                      'Signup',
+                                      style: TextStyle(
+                                          color: green_custom_color,
+                                          fontWeight: FontWeight.bold),
+                                    ))
+                              ],
+                            ),
+                          )
                         ],
                       ),
                     ),
-                  ))
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ))
             : ColorLoader(),
       ),
     );

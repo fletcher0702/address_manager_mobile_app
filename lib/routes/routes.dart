@@ -1,4 +1,4 @@
-const HOST = 'http://10.0.2.2:3000';
+const HOST = 'http://68.183.78.0:3000';
 Map<String,String> header = {"Content-Type": "application/json;charset=utf-8"};
 
 // APP ROUTES
