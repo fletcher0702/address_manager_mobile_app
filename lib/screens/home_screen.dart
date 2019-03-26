@@ -568,7 +568,7 @@ class HomeState extends State<Home> {
                                         _selectedTeamIndex,
                                         _selectedZoneIndex,
                                         visitsElements[index], loadTeams);
-                                    
+
                                   }),
                               title: Text(
                                 visitsElements[index]['name'],
