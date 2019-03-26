@@ -1,9 +1,9 @@
 import 'package:address_manager/helpers/team_helper.dart';
 import 'package:address_manager/screens/add_person_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../components/edit_person_dialog.dart';
 import '../components/side_menu.dart';
@@ -87,7 +87,8 @@ class HomeState extends State<Home> {
             return Center(
               child: IconButton(
                 onPressed: () {
-
+                  visitsElements =
+                  teamsElements[_selectedTeamIndex]['zones'][_selectedZoneIndex]['visits'];
                   showModalBottomSheet(
                       context: context,
                       builder: (context) {
@@ -120,9 +121,8 @@ class HomeState extends State<Home> {
                                       onPressed: () {
                                         editPersonDialog.dialog(
                                             context, teamsElements,_selectedTeamIndex,
-                                            _selectedZoneIndex,visit, () {
-                                          loadTeams();
-                                        });
+                                            _selectedZoneIndex, visit,
+                                            loadTeams);
                                       },
                                       color: orange_custom_color,
                                     )
@@ -295,9 +295,8 @@ class HomeState extends State<Home> {
                                         onPressed: () {
                                           editPersonDialog.dialog(
                                               context, teamsElements,_selectedTeamIndex,
-                                              _selectedZoneIndex,visit, () {
-                                            loadTeams();
-                                          });
+                                              _selectedZoneIndex, visit,
+                                              loadTeams);
                                         },
                                         color: orange_custom_color,
                                       )
@@ -439,6 +438,7 @@ class HomeState extends State<Home> {
              _selectedTeamIndex = teamsElements.indexOf(team);
              _selectedZoneIndex = tmpZones.indexOf(z);
              zones = team['zones'];
+             visitsElements = zones[_selectedZoneIndex]['visits'];
              loadZones();
              loadMarkers(z['visits']);
            });
@@ -515,7 +515,8 @@ class HomeState extends State<Home> {
                     color: green_custom_color,
                     onPressed: () {
                         addPersonDialog
-                            .dialog(context, teamsElements,_selectedTeamIndex,
+                            .dialog(
+                            this.context, teamsElements, _selectedTeamIndex,
                             _selectedZoneIndex, loadTeams);
                     }
                   )
@@ -561,12 +562,13 @@ class HomeState extends State<Home> {
                                     color: Color.fromRGBO(
                                         255, 87, 0, 1),
                                   ),
-                                  onPressed: () {
+                                  onPressed: () async {
                                     editPersonDialog.dialog(
-                                        context, teamsElements,_selectedTeamIndex,
-                                        _selectedZoneIndex,visitsElements[index], () {
-                                      loadTeams();
-                                    });
+                                        context, teamsElements,
+                                        _selectedTeamIndex,
+                                        _selectedZoneIndex,
+                                        visitsElements[index], loadTeams);
+                                    
                                   }),
                               title: Text(
                                 visitsElements[index]['name'],
