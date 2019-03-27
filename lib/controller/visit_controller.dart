@@ -35,9 +35,8 @@ class VisitController {
           'statusUuid': visit.statusUuid,
         }))
         .then((res) => res);
-    print(response.body);
 
-    return true;
+    return jsonDecode(response.body);
   }
 
   updateVisit(UpdateVisitDto visit) async {

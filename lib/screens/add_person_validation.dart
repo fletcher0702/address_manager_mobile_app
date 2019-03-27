@@ -22,7 +22,7 @@ class _AddPersonValidationScreenState extends State<AddPersonValidationScreen> {
       Future.delayed(Duration(seconds: 2), ()async{
         var response = await visitController.createVisit(widget.visit);
 
-        if(response!=null){
+        if(response['created']){
           setState(() {
             widget._callBackEnd();
             visitRegisterToggle = true;

@@ -53,8 +53,8 @@ class TeamPanelScreenState extends State<TeamPanelScreen> {
 
   saveAction() {
     Team team = Team(teamNameController.text);
-    teamController.createOne(team);
     teamNameController.clear();
+    return teamController.createOne(team);
   }
 
   createTeam(){

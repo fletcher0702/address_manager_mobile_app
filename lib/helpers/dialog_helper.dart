@@ -1,3 +1,5 @@
+import '../tools/actions.dart';
+import 'package:address_manager/screens/add_transition.dart';
 import 'package:flutter/material.dart';
 
 class DialogHelper extends StatefulWidget{
@@ -36,7 +38,12 @@ class DialogHelperState extends State<DialogHelper> {
                 FlatButton(
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30)),
-                    onPressed: saveAction,
+                    onPressed: (){
+
+                      Navigator.pop(context);
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>AddTransition('Successfully Added','Error something went wrong...',saveAction,CREATE_ACTION)));
+
+                    },
                     child: Text(
                       saveBool?'SAVE':'UPDATE',
                       style: TextStyle(

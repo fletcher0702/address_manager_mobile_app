@@ -1,6 +1,9 @@
+import 'package:address_manager/controller/visit_controller.dart';
 import 'package:address_manager/helpers/team_helper.dart';
 import 'package:address_manager/models/visit.dart';
-import 'package:address_manager/screens/add_person_validation.dart';
+import '../tools/actions.dart';
+import '../tools/messages.dart';
+import 'package:address_manager/screens/add_transition.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -42,6 +45,8 @@ class _HotDialogAddState extends State<HotDialogAdd> {
   int _selectedTeamIndex;
   int _selectedStatusIndex;
 
+  final visitController = VisitController();
+
   final visitNameController = TextEditingController();
   final visitAddressController = TextEditingController();
   final visitPhoneNumberController = TextEditingController();
@@ -58,6 +63,20 @@ class _HotDialogAddState extends State<HotDialogAdd> {
     setState(() {
       teamsItems = teamHelper.buildDropDownSelection(widget.teams);
     });
+  }
+
+  addPerson() async {
+    String name = visitNameController.text;
+    String address = visitAddressController.text;
+    String phoneNumber = visitPhoneNumberController.text;
+    String teamUuid = widget.teams[_selectedTeamIndex]["uuid"];
+    String zoneUuid = widget.teams[_selectedTeamIndex]["zones"][_selectedZoneIndex]["uuid"];
+    String statusUuid = widget.teams[_selectedTeamIndex]["status"][_selectedStatusIndex]["uuid"];
+    Visit visit = Visit(teamUuid,name, address, zoneUuid, statusUuid);
+    if (phoneNumber.isNotEmpty)
+      visit.phoneNumber = phoneNumber;
+
+    return visitController.createVisit(visit);
   }
 
   _getContent(){
@@ -236,24 +255,14 @@ class _HotDialogAddState extends State<HotDialogAdd> {
                 FlatButton(
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30)),
-                    onPressed: () async {
+                    onPressed: ()  {
 
-                      String name = visitNameController.text;
-                      String address = visitAddressController.text;
-                      String phoneNumber = visitPhoneNumberController.text;
-                      String teamUuid = widget.teams[_selectedTeamIndex]["uuid"];
-                      String zoneUuid = widget.teams[_selectedTeamIndex]["zones"][_selectedZoneIndex]["uuid"];
-                      String statusUuid = widget.teams[_selectedTeamIndex]["status"][_selectedStatusIndex]["uuid"];
-                      Visit visit = Visit(teamUuid,name, address, zoneUuid, statusUuid);
-
-                      if (phoneNumber.isNotEmpty)
-                        visit.phoneNumber = phoneNumber;
                       Navigator.pop(context);
                       Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  AddPersonValidationScreen(visit,widget.actionCallBackAfter)));
+                                  AddTransition(SUCCESS_CREATION,ERROR_CREATION,addPerson,CREATE_ACTION)));
                     },
                     child: Text(
                       'SAVE',

@@ -1,4 +1,6 @@
+import 'package:address_manager/controller/zone_controller.dart';
 import 'package:address_manager/helpers/team_helper.dart';
+import 'package:address_manager/models/dto/zone/update_zone_dto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
@@ -18,6 +20,7 @@ class HotDialogZoneEdit extends StatefulWidget {
 class _HotDialogZoneEditState extends State<HotDialogZoneEdit> {
 
   final TeamHelper teamHelper = TeamHelper();
+  final zoneController = ZoneController();
   final zoneNameController = TextEditingController();
   final zoneAddressController = TextEditingController();
   List<DropdownMenuItem> teamsDropdown = [];
@@ -30,6 +33,7 @@ class _HotDialogZoneEditState extends State<HotDialogZoneEdit> {
     super.initState();
 
     setState(() {
+      _selectedTeamIndex = widget.selectedTeamIndex;
       teamsDropdown = teamHelper.buildDropDownSelection(widget.teams);
       zoneNameController.text = widget.zone['name'];
       teamToAddInto = widget.teams[widget.selectedTeamIndex]['name'];
@@ -44,6 +48,16 @@ class _HotDialogZoneEditState extends State<HotDialogZoneEdit> {
     zoneNameController.dispose();
   }
 
+  editAction(){
+    UpdateZoneDto updateZoneDto = UpdateZoneDto();
+    updateZoneDto.name = zoneNameController.text;
+    updateZoneDto.teamUuid = widget.teams[_selectedTeamIndex]["uuid"];
+    updateZoneDto.zoneUuid = widget.zone['uuid'];
+    updateZoneDto.address = zoneAddressController.text;
+    zoneController.updateOne(updateZoneDto);
+
+  }
+
   _getContent(){
 
     return
@@ -54,13 +68,8 @@ class _HotDialogZoneEditState extends State<HotDialogZoneEdit> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Text(
-                  'Team : ',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                Icon(Icons.group,color: Colors.brown,),
+                SizedBox(width: 10,),
                 DropdownButtonHideUnderline(
                   child: DropdownButton(
                     items: teamsDropdown,
@@ -116,7 +125,40 @@ class _HotDialogZoneEditState extends State<HotDialogZoneEdit> {
                 zoneAddressController.text =
                 p != null ? p.description : '';
               },
-            )
+            ),
+            SizedBox(height: 30,),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              textDirection: TextDirection.rtl,
+              children: <Widget>[
+                FlatButton(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30)),
+                    onPressed: editAction,
+                    child: Text('UPDATE',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold
+                      ),
+                    ),
+                    color: Colors.deepOrangeAccent),
+                FlatButton(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30)),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(
+                    'CANCEL',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold
+                    ),
+                  ),
+                  color: Colors.deepOrangeAccent,
+                ),
+              ],
+            ),
           ],
         ),
       );

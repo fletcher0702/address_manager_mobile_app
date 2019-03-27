@@ -155,13 +155,9 @@ class _HotDialogStatusUpdateState extends State<HotDialogStatusUpdate> {
     String teamUuid = widget.teams[widget.selectedTeamIndex]['uuid'];
     String statusUuid = widget.teams[widget.selectedTeamIndex]["status"][widget.selectedStatusIndex]['uuid'];
 
-    print('team uuid : ' + teamUuid);
-    print('status uuid : ' + statusUuid);
     UpdateStatusDto updateStatusDto = UpdateStatusDto(teamUuid,statusUuid);
     updateStatusDto.name = statusNameController.text;
     updateStatusDto.color = pickerColor.value;
-    teamController.updateStatus(updateStatusDto).then((res){
-      print(res);
-    });
+    teamController.updateStatus(updateStatusDto);
   }
 }
