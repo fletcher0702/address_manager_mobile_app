@@ -178,30 +178,34 @@ class _TeamStatusScreenState extends State<TeamStatusScreen> {
               fontWeight: FontWeight.bold,
               fontSize: 15
           ),),
-          IconButton(icon: Icon(Icons.edit,color: Colors.deepOrangeAccent,size: 18,), onPressed: (){
-            _selectedTeamIndex = widget.teams.indexOf(team);
-            _selectedStatusIndex = status.indexOf(statusItem);
-            statusNameController.text = widget.teams[_selectedTeamIndex]["status"][_selectedStatusIndex]['name'];
-            Color selectedStatusColor = Color(widget.teams[_selectedTeamIndex]["status"][_selectedStatusIndex]['color']);
-            pickerColor = selectedStatusColor;
-            showDialog(
-                context: context,
-                child: AlertDialog(
-                  title: Center(child: Text('Edit Status',style: TextStyle(
-                      fontWeight: FontWeight.bold
-                  ),)),
-                  content: SingleChildScrollView(
-                    child: HotDialogStatusUpdate(widget.teams, _selectedTeamIndex,_selectedStatusIndex,(){}),
+          team['admin']?Row(
+            children: <Widget>[
+              IconButton(icon: Icon(Icons.edit,color: Colors.deepOrangeAccent,size: 18,), onPressed: (){
+                _selectedTeamIndex = widget.teams.indexOf(team);
+                _selectedStatusIndex = status.indexOf(statusItem);
+                statusNameController.text = widget.teams[_selectedTeamIndex]["status"][_selectedStatusIndex]['name'];
+                Color selectedStatusColor = Color(widget.teams[_selectedTeamIndex]["status"][_selectedStatusIndex]['color']);
+                pickerColor = selectedStatusColor;
+                showDialog(
+                    context: context,
+                    child: AlertDialog(
+                      title: Center(child: Text('Edit Status',style: TextStyle(
+                          fontWeight: FontWeight.bold
+                      ),)),
+                      content: SingleChildScrollView(
+                        child: HotDialogStatusUpdate(widget.teams, _selectedTeamIndex,_selectedStatusIndex,(){}),
 
-                  ),
-                )
-            );
-          }),
-          IconButton(icon: Icon(Icons.clear,color: Colors.red,size: 18), onPressed: (){
-            _selectedTeamIndex = widget.teams.indexOf(team);
-            _selectedStatusIndex = status.indexOf(statusItem);
-            editTeamDialogState.showDeleteDialog(context, statusItem, deleteStatus);
-          })
+                      ),
+                    )
+                );
+              }),
+              IconButton(icon: Icon(Icons.clear,color: Colors.red,size: 18), onPressed: (){
+                _selectedTeamIndex = widget.teams.indexOf(team);
+                _selectedStatusIndex = status.indexOf(statusItem);
+                editTeamDialogState.showDeleteDialog(context, statusItem, deleteStatus,(){});
+              })
+            ],
+          ):Row(),
         ],
 
       )

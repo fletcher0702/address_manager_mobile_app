@@ -118,9 +118,10 @@ class ZonePanelScreenState extends State<ZonePanelScreen> {
     );
   }
 
-  deleteZoneAction(){
+  deleteZoneAction() async{
     DeleteZoneDto deleteZoneDto = DeleteZoneDto(teamsData[_selectedTeamIndex]['uuid'],selectedZone['uuid']);
-    zoneController.deleteOne(deleteZoneDto);
+    print('Delete request...');
+    return zoneController.deleteOne(deleteZoneDto);
   }
 
   @override
@@ -132,8 +133,8 @@ class ZonePanelScreenState extends State<ZonePanelScreen> {
         child: PanelAppBar('Zone Panel', Icons.add_location, addZone,loadTeamsData),
         preferredSize: Size(double.infinity, 100.0),
       ),
-      body: SingleChildScrollView(
-        child: teamToggle ? Column(
+      body: teamToggle ? SingleChildScrollView(
+        child: Column(
           children: <Widget>[
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -172,8 +173,8 @@ class ZonePanelScreenState extends State<ZonePanelScreen> {
             )
 
           ],
-        ) : ColorLoader(),
-      ),
+        ),
+      ) : ColorLoader(),
     );
   }
 
@@ -238,7 +239,7 @@ class ZonePanelScreenState extends State<ZonePanelScreen> {
               IconButton(icon: Icon(Icons.close, color: Colors.red, size: 18,),
                   onPressed: () {
                     selectedZone = zone;
-                    editTeamDialogState.showDeleteDialog(context, selectedZone, deleteZoneAction);
+                    editTeamDialogState.showDeleteDialog(context, selectedZone, deleteZoneAction,loadTeamsData);
                   }),
             ],
           )

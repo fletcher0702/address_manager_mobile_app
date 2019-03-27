@@ -44,7 +44,14 @@ class _AddTransitionState extends State<AddTransition> {
             type = 'unknow';
             break;
         }
-        result = response[type];
+        try{
+          result = response[type];
+        }catch(e){
+          result = false;
+          print(e);
+          print('Unable to get server response...');
+        }
+
         Container container = Container(
           child: Center(
             child: Text(result?widget._success:widget._error,
