@@ -82,7 +82,6 @@ class _TeamStatusScreenState extends State<TeamStatusScreen> {
                 IconButton(
                   icon: Icon(Icons.add_circle,color: green_custom_color),
                   onPressed: (){
-                    List<DropdownMenuItem<int>> teamsItems = teamHelper.buildDropDownSelection(widget.teams);
                     statusNameController.text = '';
                     showDialog(
                         context: context,

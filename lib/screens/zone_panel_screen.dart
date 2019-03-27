@@ -216,7 +216,7 @@ class ZonePanelScreenState extends State<ZonePanelScreen> {
                 ),)
             ],
           ),
-          Row(
+          team['admin']?Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: <Widget>[
               IconButton(
@@ -242,7 +242,7 @@ class ZonePanelScreenState extends State<ZonePanelScreen> {
                     editTeamDialogState.showDeleteDialog(context, selectedZone, deleteZoneAction,loadTeamsData);
                   }),
             ],
-          )
+          ):Row(),
         ],
       ));
       rows.add(row);

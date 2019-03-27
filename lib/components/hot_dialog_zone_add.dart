@@ -39,7 +39,7 @@ class _HotDialogZoneAddState extends State<HotDialogZoneAdd> {
         _selectedTeamIndex = widget.selectedTeamIndex;
         teamToAddInto = widget.teams[widget.selectedTeamIndex]['name'];
       }
-      teamsDropdown = teamHelper.buildDropDownSelection(widget.teams);
+      teamsDropdown = teamHelper.buildDropDownSelection(teamHelper.getAllowTeams(widget.teams));
     });
   }
 

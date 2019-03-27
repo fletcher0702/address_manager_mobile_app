@@ -59,5 +59,17 @@ class TeamHelper {
       return tmpList;
   }
 
+  getAllowTeams(List<dynamic> teams){
+
+    List<dynamic> res = [];
+
+    teams.forEach((t){
+
+      if(t['admin']) res.add(t);
+    });
+
+    return res;
+  }
+
 
 }

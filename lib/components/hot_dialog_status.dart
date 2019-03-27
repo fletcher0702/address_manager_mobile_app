@@ -31,13 +31,15 @@ class _HotDialogStatusState extends State<HotDialogStatus> {
   Color currentColor = Color(0xff443a49);
 
   List<DropdownMenuItem<int>> teamsItems = [];
+  List<dynamic> teamsAllowed = [];
 
 
   @override
   void initState() {
     super.initState();
     setState(() {
-      teamsItems = teamHelper.buildDropDownSelection(widget.teams);
+      teamsAllowed = teamHelper.getAllowTeams(widget.teams);
+      teamsItems = teamHelper.buildDropDownSelection(teamsAllowed);
     });
   }
 
@@ -83,7 +85,7 @@ class _HotDialogStatusState extends State<HotDialogStatus> {
                       textAlign: TextAlign.center),
                   onChanged: (value) {
                     setState(() {
-                      selectedTeam = widget.teams[value]['name'];
+                      selectedTeam = teamsAllowed[value]['name'];
                       _selectedTeamIndex= value;
                     });
                   },
@@ -94,21 +96,28 @@ class _HotDialogStatusState extends State<HotDialogStatus> {
                 onPressed: (){
                   showDialog(
                       context: context,
-                      child: AlertDialog(
+                      child: SimpleDialog(
                         title: Center(child: Text('Choose status color',style: TextStyle(
                             fontWeight: FontWeight.bold
                         ),)),
-                        content: SingleChildScrollView(
-                          child:  ColorPicker(
-                              pickerColor: pickerColor,
-                              enableLabel: true,
-                              pickerAreaHeightPercent: 0.8,
-                              onColorChanged: changeColor
+                        children: <Widget>[
+                          Padding(
+                            padding: EdgeInsets.all(20.0),
+                            child: ColorPicker(
+                                pickerColor: pickerColor,
+                                enableLabel: true,
+                                pickerAreaHeightPercent: 0.8,
+                                onColorChanged: changeColor
+                            ),
                           ),
-                        ),
-                        actions: <Widget>[
-                          IconButton(icon: Icon(Icons.colorize,color: pickerColor,), onPressed: pickerAction)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: <Widget>[
+                              IconButton(icon: Icon(Icons.colorize,color: pickerColor,), onPressed: pickerAction),
+                            ],
+                          )
                         ],
+
                       )
                   );
                 },
@@ -154,7 +163,7 @@ class _HotDialogStatusState extends State<HotDialogStatus> {
               FlatButton(onPressed: (){
 
                 if(statusNameController.text.isNotEmpty){
-                  Status status = Status(widget.teams[_selectedTeamIndex]["uuid"],statusNameController.text,pickerColor.value);
+                  Status status = Status(teamsAllowed[_selectedTeamIndex]["uuid"],statusNameController.text,pickerColor.value);
                   teamController.createStatus(status);
                 }
 

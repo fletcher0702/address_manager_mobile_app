@@ -34,6 +34,9 @@ class _AddTransitionState extends State<AddTransition> {
           case 'create':
             type = 'created';
             break;
+          case 'invite':
+            type = 'email';
+            break;
           case 'update':
             type = 'updated';
             break;
@@ -45,7 +48,14 @@ class _AddTransitionState extends State<AddTransition> {
             break;
         }
         try{
-          result = response[type];
+          var res = response[type];
+          if(res is bool){
+            result = response[type];
+          }else if(res is List){
+            if(res.length==0) result = false;
+            else result = true;
+          }
+
         }catch(e){
           result = false;
           print(e);
@@ -53,11 +63,14 @@ class _AddTransitionState extends State<AddTransition> {
         }
 
         Container container = Container(
-          child: Center(
-            child: Text(result?widget._success:widget._error,
-              style: TextStyle(
-                  color: result?Colors.green:Colors.red,
-                  fontSize: 25
+          child: Padding(
+            padding: EdgeInsets.all(20.0),
+            child: Center(
+              child: Text(result?widget._success:widget._error,
+                style: TextStyle(
+                    color: result?Colors.green:Colors.red,
+                    fontSize: 25
+                ),
               ),
             ),
           ),
