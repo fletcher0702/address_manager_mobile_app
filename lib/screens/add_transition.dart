@@ -8,9 +8,10 @@ class AddTransition extends StatefulWidget {
   String _error;
   Function _action;
   String _typeOfAction;
+  Function _actionCallBackAfterProcess;
 
 
-  AddTransition(this._success, this._error, this._action,this._typeOfAction);
+  AddTransition(this._success, this._error, this._action,this._typeOfAction,this._actionCallBackAfterProcess);
 
   @override
   _AddTransitionState createState() => _AddTransitionState();
@@ -56,6 +57,7 @@ class _AddTransitionState extends State<AddTransition> {
         );
         setState(() {
           content = container;
+          widget._actionCallBackAfterProcess();
           processEnded = true;
         });
       });

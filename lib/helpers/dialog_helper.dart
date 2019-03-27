@@ -1,4 +1,5 @@
 import '../tools/actions.dart';
+import '../tools/messages.dart';
 import 'package:address_manager/screens/add_transition.dart';
 import 'package:flutter/material.dart';
 
@@ -11,7 +12,7 @@ class DialogHelper extends StatefulWidget{
 class DialogHelperState extends State<DialogHelper> {
 
 
-  static Future<bool> showDialogBox(context, title, content, saveAction,saveBool) {
+  static Future<bool> showDialogBox(context, title, content, saveAction,saveBool,actionCallBackAfterProcess) {
     return showDialog(
       context: context,
       barrierDismissible: false,
@@ -41,7 +42,7 @@ class DialogHelperState extends State<DialogHelper> {
                     onPressed: (){
 
                       Navigator.pop(context);
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>AddTransition('Successfully Added','Error something went wrong...',saveAction,CREATE_ACTION)));
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>AddTransition(SUCCESS_CREATION,ERROR_CREATION,saveAction,CREATE_ACTION,actionCallBackAfterProcess)));
 
                     },
                     child: Text(

@@ -148,7 +148,7 @@ class TeamDescriptionState extends State<TeamDescription> {
       )
     ];
     DialogHelperState.showDialogBox(
-        this.context, 'Edit Team', content, editAction,false);
+        this.context, 'Edit Team', content, editAction,false,(){});
   }
 
   deleteTeam(){
