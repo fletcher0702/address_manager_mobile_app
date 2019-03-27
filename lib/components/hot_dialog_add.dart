@@ -262,7 +262,7 @@ class _HotDialogAddState extends State<HotDialogAdd> {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  AddTransition(SUCCESS_CREATION,ERROR_CREATION,addPerson,CREATE_ACTION)));
+                                  AddTransition(SUCCESS_CREATION,ERROR_CREATION,addPerson,CREATE_ACTION,widget.actionCallBackAfter)));
                     },
                     child: Text(
                       'SAVE',

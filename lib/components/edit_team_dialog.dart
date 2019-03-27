@@ -1,6 +1,9 @@
 
 import 'package:address_manager/controller/team_controller.dart';
 import 'package:address_manager/models/dto/team/delete_team_dto.dart';
+import '../tools/messages.dart';
+import '../tools/actions.dart';
+import 'package:address_manager/screens/add_transition.dart';
 import 'package:flutter/material.dart';
 
 class EditTeamDialog extends StatefulWidget{
@@ -18,7 +21,7 @@ class EditTeamDialogState extends State<EditTeamDialog> {
     return null;
   }
 
-  showDeleteDialog(context, team, action) {
+  showDeleteDialog(context, team, action,callBackAfterProcess) {
     return showDialog(
         context: context,
         builder: (context) {
@@ -59,9 +62,8 @@ class EditTeamDialogState extends State<EditTeamDialog> {
                     ),
                     FlatButton(
                       onPressed: () async {
-
-                        //TODO: Animation transition
-                        action();
+                        Navigator.pop(context);
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>AddTransition(SUCCESS_DELETE,ERROR_DELETE,action,DELETE_ACTION,callBackAfterProcess)));
                       },
                       child: Text(
                         'DELETE',

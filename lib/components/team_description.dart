@@ -70,7 +70,7 @@ class TeamDescriptionState extends State<TeamDescription> {
               fontSize: 20
             ),
           ),
-          Row(
+          team['admin']?Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: <Widget>[
               IconButton(icon: Icon(Icons.edit, color: Colors.orange,size: 18,), onPressed: (){
@@ -83,7 +83,7 @@ class TeamDescriptionState extends State<TeamDescription> {
 
               }),
             ],
-          )
+          ):Row()
         ],
       );
       Divider divider = Divider(color: Colors.black,height: 5,);
@@ -151,8 +151,12 @@ class TeamDescriptionState extends State<TeamDescription> {
         this.context, 'Edit Team', content, editAction,false,(){});
   }
 
+  afterAction (){
+
+  }
+
   deleteTeam(){
-    editTeamDialogState.showDeleteDialog(context, widget.teams[_selectedTeamIndex], deleteAction);
+    editTeamDialogState.showDeleteDialog(context, widget.teams[_selectedTeamIndex], deleteAction,afterAction);
   }
 
   editAction(){
