@@ -1,6 +1,7 @@
 import 'package:address_manager/controller/team_controller.dart';
 import 'package:address_manager/helpers/auth_helper.dart';
 import 'package:address_manager/helpers/team_helper.dart';
+import 'package:address_manager/helpers/ui_helper.dart';
 import 'package:address_manager/screens/add_transition.dart';
 import 'package:address_manager/tools/colors.dart';
 import 'package:address_manager/tools/messages.dart';
@@ -100,13 +101,13 @@ class _HotDialogInvitationState extends State<HotDialogInvitation> {
                 }else{
                   setState(() {
                     errorMessage = 'Error bad email syntax...';
-                    errorBox = _errorMessageWidget();
+                    errorBox = UIHelper.errorMessageWidget(errorMessage,updateUI);
                   });
                 }
               }else{
                 setState(() {
                   errorMessage = 'Select valid team...';
-                  errorBox = _errorMessageWidget();
+                  errorBox = UIHelper.errorMessageWidget(errorMessage,updateUI);
                 });
               }
 
@@ -127,14 +128,20 @@ class _HotDialogInvitationState extends State<HotDialogInvitation> {
       if(!AuthHelper.isEmail(person)) res = false;
     });
 
-    return res;
+    return res && _tags.isNotEmpty;
+  }
+
+  updateUI(){
+    setState(() {
+      errorBox = Container();
+    });
   }
 
   _sendInvitation() async {
     return teamController.invitePeople(teamsAllowed[_selectedTeamIndex]['uuid'], _tags);
   }
 
-  _errorMessageWidget(){
+  _errorMessageWidget(errorMessage){
 
     Container c = Container(
       decoration: BoxDecoration(

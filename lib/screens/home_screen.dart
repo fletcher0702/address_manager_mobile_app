@@ -172,7 +172,7 @@ class HomeState extends State<Home> {
                                             width: 10,
                                           ),
                                           Text(
-                                            visit['phoneNumber'],
+                                            visit['phoneNumber']!=null?visit['phoneNumber']:'Not provided',
                                             style: TextStyle(
                                               fontWeight: FontWeight.bold,
                                             ),

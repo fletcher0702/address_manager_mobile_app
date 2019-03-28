@@ -1,9 +1,12 @@
 import 'package:address_manager/controller/user_controller.dart';
 import 'package:address_manager/controller/visit_controller.dart';
 import 'package:address_manager/helpers/team_helper.dart';
+import 'package:address_manager/helpers/ui_helper.dart';
 import 'package:address_manager/models/dto/visit/update_visit_dto.dart';
-import 'package:address_manager/models/visit.dart';
-import 'package:address_manager/screens/add_person_validation.dart';
+import '../tools/actions.dart';
+import '../tools/messages.dart';
+import 'package:address_manager/screens/add_transition.dart';
+import 'package:address_manager/tools/colors.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -45,9 +48,9 @@ class HotDialogEditState extends State<HotDialogEdit> {
   var selectedZone = '';
   var selectedTeam = '';
   var selectedStatusName ='';
-  int _selectedZoneIndex;
-  int _selectedTeamIndex;
-  int _selectedStatusIndex;
+  int _selectedZoneIndex = -1;
+  int _selectedTeamIndex = -1;
+  int _selectedStatusIndex = -1;
 
   final visitNameController = TextEditingController();
   final visitAddressController = TextEditingController();
@@ -59,6 +62,8 @@ class HotDialogEditState extends State<HotDialogEdit> {
   List<DropdownMenuItem<int>> statusItems = [];
 
   bool firstLaunch = false;
+  String errorMessage = '';
+  Container errorBox = Container();
 
 
   @override
@@ -98,22 +103,48 @@ class HotDialogEditState extends State<HotDialogEdit> {
                   style: TextStyle(
                       fontSize: 30.0, fontWeight: FontWeight.bold),
                 ),
+                errorBox,
                 TextField(
                   decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.person),
+                    prefixIcon: Icon(Icons.person,color: green_custom_color,
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Colors.black)),
+                    alignLabelWithHint: true,
+                    hintText: 'name',
+                    hintStyle:
+                    TextStyle(color: Colors.black),
                   ),
+                  cursorColor: Colors.black,
                   controller: visitNameController,
                 ),
                 TextField(
                   decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.phone),
+                      prefixIcon: Icon(Icons.phone,color: Colors.orangeAccent,),focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                          color: Colors.black)),
+                      alignLabelWithHint: true,
+                      hintText: 'phone number',
+                      hintStyle:
+                      TextStyle(color: Colors.black)
                   ),
+                  cursorColor: Colors.black,
                   controller: visitPhoneNumberController,
                 ),
                 TextField(
                   decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.place),
+                    prefixIcon: Icon(Icons.place,color:Colors.blue,),
+                    focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Colors.black)),
+                    alignLabelWithHint: true,
+                    hintText: 'address',
+                    hintStyle:
+                    TextStyle(color: Colors.black),
                   ),
+                  cursorColor: Colors.black,
+
                   controller: visitAddressController,
                   onTap: () async {
                     Prediction p = await PlacesAutocomplete.show(
@@ -131,19 +162,22 @@ class HotDialogEditState extends State<HotDialogEdit> {
                   format: formats[inputType],
                   editable: editable,
                   decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.calendar_today)
+                      prefixIcon: Icon(Icons.calendar_today),
+                      focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Colors.black)),
+                      alignLabelWithHint: true,
+                      hintText: 'date',
+                      hintStyle:
+                      TextStyle(color: Colors.black)
                   ),
                   onChanged: (dt) => setState(() => date = dt),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Text(
-                      'Team : ',
-                      style: TextStyle(
-                        fontSize: 20,
-                      ),
-                    ),
+                    Icon(Icons.group,color:Colors.brown),
+                    SizedBox(width: 10,),
                     DropdownButtonHideUnderline(
                       child: DropdownButton(
                         items: teamsItems,
@@ -158,9 +192,7 @@ class HotDialogEditState extends State<HotDialogEdit> {
                             selectedTeam = widget.teams[value]['name'];
                             _selectedTeamIndex= value;
                             selectedZone = '';
-                            selectedStatusName = '';
                             zonesItems = teamHelper.buildDropDownSelection(widget.teams[_selectedTeamIndex]["zones"]);
-                            statusItems = [];
                           });
                         },
                       ),
@@ -170,12 +202,8 @@ class HotDialogEditState extends State<HotDialogEdit> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Text(
-                      'Zone : ',
-                      style: TextStyle(
-                        fontSize: 20,
-                      ),
-                    ),
+                    Icon(Icons.place,color:Colors.blue),
+                    SizedBox(width: 10,),
                     DropdownButtonHideUnderline(
                       child: DropdownButton(
                         items: zonesItems,
@@ -199,12 +227,8 @@ class HotDialogEditState extends State<HotDialogEdit> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Text(
-                      'Status : ',
-                      style: TextStyle(
-                        fontSize: 20,
-                      ),
-                    ),
+                    Icon(Icons.filter_list,color:Colors.black),
+                    SizedBox(width: 10,),
                     DropdownButtonHideUnderline(
                       child: DropdownButton(
                         items: statusItems,
@@ -225,7 +249,7 @@ class HotDialogEditState extends State<HotDialogEdit> {
                       ),
                     ),
                   ],
-                )
+                ),
               ],
             ),
           ),
@@ -237,6 +261,7 @@ class HotDialogEditState extends State<HotDialogEdit> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30)),
               onPressed: () {
+                firstLaunch = false;
                 Navigator.of(context).pop();
               },
               child: Text(
@@ -249,28 +274,17 @@ class HotDialogEditState extends State<HotDialogEdit> {
             FlatButton(
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30)),
-                onPressed: () async {
+                onPressed: (){
 
-                  print('update request ! ');
-                  var userCredentials = await userController.getCredentials();
-                  String userUuid = userCredentials['uuid'].toString();
-                  String name = visitNameController.text;
-                  String address = visitAddressController.text;
-                  String phoneNumber = visitPhoneNumberController.text;
-                  String visitUuid = widget.person['uuid'];
-                  String teamUuid = widget.teams[_selectedTeamIndex]["uuid"];
-                  String zoneUuid = widget.teams[_selectedTeamIndex]["zones"][_selectedZoneIndex]["uuid"];
-                  String statusUuid = _selectedStatusIndex!=-1?widget.teams[_selectedTeamIndex]["status"][_selectedStatusIndex]["uuid"]:widget.person['status']['uuid'];
-                  UpdateVisitDto visitDto = UpdateVisitDto(userUuid,teamUuid,zoneUuid,visitUuid,statusUuid,name,address,phoneNumber);
-
-                  await visitController.updateVisit(visitDto);
-                  widget.actionCallBackAfter();
-                  Navigator.pop(context);
-//                      Navigator.push(
-//                          context,
-//                          MaterialPageRoute(
-//                              builder: (context) =>
-//                                  AddPersonValidationScreen(visitDto,widget.actionCallBackAfter)));
+                  if(_selectedTeamIndex == -1 || _selectedZoneIndex == -1 || visitAddressController.text.isEmpty || visitNameController.text.isEmpty){
+                    setState(() {
+                      errorMessage = 'Please make sure no field is empty...';
+                      errorBox = UIHelper.errorMessageWidget(errorMessage, updateErrorMessage);
+                    });
+                  }else{
+                    Navigator.pop(context);
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>AddTransition(SUCCESS_UPDATE,ERROR_UPDATE,editPerson,UPDATE_ACTION,widget.actionCallBackAfter)));
+                  }
                 },
                 child: Text(
                   'UPDATE',
@@ -284,6 +298,28 @@ class HotDialogEditState extends State<HotDialogEdit> {
       ],
     );
 
+  }
+
+  editPerson() async{
+    var userCredentials = await userController.getCredentials();
+    String userUuid = userCredentials['uuid'].toString();
+    String name = visitNameController.text;
+    String address = visitAddressController.text;
+    String phoneNumber = visitPhoneNumberController.text;
+    String visitUuid = widget.person['uuid'];
+    String teamUuid = widget.teams[_selectedTeamIndex]["uuid"];
+    String zoneUuid = widget.teams[_selectedTeamIndex]["zones"][_selectedZoneIndex]["uuid"];
+    String statusUuid = _selectedStatusIndex!=-1?widget.teams[_selectedTeamIndex]["status"][_selectedStatusIndex]["uuid"]:widget.person['status']['uuid'];
+    UpdateVisitDto visitDto = UpdateVisitDto(userUuid,teamUuid,zoneUuid,visitUuid,statusUuid,name,address,phoneNumber);
+
+    print('Before update request');
+    return visitController.updateVisit(visitDto);
+  }
+
+  updateErrorMessage(){
+    setState(() {
+      errorBox = Container();
+    });
   }
 
   @override

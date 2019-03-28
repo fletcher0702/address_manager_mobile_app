@@ -1,6 +1,8 @@
 import 'package:address_manager/controller/visit_controller.dart';
 import 'package:address_manager/helpers/team_helper.dart';
+import 'package:address_manager/helpers/ui_helper.dart';
 import 'package:address_manager/models/visit.dart';
+import 'package:address_manager/tools/colors.dart';
 import '../tools/actions.dart';
 import '../tools/messages.dart';
 import 'package:address_manager/screens/add_transition.dart';
@@ -41,9 +43,9 @@ class _HotDialogAddState extends State<HotDialogAdd> {
   var selectedZone = '';
   var selectedTeam = '';
   var selectedStatusName ='';
-  int _selectedZoneIndex;
-  int _selectedTeamIndex;
-  int _selectedStatusIndex;
+  int _selectedZoneIndex = -1;
+  int _selectedTeamIndex = -1;
+  int _selectedStatusIndex = -1;
 
   final visitController = VisitController();
 
@@ -55,6 +57,9 @@ class _HotDialogAddState extends State<HotDialogAdd> {
   List<DropdownMenuItem<int>> teamsItems = [];
   List<DropdownMenuItem<int>> zonesItems = [];
   List<DropdownMenuItem<int>> statusItems = [];
+
+  String errorMessage = '';
+  Container errorBox = Container();
 
 
   @override
@@ -103,22 +108,49 @@ class _HotDialogAddState extends State<HotDialogAdd> {
               style: TextStyle(
                   fontSize: 30.0, fontWeight: FontWeight.bold),
             ),
+
+            errorBox,
             TextField(
               decoration: InputDecoration(
-                prefixIcon: Icon(Icons.person),
+                prefixIcon: Icon(Icons.person,color: green_custom_color,
+                ),
+                  focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                          color: Colors.black)),
+                  alignLabelWithHint: true,
+                  hintText: 'name',
+                  hintStyle:
+                  TextStyle(color: Colors.black),
               ),
+              cursorColor: Colors.black,
               controller: visitNameController,
             ),
             TextField(
               decoration: InputDecoration(
-                prefixIcon: Icon(Icons.phone),
+                prefixIcon: Icon(Icons.phone,color: Colors.orangeAccent,),focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                      color: Colors.black)),
+                  alignLabelWithHint: true,
+                  hintText: 'phone number',
+                  hintStyle:
+                  TextStyle(color: Colors.black)
               ),
+              cursorColor: Colors.black,
               controller: visitPhoneNumberController,
             ),
             TextField(
               decoration: InputDecoration(
-                prefixIcon: Icon(Icons.place),
+                prefixIcon: Icon(Icons.place,color:Colors.blue,),
+                  focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                          color: Colors.black)),
+                  alignLabelWithHint: true,
+                  hintText: 'address',
+                  hintStyle:
+                  TextStyle(color: Colors.black),
               ),
+              cursorColor: Colors.black,
+
               controller: visitAddressController,
               onTap: () async {
                 Prediction p = await PlacesAutocomplete.show(
@@ -136,19 +168,22 @@ class _HotDialogAddState extends State<HotDialogAdd> {
               format: formats[inputType],
               editable: editable,
               decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.calendar_today)
+                  prefixIcon: Icon(Icons.calendar_today),
+                  focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                          color: Colors.black)),
+                  alignLabelWithHint: true,
+                  hintText: 'date',
+                  hintStyle:
+                  TextStyle(color: Colors.black)
               ),
               onChanged: (dt) => setState(() => date = dt),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Text(
-                  'Team : ',
-                  style: TextStyle(
-                    fontSize: 20,
-                  ),
-                ),
+                Icon(Icons.group,color:Colors.brown),
+                SizedBox(width: 10,),
                 DropdownButtonHideUnderline(
                   child: DropdownButton(
                     items: teamsItems,
@@ -173,12 +208,8 @@ class _HotDialogAddState extends State<HotDialogAdd> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Text(
-                  'Zone : ',
-                  style: TextStyle(
-                    fontSize: 20,
-                  ),
-                ),
+                Icon(Icons.place,color:Colors.blue),
+                SizedBox(width: 10,),
                 DropdownButtonHideUnderline(
                   child: DropdownButton(
                     items: zonesItems,
@@ -202,12 +233,8 @@ class _HotDialogAddState extends State<HotDialogAdd> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Text(
-                  'Status : ',
-                  style: TextStyle(
-                    fontSize: 20,
-                  ),
-                ),
+                Icon(Icons.filter_list,color:Colors.black),
+                SizedBox(width: 10,),
                 DropdownButtonHideUnderline(
                   child: DropdownButton(
                     items: statusItems,
@@ -257,12 +284,24 @@ class _HotDialogAddState extends State<HotDialogAdd> {
                         borderRadius: BorderRadius.circular(30)),
                     onPressed: ()  {
 
-                      Navigator.pop(context);
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  AddTransition(SUCCESS_CREATION,ERROR_CREATION,addPerson,CREATE_ACTION,widget.actionCallBackAfter)));
+                      if(_selectedTeamIndex==-1 || _selectedZoneIndex ==-1 || _selectedStatusIndex ==-1 || visitNameController.text.isEmpty || visitAddressController.text.isEmpty){
+
+                        setState(() {
+                          errorMessage = 'Please make sure no field is empty...';
+                          errorBox = UIHelper.errorMessageWidget(errorMessage, _updateErrorMessage);
+                        });
+                      }else{
+
+
+                        Navigator.pop(context);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    AddTransition(SUCCESS_CREATION,ERROR_CREATION,addPerson,CREATE_ACTION,widget.actionCallBackAfter)));
+
+                      }
+
                     },
                     child: Text(
                       'SAVE',
@@ -277,6 +316,12 @@ class _HotDialogAddState extends State<HotDialogAdd> {
       ),
     );
 
+  }
+
+  _updateErrorMessage(){
+    setState(() {
+      errorBox = Container();
+    });
   }
 
   @override

@@ -1,9 +1,13 @@
 import 'package:address_manager/controller/team_controller.dart';
 import 'package:address_manager/helpers/team_helper.dart';
+import 'package:address_manager/helpers/ui_helper.dart';
 import 'package:address_manager/models/status.dart';
+import 'package:address_manager/screens/add_transition.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import '../tools/colors.dart';
+import '../tools/messages.dart';
+import '../tools/actions.dart';
 
 class HotDialogStatus extends StatefulWidget {
 
@@ -21,7 +25,7 @@ class _HotDialogStatusState extends State<HotDialogStatus> {
 
   var selectedTeam = '';
   var selectedStatusName ='';
-  int _selectedTeamIndex;
+  int _selectedTeamIndex = -1;
   final teamHelper = TeamHelper();
   final statusNameController = TextEditingController();
   TeamController teamController = TeamController();
@@ -32,7 +36,8 @@ class _HotDialogStatusState extends State<HotDialogStatus> {
 
   List<DropdownMenuItem<int>> teamsItems = [];
   List<dynamic> teamsAllowed = [];
-
+  Container errorBox = Container();
+  String errorMessage = '';
 
   @override
   void initState() {
@@ -63,12 +68,18 @@ class _HotDialogStatusState extends State<HotDialogStatus> {
     Navigator.of(context).pop();
   }
 
+  updateErrorMessage(){
+    setState(() {
+      errorBox = Container();
+    });
+  }
   _getContent(){
 
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Column(
         children: <Widget>[
+          errorBox,
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
@@ -162,9 +173,14 @@ class _HotDialogStatusState extends State<HotDialogStatus> {
               SizedBox(width: 10,),
               FlatButton(onPressed: (){
 
-                if(statusNameController.text.isNotEmpty){
-                  Status status = Status(teamsAllowed[_selectedTeamIndex]["uuid"],statusNameController.text,pickerColor.value);
-                  teamController.createStatus(status);
+                if(statusNameController.text.isNotEmpty && _selectedTeamIndex!=-1){
+                  Navigator.pop(context);
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>AddTransition(SUCCESS_CREATION,ERROR_CREATION,_createStatus,CREATE_ACTION,(){})));
+                }else{
+                  errorMessage = 'Select a team or Enter a valid name !';
+                  setState(() {
+                    errorBox = UIHelper.errorMessageWidget(errorMessage, updateErrorMessage);
+                  });
                 }
 
               }, child: Text('SAVE',style: TextStyle(
@@ -179,6 +195,11 @@ class _HotDialogStatusState extends State<HotDialogStatus> {
       ),
     );
 
+  }
+
+  _createStatus(){
+    Status status = Status(teamsAllowed[_selectedTeamIndex]["uuid"],statusNameController.text,pickerColor.value);
+    return teamController.createStatus(status);
   }
 
   @override

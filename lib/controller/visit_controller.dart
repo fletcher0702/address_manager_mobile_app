@@ -44,6 +44,8 @@ class VisitController {
         .patch(UPDATE_VISIT_HTTP_ROUTE, headers: header ,body: jsonEncode({'userUuid': visit.userUuid,'teamUuid':visit.teamUuid,'zoneUuid':visit.zoneUuid,'visitUuid':visit.visitUuid,'name': visit.name, 'address': visit.address,'phoneNumber':visit.phoneNumber,'statusUuid': visit.statusUuid}))
         .then((res) => res);
 
+    print('after server response...');
+
     return jsonDecode(response.body);
   }
 

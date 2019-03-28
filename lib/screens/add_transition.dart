@@ -30,6 +30,7 @@ class _AddTransitionState extends State<AddTransition> {
       Future.delayed(Duration(seconds: 2), ()async{
         response = await widget._action();
         String type = '';
+        print('after action...');
         switch(widget._typeOfAction){
           case 'create':
             type = 'created';
