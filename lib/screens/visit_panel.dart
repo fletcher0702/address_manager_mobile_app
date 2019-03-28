@@ -27,7 +27,7 @@ class VisitPanelScreenState extends State<VisitPanelScreen> {
   AddPersonDialogState addPersonDialog = AddPersonDialogState();
   var visits;
   var zones;
-  var teams;
+  List<dynamic> teams;
 
   var selectedZone;
   var selectedTeam;
@@ -45,6 +45,9 @@ class VisitPanelScreenState extends State<VisitPanelScreen> {
   List<Widget> visitsRows = [];
   int _selectedZoneIndex = -1;
   int _selectedTeamIndex = -1;
+  String _currentTeamUuidForReload = '';
+  String _currentZoneUuidForReload = '';
+
 
 
   @override
@@ -60,13 +63,16 @@ class VisitPanelScreenState extends State<VisitPanelScreen> {
         teams = res;
         teamsDropDownItems = teamHelper.buildDropDownSelection(teams);
         teamToggle = true;
+        if(_currentZoneUuidForReload.isNotEmpty && _currentTeamUuidForReload.isNotEmpty){
+          refreshVisits();
+        }
       });
 
     });
   }
 
   addVisit() {
-    addPersonDialog.dialog(this.context, teams, _selectedTeamIndex,_selectedZoneIndex, (){});
+    addPersonDialog.dialog(this.context, teams, _selectedTeamIndex,_selectedZoneIndex, loadTeams);
   }
 
   @override
@@ -104,6 +110,8 @@ class VisitPanelScreenState extends State<VisitPanelScreen> {
                         selectedTeam = teams[value]['name'];
                         _selectedTeamIndex = value;
                         selectedZone = '';
+                        _currentTeamUuidForReload = teams[value]['uuid'];
+                        _currentZoneUuidForReload = '';
                         locations = teamHelper.buildDropDownSelection(
                             teams[value]['zones']);
 
@@ -136,6 +144,7 @@ class VisitPanelScreenState extends State<VisitPanelScreen> {
                         teams[_selectedTeamIndex]["zones"][value]['name'];
                         _selectedZoneIndex = value;
                         visitsElements = teams[_selectedTeamIndex]["zones"][value]['visits'];
+                        _currentZoneUuidForReload = teams[_selectedTeamIndex]["zones"][value]['uuid'];
                         buildVisitsList(context);
                       });
                     },
@@ -210,6 +219,24 @@ class VisitPanelScreenState extends State<VisitPanelScreen> {
       );
 
       visitsRows.add(row);
+    });
+  }
+
+  refreshVisits() {
+    teams.forEach((t){
+
+      if(t['uuid'].toString()==_currentTeamUuidForReload){
+        List<dynamic> zones = t['zones'];
+
+        zones.forEach((z){
+
+          if(z['uuid'].toString() == _currentZoneUuidForReload){
+            visitsElements = z['visits'];
+            buildVisitsList(context);
+          }
+        });
+      }
+
     });
   }
 }

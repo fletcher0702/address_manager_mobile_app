@@ -175,7 +175,7 @@ class _HotDialogStatusState extends State<HotDialogStatus> {
 
                 if(statusNameController.text.isNotEmpty && _selectedTeamIndex!=-1){
                   Navigator.pop(context);
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=>AddTransition(SUCCESS_CREATION,ERROR_CREATION,_createStatus,CREATE_ACTION,(){})));
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>AddTransition(SUCCESS_CREATION,ERROR_CREATION,_createStatus,CREATE_ACTION,widget.actionCallBackAfter)));
                 }else{
                   errorMessage = 'Select a team or Enter a valid name !';
                   setState(() {

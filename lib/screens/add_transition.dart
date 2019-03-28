@@ -21,7 +21,7 @@ class _AddTransitionState extends State<AddTransition> {
 
   Widget content;
   var response;
-  bool result;
+  bool result = false;
   bool processEnded = false;
 
   @override
@@ -30,7 +30,7 @@ class _AddTransitionState extends State<AddTransition> {
       Future.delayed(Duration(seconds: 2), ()async{
         response = await widget._action();
         String type = '';
-        print('after action...');
+        print(response);
         switch(widget._typeOfAction){
           case 'create':
             type = 'created';

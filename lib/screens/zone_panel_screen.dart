@@ -4,17 +4,12 @@ import 'package:address_manager/components/hot_dialog_zone_edit.dart';
 import 'package:address_manager/controller/team_controller.dart';
 import 'package:address_manager/helpers/team_helper.dart';
 import 'package:address_manager/models/dto/zone/delete_zone_dto.dart';
-import 'package:address_manager/models/dto/zone/update_zone_dto.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_places/flutter_google_places.dart';
-import 'package:google_maps_webservice/places.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../components/loader.dart';
 import '../components/panel_app_bar.dart';
 import '../components/side_menu.dart';
 import '../controller/zone_controller.dart';
-import '../helpers/dialog_helper.dart';
 import '../models/zone.dart';
 
 class ZonePanelScreen extends StatefulWidget {
@@ -39,16 +34,14 @@ class ZonePanelScreenState extends State<ZonePanelScreen> {
   var teamsData = [];
   List<DropdownMenuItem> teams = [];
   List<Widget> _zoneDescription = List<Widget>();
-  bool zoneToggle = false;
   bool teamToggle = false;
+  String _currentTeamUuidAfterCallBackReload = '';
 
 
   @override
   void initState() {
     super.initState();
-
     loadTeamsData();
-
   }
 
   @override
@@ -57,49 +50,17 @@ class ZonePanelScreenState extends State<ZonePanelScreen> {
     zoneAddressController.dispose();
     super.dispose();
   }
-
-  loadTeamsData(){
+  loadTeamsData() async {
     teamController.findAll().then((data) {
-
       setState(() {
-        teamsData = data;
+        teamsData = teamHelper.getAllowTeams(data);
+        teamToggle = true;
         teams = teamHelper.buildDropDownSelection(teamsData);
-        teamToggle = true;
+        if(_currentTeamUuidAfterCallBackReload.isNotEmpty){
+          _refreshZones();
+        }
       });
-
     });
-  }
-  void loadTeams() async {
-    if (!teamToggle) {
-      List<DropdownMenuItem> tmpList = [];
-      teamController.findAll().then((res) {
-        teamToggle = true;
-        teamsElements = res;
-
-        teamsElements.forEach((team) {
-          DropdownMenuItem dropdownMenuItem = DropdownMenuItem(
-            child: Text(
-              team['name'],
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15
-              ),
-              textAlign: TextAlign.center,
-            ),
-            value: teamsElements.indexOf(team),
-          );
-          tmpList.add(dropdownMenuItem);
-          setState(() {
-            teams = tmpList;
-          });
-        });
-      });
-    }
-  }
-
-  saveAction() {
-    Zone zone = Zone(zoneNameController.text,teamsData[_selectedTeamIndex]["uuid"],zoneAddressController.text);
-    zoneController.createOne(zone);
   }
 
   addZone() {
@@ -110,7 +71,7 @@ class ZonePanelScreenState extends State<ZonePanelScreen> {
           return SimpleDialog(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             children: <Widget>[
-              HotDialogZoneAdd(teamsData,_selectedTeamIndex),
+              HotDialogZoneAdd(teamsData,_selectedTeamIndex,loadTeamsData),
             ],
 
           );
@@ -120,7 +81,6 @@ class ZonePanelScreenState extends State<ZonePanelScreen> {
 
   deleteZoneAction() async{
     DeleteZoneDto deleteZoneDto = DeleteZoneDto(teamsData[_selectedTeamIndex]['uuid'],selectedZone['uuid']);
-    print('Delete request...');
     return zoneController.deleteOne(deleteZoneDto);
   }
 
@@ -143,7 +103,7 @@ class ZonePanelScreenState extends State<ZonePanelScreen> {
                 SizedBox(width: 5,),
                 DropdownButtonHideUnderline(
                   child: DropdownButton(
-                    items: teamToggle?teams:[],
+                    items: teams,
                     hint: selectedTeam != null
                         ? Text(selectedTeam,
                         style: TextStyle(
@@ -156,6 +116,8 @@ class ZonePanelScreenState extends State<ZonePanelScreen> {
                       setState(() {
                         _selectedTeamIndex = value;
                         selectedTeam = teamsData[value]['name'];
+                        _currentTeamUuidAfterCallBackReload =
+                        teamsData[value]['uuid'];
                         selectedTeamDescription(teamsData[value]);
                       });
                     },
@@ -229,7 +191,7 @@ class ZonePanelScreenState extends State<ZonePanelScreen> {
                           return SimpleDialog(
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                             children: <Widget>[
-                              HotDialogZoneEdit(teamsData,_selectedTeamIndex,zone),
+                              HotDialogZoneEdit(teamsData,_selectedTeamIndex,zone,loadTeamsData),
                             ],
 
                           );
@@ -257,4 +219,14 @@ class ZonePanelScreenState extends State<ZonePanelScreen> {
     content.add(wrapper);
     _zoneDescription = content;
   }
+
+   _refreshZones() {
+      teamsData.forEach((t){
+        if(t['uuid'].toString()==_currentTeamUuidAfterCallBackReload){
+          setState(() {
+            selectedTeamDescription(t);
+          });
+        }
+      });
+    }
 }

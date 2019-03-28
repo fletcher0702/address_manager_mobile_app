@@ -23,6 +23,7 @@ class _TeamInvitationScreenState extends State<TeamInvitationScreen> {
   TeamController teamController = TeamController();
   List<DropdownMenuItem<int>> teamsItems;
   List<dynamic> selectedTeamMembers = [];
+  List<dynamic> teamsAllowed = [];
   String selectedTeam = '';
   int _selectedTeamIndex;
   int _selectedMemberIndex;
@@ -32,7 +33,8 @@ class _TeamInvitationScreenState extends State<TeamInvitationScreen> {
   void initState() {
   super.initState();
   setState(() {
-    teamsItems = teamHelper.buildDropDownSelection(widget.teams);
+    teamsAllowed = teamHelper.getAllowTeams(widget.teams);
+    teamsItems = teamHelper.buildDropDownSelection(teamsAllowed);
   });
   }
 
@@ -87,7 +89,7 @@ class _TeamInvitationScreenState extends State<TeamInvitationScreen> {
                       ),
                       textAlign: TextAlign.center),
                   onChanged: (value) {
-                    selectedTeam = widget.teams[value]['name'];
+                    selectedTeam = teamsAllowed[value]['name'];
                     _selectedTeamIndex= value;
                     selectedTeamMembers = [];
                     setState(() {

@@ -102,10 +102,10 @@ class TeamPanelScreenState extends State<TeamPanelScreen> {
         ),
         body: TabBarView(children: [
           Padding(
-            child: teamToggle ? TeamDescription(teams) : ColorLoader(), padding: EdgeInsets.only(top: 30, left: 20),
+            child: teamToggle ? TeamDescription(teams,loadTeams) : ColorLoader(), padding: EdgeInsets.only(top: 30, left: 20),
           ),
           teamToggle ?TeamInvitationScreen(teams):Container(),
-          teamToggle ?TeamStatusScreen(teams):Container(),
+          teamToggle ?TeamStatusScreen(teams,loadTeams):Container(),
         ])
       ),
     );

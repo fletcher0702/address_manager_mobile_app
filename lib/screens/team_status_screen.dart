@@ -5,9 +5,8 @@ import 'package:address_manager/controller/team_controller.dart';
 import 'package:address_manager/helpers/team_helper.dart';
 import 'package:address_manager/models/dto/status/delete_status_dto.dart';
 import 'package:address_manager/models/dto/status/update_status_dto.dart';
-import 'package:address_manager/models/status.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+
 import '../tools/colors.dart';
 
 
@@ -15,8 +14,9 @@ import '../tools/colors.dart';
 class TeamStatusScreen extends StatefulWidget {
 
   List<dynamic> teams;
+  Function callBackAfterProcess;
 
-  TeamStatusScreen(this.teams);
+  TeamStatusScreen(this.teams, this.callBackAfterProcess);
 
   @override
   _TeamStatusScreenState createState() => _TeamStatusScreenState();
@@ -32,13 +32,16 @@ class _TeamStatusScreenState extends State<TeamStatusScreen> {
   EditTeamDialogState editTeamDialogState = EditTeamDialogState();
   List<DropdownMenuItem<int>> teamsItems;
   List<Widget> selectedTeamStatus = [];
+  List<dynamic> teams = [];
   Color pickerColor = Color(0xff443a49);
   Color currentColor = Color(0xff443a49);
 
+  String _currentTeamUuidForRefresh = '';
+
   String selectedTeam = '';
 
-  int _selectedTeamIndex;
-  int _selectedStatusIndex;
+  int _selectedTeamIndex = -1;
+  int _selectedStatusIndex = -1;
 
 
   @override
@@ -60,6 +63,24 @@ class _TeamStatusScreenState extends State<TeamStatusScreen> {
       currentColor = pickerColor;
     });
     Navigator.of(context).pop();
+  }
+
+  afterAction() async {
+    teamController.findAll().then((data) {
+      teams = data;
+
+      setState(() {
+        if (_currentTeamUuidForRefresh.isNotEmpty) {
+          print('it is not empty');
+          teams.forEach((t) {
+            if (t['uuid'].toString() == _currentTeamUuidForRefresh) {
+              print('found...');
+              selectedTeamStatus = buildStatusDescription(t);
+            }
+          });
+        }
+      });
+    });
   }
 
   @override
@@ -90,7 +111,8 @@ class _TeamStatusScreenState extends State<TeamStatusScreen> {
                               fontWeight: FontWeight.bold
                           ),)),
                           content: SingleChildScrollView(
-                            child: HotDialogStatus(widget.teams,_selectedTeamIndex,(){}),
+                            child: HotDialogStatus(
+                                widget.teams, _selectedTeamIndex, afterAction),
 
                           ),
                         )
@@ -117,9 +139,11 @@ class _TeamStatusScreenState extends State<TeamStatusScreen> {
                     onChanged: (value) {
                       selectedTeam = widget.teams[value]['name'];
                       _selectedTeamIndex= value;
+                      _currentTeamUuidForRefresh = widget.teams[value]['uuid'];
                       selectedTeamStatus = [];
                       setState(() {
-                        selectedTeamStatus = buildStatusDescription();
+                        selectedTeamStatus =
+                            buildStatusDescription(widget.teams[value]);
                       });
                     },
                   ),
@@ -154,10 +178,9 @@ class _TeamStatusScreenState extends State<TeamStatusScreen> {
     );
   }
 
-  buildStatusDescription(){
+  buildStatusDescription(team) {
 
     List<Widget> rows = [];
-    var team = widget.teams[_selectedTeamIndex];
     List<dynamic> status = team["status"];
 
     status.forEach((statusItem){

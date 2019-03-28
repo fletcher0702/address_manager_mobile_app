@@ -42,7 +42,7 @@ class DialogHelperState extends State<DialogHelper> {
                     onPressed: (){
 
                       Navigator.pop(context);
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>AddTransition(SUCCESS_CREATION,ERROR_CREATION,saveAction,CREATE_ACTION,actionCallBackAfterProcess)));
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>AddTransition(saveBool?SUCCESS_CREATION:SUCCESS_UPDATE,saveBool?ERROR_CREATION:ERROR_UPDATE,saveAction,saveBool?CREATE_ACTION:UPDATE_ACTION,actionCallBackAfterProcess)));
 
                     },
                     child: Text(

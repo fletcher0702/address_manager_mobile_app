@@ -1,17 +1,22 @@
 import 'package:address_manager/controller/zone_controller.dart';
 import 'package:address_manager/helpers/team_helper.dart';
+import 'package:address_manager/helpers/ui_helper.dart';
 import 'package:address_manager/models/dto/zone/update_zone_dto.dart';
+import 'package:address_manager/screens/add_transition.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:google_maps_webservice/places.dart';
+import '../tools/messages.dart';
+import '../tools/actions.dart';
 
 class HotDialogZoneEdit extends StatefulWidget {
 
   List<dynamic> teams;
   final zone ;
   int selectedTeamIndex;
-  HotDialogZoneEdit(this.teams,this.selectedTeamIndex,this.zone);
+  Function callBackAfterProcess;
+  HotDialogZoneEdit(this.teams,this.selectedTeamIndex,this.zone,this.callBackAfterProcess);
 
   @override
   _HotDialogZoneEditState createState() => _HotDialogZoneEditState();
@@ -24,9 +29,11 @@ class _HotDialogZoneEditState extends State<HotDialogZoneEdit> {
   final zoneNameController = TextEditingController();
   final zoneAddressController = TextEditingController();
   List<DropdownMenuItem> teamsDropdown = [];
-  int _selectedTeamIndex;
+  int _selectedTeamIndex = -1;
   String teamToAddInto = '';
   bool firstLaunch = false;
+  String errorMessage = '';
+  Container errorBox = Container();
 
   @override
   void initState() {
@@ -58,6 +65,13 @@ class _HotDialogZoneEditState extends State<HotDialogZoneEdit> {
 
   }
 
+  updateMessageError(){
+    setState(() {
+      errorBox = Container();
+    });
+
+  }
+
   _getContent(){
 
     return
@@ -65,6 +79,7 @@ class _HotDialogZoneEditState extends State<HotDialogZoneEdit> {
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: <Widget>[
+            errorBox,
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
@@ -134,7 +149,30 @@ class _HotDialogZoneEditState extends State<HotDialogZoneEdit> {
                 FlatButton(
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30)),
-                    onPressed: editAction,
+                    onPressed: (){
+
+                      if(_selectedTeamIndex==-1){
+                        setState(() {
+                          errorMessage = 'Please select a valid team...';
+                          errorBox = UIHelper.errorMessageWidget(errorMessage, updateMessageError);
+                        });
+                      }else{
+
+                        if(zoneNameController.text.isEmpty || zoneAddressController.text.isEmpty){
+
+                          setState(() {
+                            errorMessage = 'Please fill all the fields...';
+                            errorBox = UIHelper.errorMessageWidget(errorMessage, updateMessageError);
+                          });
+
+                        }else{
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=>AddTransition(SUCCESS_UPDATE,ERROR_UPDATE,editAction,UPDATE_ACTION,widget.callBackAfterProcess)));
+                        }
+
+                      }
+
+
+                    },
                     child: Text('UPDATE',
                       style: TextStyle(
                           color: Colors.white,
