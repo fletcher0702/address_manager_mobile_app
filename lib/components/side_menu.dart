@@ -168,24 +168,27 @@ class SideMenu extends StatelessWidget {
             ),
           ),
           Container(color: Colors.grey,height: 1,width: double.infinity,),
-          Row(
-            children: <Widget>[
-              Icon(Icons.close,color:Colors.red),
-              FlatButton(
-                onPressed: () async {
-                  await userController.destroyCredentials();
-                  Navigator.pop(context);
-                  Navigator.pushNamed(context, LOGIN_ROUTE);
-                },
-                child: Text('Log out',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
+          Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Row(
+              children: <Widget>[
+                Icon(Icons.close,color:Colors.red),
+                FlatButton(
+                  onPressed: () async {
+                    await userController.destroyCredentials();
+                    Navigator.pop(context);
+                    Navigator.pushNamed(context, LOGIN_ROUTE);
+                  },
+                  child: Text('Log out',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
                 ),
-                splashColor: Colors.transparent,
-                highlightColor: Colors.transparent,
-              ),
-            ],
+              ],
+            ),
           )
         ],
       ),
