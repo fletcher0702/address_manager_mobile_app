@@ -55,13 +55,13 @@ class _HotDialogZoneEditState extends State<HotDialogZoneEdit> {
     zoneNameController.dispose();
   }
 
-  editAction(){
+  editAction() async{
     UpdateZoneDto updateZoneDto = UpdateZoneDto();
     updateZoneDto.name = zoneNameController.text;
     updateZoneDto.teamUuid = widget.teams[_selectedTeamIndex]["uuid"];
     updateZoneDto.zoneUuid = widget.zone['uuid'];
     updateZoneDto.address = zoneAddressController.text;
-    zoneController.updateOne(updateZoneDto);
+    return zoneController.updateOne(updateZoneDto);
 
   }
 
@@ -166,6 +166,7 @@ class _HotDialogZoneEditState extends State<HotDialogZoneEdit> {
                           });
 
                         }else{
+                          Navigator.pop(context);
                           Navigator.push(context, MaterialPageRoute(builder: (context)=>AddTransition(SUCCESS_UPDATE,ERROR_UPDATE,editAction,UPDATE_ACTION,widget.callBackAfterProcess)));
                         }
 

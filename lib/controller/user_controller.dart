@@ -21,8 +21,6 @@ class UserController {
       if (jsonResponse != null) {
         var jwt = jsonResponse["jwt"].toString();
         var uuid = jsonResponse["uuid"].toString();
-//        await userService
-//            .createUserCredentialsCache(jwt);
         await userService.createUserCredentialsPreferences(uuid,jwt);
         return true;
       }

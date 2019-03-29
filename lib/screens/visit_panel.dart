@@ -194,9 +194,7 @@ class VisitPanelScreenState extends State<VisitPanelScreen> {
 
                           IconButton(icon: Icon(Icons.edit, color: Colors.orangeAccent, size: 15 ), onPressed: (){
                             editPersonDialog.dialog(context, teams,_selectedTeamIndex,
-                                _selectedZoneIndex,element, () {
-
-                                });
+                                _selectedZoneIndex,element, loadTeams);
                           }),
                           IconButton(icon: Icon(Icons.delete, color: Colors.red,size: 15), onPressed: (){editPersonDialog.showDeleteDialog(context,element,teams[_selectedTeamIndex]["zones"][_selectedZoneIndex]["uuid"]);})
                         ],
