@@ -1,3 +1,5 @@
+import 'package:address_manager/helpers/auth_helper.dart';
+import 'package:address_manager/helpers/ui_helper.dart';
 import 'package:flutter/material.dart';
 
 import '../controller/user_controller.dart';
@@ -14,6 +16,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
+  Container errorBox = Container();
+  String errorMessage = '';
+
+  updateErrorMessage(){
+    setState(() {
+      errorBox = Container();
+    });
+  }
 
   @override
   void dispose() {
@@ -52,6 +62,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     child: Container(
                       child: Column(
                         children: <Widget>[
+                          SingleChildScrollView(
+                              child: errorBox,
+                            scrollDirection: Axis.horizontal,
+                          ),
                           TextField(
                             controller: emailController,
                             decoration: InputDecoration(
@@ -132,20 +146,57 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     bottomLeft: Radius.circular(20),
                                     bottomRight: Radius.circular(20))),
                             child: FlatButton(
-                              onPressed: () {
+                              onPressed: () async {
                                 String email = emailController.text;
                                 String password = passwordController.text;
                                 String confirmedPassword = confirmPasswordController.text;
 
 
-                                if(email.isEmpty || password.isEmpty || confirmedPassword.isEmpty) return false;
-                                if(password!=confirmedPassword) return false;
+                                if(email.isEmpty || password.isEmpty || confirmedPassword.isEmpty) {
 
-                                print(email);
-                                print(password);
-                                print(confirmedPassword);
-                                _registerRequest(email, password);
-                                return true;
+                                  setState(() {
+                                    errorMessage = 'Please fill all the fields...';
+                                    errorBox = UIHelper.errorMessageWidget(errorMessage, updateErrorMessage);
+                                  });
+                                }else{
+                                  if(!AuthHelper.isEmail(email)){
+                                    setState(() {
+                                      errorMessage = 'Please enter valid email..';
+                                      errorBox = UIHelper.errorMessageWidget(errorMessage, updateErrorMessage);
+                                    });
+                                  }else{
+
+                                    if(password!=confirmedPassword) {
+
+                                      setState(() {
+                                        errorMessage = 'Password are differents...';
+                                        errorBox = UIHelper.errorMessageWidget(errorMessage, updateErrorMessage);
+                                      });
+                                    }else{
+
+                                      if(AuthHelper.passwordRule(password)){
+
+                                        bool res = await _registerRequest(email, password);
+
+                                        if(res){
+                                          Navigator.pushNamed(context, HOME_ROUTE);
+                                        }else{
+                                          setState(() {
+                                            errorMessage = 'Please try another email...';
+                                            errorBox = UIHelper.errorMessageWidget(errorMessage, updateErrorMessage);
+                                          });
+                                        }
+                                      }else{
+                                        setState(() {
+                                          errorMessage = 'Password length less than 6 ';
+                                          errorBox = UIHelper.errorMessageWidget(errorMessage, updateErrorMessage);
+                                        });
+                                      }
+
+                                    }
+
+                                  }
+                                }
                               },
                               child: Container(
                                 width: 200,
@@ -203,8 +254,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  void _registerRequest(String s, String t) {
-//    Navigator.of(context).pushNamed(HOME_ROUTE);
-    _userController.register(s, t);
+   _registerRequest(String s, String t) async {
+    return _userController.register(s, t);
   }
 }
