@@ -426,7 +426,7 @@ class HomeState extends State<Home> {
                       Positioned(
                         top: 8,
                         left: 15,
-                        child: Text(conflicts.length.toString()
+                        child: Text(_conflictsAddressByTypeSize(conflicts, type).toString()
                           ,
                           style: TextStyle(
                             color: Colors.white,
@@ -492,6 +492,17 @@ class HomeState extends State<Home> {
     return visitsConflicts;
   }
 
+  _conflictsAddressByTypeSize(List<dynamic>address,type){
+
+    int counter = 0;
+
+    address.forEach((a){
+
+      if(a['status']['uuid'].toString()==type) counter+=1;
+    });
+    return counter;
+  }
+
   @override
   Widget build(BuildContext context) {
     this.context = context;
@@ -540,6 +551,7 @@ class HomeState extends State<Home> {
                             statusElements = teamsElements[value]["status"];
                             status.clear();
                             markersList.clear();
+                            flutterMapWidget.state.updateMarkers(markersList, LatLng(currentLocation[0],currentLocation[1]), 13.0);
                             loadZones();
                           });
                         },
@@ -748,21 +760,40 @@ class HomeState extends State<Home> {
   _visitsDescription(List<dynamic> visits) {
     List<Widget> description = [];
 
-    Padding address = Padding(padding: EdgeInsets.only(top: 10), child: Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Icon(Icons.place, color: Colors.blue,),
-        SizedBox(width: 10,),
-        Text(visits[0]['address'], style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-            fontSize: 20
-        ),)
-      ],
+    Padding address = Padding(padding: EdgeInsets.only(left:10,right: 10,top: 10), child: SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Icon(Icons.place, color: Colors.blue,),
+          SizedBox(width: 10,),
+          Text(visits[0]['address'], style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+              fontSize: 18
+          ),)
+        ],
+      ),
     ),);
     description.add(address);
-    visits.forEach((v) {
+    List<dynamic> tmpVisitsFiltered = [];
+    String currentStatus = teamsElements[_selectedTeamIndex]['status'][_selectedStatusIndex]['uuid'];
+
+    int size = visits.length;
+    for(int i=0;i<size;i++){
+      if(visits[i]['status']['uuid']==currentStatus){
+        tmpVisitsFiltered.add(visits[i]);
+      }
+    }
+
+    for(int i=0;i<size;i++){
+      if(visits[i]['status']['uuid']!=currentStatus){
+        tmpVisitsFiltered.add(visits[i]);
+      }
+    }
+
+    tmpVisitsFiltered.forEach((v) {
       Color color = colorType(v);
       Padding visitAddress = Padding(
         padding: EdgeInsets.only(top: 5.0),

@@ -46,8 +46,9 @@ class UserController {
       if (jsonResponse != null) {
         try{
           if(jsonResponse['created']){
-            await userService
-                .createUserCredentialsCache(jsonResponse["jwt"].toString());
+            var jwt = jsonResponse["jwt"].toString();
+            var uuid = jsonResponse["uuid"].toString();
+            await userService.createUserCredentialsPreferences(uuid, jwt);
             return true;
           }
         }catch(e){
@@ -67,8 +68,6 @@ class UserController {
       var json = jsonDecode(response.body);
       return json["valid"] as bool;
     }
-
-    print('Empty Token...');
     return false;
   }
 
