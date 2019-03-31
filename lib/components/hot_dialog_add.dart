@@ -109,7 +109,7 @@ class _HotDialogAddState extends State<HotDialogAdd> {
                   fontSize: 30.0, fontWeight: FontWeight.bold),
             ),
 
-            errorBox,
+            SingleChildScrollView(child: errorBox,scrollDirection: Axis.horizontal,),
             TextField(
               decoration: InputDecoration(
                 prefixIcon: Icon(Icons.person,color: green_custom_color,

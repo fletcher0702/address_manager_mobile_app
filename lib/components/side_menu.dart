@@ -81,6 +81,21 @@ class SideMenu extends StatelessWidget {
               children: <Widget>[
                 Row(
                   children: <Widget>[
+                    Icon(Icons.group, color: Colors.brown),
+                    FlatButton(
+                      onPressed: () {Navigator.pushNamed(context, TEAM_PANEL_ROUTE);},
+                      child: Text('Team Panel',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      highlightColor: Colors.transparent,
+                      splashColor: Colors.transparent,
+                    )
+                  ],
+                ),
+                Row(
+                  children: <Widget>[
                     Icon(Icons.place, color:Colors.blue),
                     FlatButton(
                       onPressed: () {
@@ -98,25 +113,10 @@ class SideMenu extends StatelessWidget {
                 ),
                 Row(
                   children: <Widget>[
-                    Icon(Icons.group, color: Colors.brown),
-                    FlatButton(
-                      onPressed: () {Navigator.pushNamed(context, TEAM_PANEL_ROUTE);},
-                      child: Text('Team Panel',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      highlightColor: Colors.transparent,
-                      splashColor: Colors.transparent,
-                    )
-                  ],
-                ),
-                Row(
-                  children: <Widget>[
                     Icon(Icons.person,color: Colors.orange),
                     FlatButton(
                       onPressed: () {Navigator.pushNamed(context, VISITS_PANEL_ROUTE);},
-                      child: Text('Visits Panel',
+                      child: Text('Persons Panel',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                         ),
