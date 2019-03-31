@@ -101,7 +101,7 @@ class _TeamInvitationScreenState extends State<TeamInvitationScreen> {
             ],
           ),
           Padding(
-            padding: EdgeInsets.only(left: 20,top: 20.0),
+            padding: EdgeInsets.only(left: MediaQuery.of(context).size.width*0.05,top: 20.0),
             child: Text('Members',style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 30
@@ -109,11 +109,12 @@ class _TeamInvitationScreenState extends State<TeamInvitationScreen> {
           ),
           Padding(
             padding: EdgeInsets.only(right: 20.0),
-            child: Divider(color: Colors.black,height: 3,indent: 20),
+            child: Divider(color: Colors.black,height: 3,indent: MediaQuery.of(context).size.width*0.05),
           ),
           Padding(
             padding: EdgeInsets.all(20.0),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: selectedTeamMembers.length==0?[Center(child: Text('Empty... Please invite members or select a team...',style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18
@@ -129,7 +130,7 @@ class _TeamInvitationScreenState extends State<TeamInvitationScreen> {
 
     List<Widget> rows = [];
     var team = widget.teams[_selectedTeamIndex];
-    List<dynamic> users = team["users"];
+    List<dynamic> users = team["emails"];
 
     users.forEach((user){
 
@@ -146,7 +147,7 @@ class _TeamInvitationScreenState extends State<TeamInvitationScreen> {
 
             ),
             SizedBox(width: 20,),
-            Text(user['uuid'],style: TextStyle(
+            Text(user,style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 15
             ),),

@@ -19,7 +19,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       new GlobalKey<AnimatedCircularChartState>();
   List<CircularStackEntry> data = <CircularStackEntry>[];
   String _holeLabel = '';
-  Row _legend = Row();
+  SingleChildScrollView _legend = SingleChildScrollView();
   Column _legendNumber = Column();
   int _selectedTeamIndex;
   String selectedTeam = '';
@@ -168,9 +168,12 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       list.add(r);
     });
 
-    Row description = Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: list,
+    SingleChildScrollView description = SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: list,
+      ),
     );
     setState(() {
       _legend = description;

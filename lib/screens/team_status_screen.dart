@@ -152,7 +152,7 @@ class _TeamStatusScreenState extends State<TeamStatusScreen> {
             ),
 
             Padding(
-              padding: EdgeInsets.only(left: 20,top: 20.0),
+              padding: EdgeInsets.only(left: MediaQuery.of(context).size.width*0.05,top: 20.0),
               child: Text('Status',style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 30
@@ -160,7 +160,7 @@ class _TeamStatusScreenState extends State<TeamStatusScreen> {
             ),
             Padding(
               padding: EdgeInsets.only(right: 20.0),
-              child: Divider(color: Colors.black,height: 3,indent: 20),
+              child: Divider(color: Colors.black,height: 3,indent: MediaQuery.of(context).size.width*0.05),
             ),
             Padding(
               padding: EdgeInsets.all(20.0),

@@ -179,7 +179,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                         bool res = await _registerRequest(email, password);
 
                                         if(res){
-                                          Navigator.pushNamed(context, HOME_ROUTE);
+                                          Navigator.pushReplacementNamed(context, LOGIN_ROUTE);
                                         }else{
                                           setState(() {
                                             errorMessage = 'Please try another email...';

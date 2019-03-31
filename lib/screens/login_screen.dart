@@ -22,6 +22,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool alreadySignedToggle = false;
   bool alreadySigned = false;
+  bool firstLaunch = true;
 
   @override
   void dispose() {
@@ -39,6 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
           alreadySignedToggle = true;
           setState(() {
             alreadySigned = res;
+            firstLaunch = false;
           });
         });
       });
@@ -71,7 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 Text(
-                  'sign to continue',
+                  'sign in to continue',
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.grey),
@@ -174,7 +176,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       passwordController.text);
                                   if (res){
                                     print('valid credentials...');
-                                    Navigator.pushNamed(
+                                    Navigator.pushReplacementNamed(
                                         context, HOME_ROUTE);
                                   }
                                   else {
