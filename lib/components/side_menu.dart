@@ -2,8 +2,30 @@ import 'package:flutter/material.dart';
 import '../routes/routes.dart';
 import '../controller/user_controller.dart';
 
-class SideMenu extends StatelessWidget {
+class SideMenu extends StatefulWidget {
+  @override
+  _SideMenuState createState() => _SideMenuState();
+}
+
+class _SideMenuState extends State<SideMenu> {
   final userController = UserController();
+  String _userEmail = '';
+
+
+  @override
+  void initState() {
+    super.initState();
+      getUserCredentials();
+  }
+
+  getUserCredentials() async{
+    var credentials= await userController.getCredentials();
+
+    setState(() {
+      _userEmail = credentials['email'];
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -21,10 +43,10 @@ class SideMenu extends StatelessWidget {
               Column(
                 children: <Widget>[
                   Padding(
-                    padding: EdgeInsets.only(top: 8.0),
+                    padding: EdgeInsets.only(top: 25.0),
                     child: Container(
-                      height: 80,
-                      width: 80,
+                      height: 60,
+                      width: 60,
                       decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: Colors.white,
@@ -36,7 +58,7 @@ class SideMenu extends StatelessWidget {
                     scrollDirection: Axis.horizontal,
                     child: Padding(
                       padding: EdgeInsets.only(top:8.0),
-                      child: Text('fletcher.abedier@gmail.com',style: TextStyle(
+                      child: Text(_userEmail,style: TextStyle(
                           color: Colors.white,
                           fontSize: 15,
                           fontWeight: FontWeight.bold
@@ -177,7 +199,7 @@ class SideMenu extends StatelessWidget {
                   onPressed: () async {
                     await userController.destroyCredentials();
                     Navigator.pop(context);
-                    Navigator.pushNamed(context, LOGIN_ROUTE);
+                    Navigator.pushReplacementNamed(context, LOGIN_ROUTE);
                   },
                   child: Text('Log out',
                     style: TextStyle(

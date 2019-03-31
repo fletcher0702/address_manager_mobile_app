@@ -12,10 +12,11 @@ class UserService {
     fileHelper.writeJwt(jwt);
   }
 
-  createUserCredentialsPreferences(uuid,jwt) async{
+  createUserCredentialsPreferences(uuid,jwt,email) async{
     SharedPreferences prefs= await SharedPreferences.getInstance();
     prefs.setString('uuid', uuid);
     prefs.setString('jwt', jwt);
+    prefs.setString('email', email);
   }
 
   getJwt() async {
@@ -30,7 +31,8 @@ class UserService {
 
       credentials = {
         'uuid': prefs.getString('uuid'),
-        'jwt': prefs.getString('jwt')
+        'jwt': prefs.getString('jwt'),
+        'email': prefs.get('email')
       };
     }
 

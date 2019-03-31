@@ -23,8 +23,19 @@ class UserController {
           if(jsonResponse['created']){
             var jwt = jsonResponse["jwt"].toString();
             var uuid = jsonResponse["uuid"].toString();
-            await userService.createUserCredentialsPreferences(uuid, jwt);
-            return true;
+
+            var emailResponse = await http
+                .get(USER_BASE_URL+uuid,
+                headers: header,)
+                .then((res) => res);
+            var res = jsonDecode(emailResponse.body);
+            if(res['exist']){
+
+              await userService.createUserCredentialsPreferences(uuid, jwt,res['email']);
+              return true;
+
+            }
+
           }
         }catch(e){
           return false;
@@ -48,8 +59,15 @@ class UserController {
           if(jsonResponse['created']){
             var jwt = jsonResponse["jwt"].toString();
             var uuid = jsonResponse["uuid"].toString();
-            await userService.createUserCredentialsPreferences(uuid, jwt);
-            return true;
+            var emailResponse = await http
+                .get(USER_BASE_URL+uuid,
+              headers: header,)
+                .then((res) => res);
+            var res = jsonDecode(emailResponse.body);
+            if(res['exist']){
+              await userService.createUserCredentialsPreferences(uuid, jwt,res['email']);
+              return true;
+            }
           }
         }catch(e){
           return false;
