@@ -33,6 +33,8 @@ class VisitController {
           'address': visit.address,
           'phoneNumber': visit.phoneNumber,
           'statusUuid': visit.statusUuid,
+          'observation':visit.observation,
+          'date':visit.date
         }))
         .then((res) => res);
 
