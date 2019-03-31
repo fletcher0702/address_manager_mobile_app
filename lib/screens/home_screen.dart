@@ -1,7 +1,7 @@
+import 'package:address_manager/components/map_widget.dart';
 import 'package:address_manager/helpers/team_helper.dart';
 import 'package:address_manager/screens/add_person_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
 
@@ -26,6 +26,7 @@ class HomeState extends State<Home> {
   EditPersonDialogState editPersonDialog = EditPersonDialogState();
   AddPersonDialogState addPersonDialog = AddPersonDialogState();
   MapController mapController;
+  FlutterMapWidget flutterMapWidget;
 
   // Toggles trackers
   bool mapToggle = false;
@@ -273,6 +274,8 @@ class HomeState extends State<Home> {
             point: LatLng(visit['latitude'], visit['longitude']),
             builder: (context) {
               Color color = colorType(visit);
+              List<dynamic> conflicts = _conflictsAddress(
+                  visit['address'], visitsElements);
               return Center(
                 child: IconButton(
                   onPressed: () {
@@ -280,111 +283,126 @@ class HomeState extends State<Home> {
                     showModalBottomSheet(
                         context: context,
                         builder: (context) {
-                          return Container(
-                            height: 400,
+                          return  SizedBox(
+                            height: conflicts.length > 1 ? MediaQuery
+                                .of(context)
+                                .size
+                                .height * 0.90 : MediaQuery
+                                .of(context)
+                                .size
+                                .height * 0.40,
                             width: double.infinity,
-                            child: Column(
-                              children: <Widget>[
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 15.0),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: <Widget>[
-                                      Icon(
-                                        Icons.person_pin,
-                                        color: color,
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          visit['name'],
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 25,
+                            child: SingleChildScrollView(
+                              child: conflicts.length > 1 ? _visitsDescription(
+                                  conflicts) : Column(
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 15.0),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        Icon(
+                                          Icons.person_pin,
+                                          color: color,
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Text(
+                                            visit['name'],
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 25,
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      IconButton(
-                                        icon: Icon(Icons.edit),
-                                        onPressed: () {
-                                          editPersonDialog.dialog(
-                                              context, teamsElements,_selectedTeamIndex,
-                                              _selectedZoneIndex, visit,
-                                              loadTeams);
-                                        },
-                                        color: orange_custom_color,
-                                      )
-                                    ],
+                                        IconButton(
+                                          icon: Icon(Icons.edit),
+                                          onPressed: () {
+                                            editPersonDialog.dialog(
+                                                context, teamsElements,
+                                                _selectedTeamIndex,
+                                                _selectedZoneIndex, visit,
+                                                loadTeams);
+                                          },
+                                          color: orange_custom_color,
+                                        )
+                                      ],
+                                    ),
                                   ),
-                                ),
-                                Container(
-                                  child: Padding(
-                                    padding: EdgeInsets.only(
-                                        left: 20, right: 20, top: 40),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                      children: <Widget>[
-                                        SingleChildScrollView(
-                                          scrollDirection: Axis.horizontal,
-                                          child: Row(
+                                  Container(
+                                    child: Padding(
+                                      padding: EdgeInsets.only(
+                                          left: 20, right: 20, top: 40),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment
+                                            .start,
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                        children: <Widget>[
+                                          SingleChildScrollView(
+                                            scrollDirection: Axis.horizontal,
+                                            child: SingleChildScrollView(
+                                              child: Row(
+                                                children: <Widget>[
+                                                  Icon(
+                                                    Icons.place,
+                                                    color: color,
+                                                  ),
+                                                  SizedBox(
+                                                    width: 10,
+                                                  ),
+                                                  Text(
+                                                    visit['address'],
+                                                    style: TextStyle(
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 14,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          Row(
                                             children: <Widget>[
                                               Icon(
-                                                Icons.place,
-                                                color: color,
+                                                Icons.phone,
+                                                color:
+                                                Color.fromRGBO(46, 204, 113, 1),
                                               ),
                                               SizedBox(
                                                 width: 10,
                                               ),
                                               Text(
-                                                visit['address'],
+                                                visit['phoneNumber'] != null
+                                                    ? visit['phoneNumber']
+                                                    : 'Not provided',
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.bold,
-                                                  fontSize: 14,
                                                 ),
-                                              ),
+                                              )
                                             ],
                                           ),
-                                        ),
-                                        Row(
-                                          children: <Widget>[
-                                            Icon(
-                                              Icons.phone,
-                                              color:
-                                              Color.fromRGBO(46, 204, 113, 1),
-                                            ),
-                                            SizedBox(
-                                              width: 10,
-                                            ),
-                                            Text(
-                                              visit['phoneNumber'],
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
+                                          Row(
+                                            children: <Widget>[
+                                              Icon(Icons.filter_list,
+                                                  color: Colors.black),
+                                              SizedBox(
+                                                width: 10,
                                               ),
-                                            )
-                                          ],
-                                        ),
-                                        Row(
-                                          children: <Widget>[
-                                            Icon(Icons.filter_list,
-                                                color: Colors.black),
-                                            SizedBox(
-                                              width: 10,
-                                            ),
-                                            Text(
-                                              visit['status']['name'],
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            )
-                                          ],
-                                        )
-                                      ],
+                                              Text(
+                                                visit['status']['name'],
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              )
+                                            ],
+                                          )
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                )
-                              ],
+                                  )
+                                ],
+                              ),
                             ),
                           );
                         });
@@ -408,8 +426,8 @@ class HomeState extends State<Home> {
                       Positioned(
                         top: 8,
                         left: 15,
-                        child: Text(
-                          visit['name'],
+                        child: Text(conflicts.length.toString()
+                          ,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 15,
@@ -431,6 +449,7 @@ class HomeState extends State<Home> {
 
       setState(() {
         markersList = tmpMarkers;
+        flutterMapWidget.state.updateMarkers(markersList, LatLng(currentLocation[0],currentLocation[1]), 13.0);
       });
   }
 
@@ -438,6 +457,7 @@ class HomeState extends State<Home> {
     super.initState();
     loadTeams();
     mapController = MapController();
+    flutterMapWidget = FlutterMapWidget();
     mapToggle = true;
   }
 
@@ -454,6 +474,7 @@ class HomeState extends State<Home> {
              visitsElements = zones[_selectedZoneIndex]['visits'];
              loadZones();
              loadMarkers(z['visits']);
+             flutterMapWidget.state.updateMarkers(markersList, LatLng(currentLocation[0], currentLocation[1]), 12.0);
            });
           }
         });
@@ -661,8 +682,9 @@ class HomeState extends State<Home> {
                           visitsElements = zones[value]["visits"];
                           status = teamHelper.buildDropDownSelection(statusElements);
                           loadMarkers(zones[value]["visits"]);
-                          mapController.move(LatLng(currentLocation[0], currentLocation[1]),13);
+                          flutterMapWidget.state.updateMarkers(markersList,LatLng(currentLocation[0], currentLocation[1]),13.0);
                         });
+
 
 
                       },
@@ -705,31 +727,8 @@ class HomeState extends State<Home> {
                     .size
                     .height - 120 ,
                 width: double.infinity,
-                child: mapToggle
-                    ? FlutterMap(
-                  mapController: mapController,
-                  options: MapOptions(
-                    zoom: 14, //48.864716, 2.349014 Paris
-                    center: LatLng(
-                        currentLocation[0], currentLocation[1]),
-
-                  ),
-                  layers: [
-                    TileLayerOptions(
-                      urlTemplate:
-                      "https://api.tiles.mapbox.com/v4/"
-                          "{id}/{z}/{x}/{y}@2x.png?access_token={accessToken}",
-                      additionalOptions: {
-                        'accessToken':
-                        DotEnv().env['MapBoxApiKey'],
-                        'id': 'mapbox.streets',
-                      },
-                    ),
-                    MarkerLayerOptions(
-                      markers: markersList,
-                    ),
-                  ],
-                )
+                child: mapToggle && teamToggle
+                    ? flutterMapWidget
                     : Center(
                   child: Text('Loading Map...Please Wait...'),
                 ),
@@ -857,4 +856,6 @@ class HomeState extends State<Home> {
 
     return visitsDescription;
   }
+
+
 }
