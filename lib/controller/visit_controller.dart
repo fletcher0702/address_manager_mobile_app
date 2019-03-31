@@ -1,13 +1,15 @@
 import 'dart:convert';
+
 import 'package:address_manager/models/dto/visit/delete_visit_dto.dart';
 import 'package:address_manager/models/dto/visit/update_visit_dto.dart';
 import 'package:address_manager/services/user_service.dart';
-import 'package:http/http.dart' as http;
 import 'package:dio/dio.dart';
+import 'package:http/http.dart' as http;
 import 'package:mongo_dart/mongo_dart.dart';
+
 import '../models/visit.dart';
-import '../services/visit_service.dart';
 import '../routes/routes.dart';
+import '../services/visit_service.dart';
 
 class VisitController {
   VisitService visitService = VisitService();
@@ -33,15 +35,16 @@ class VisitController {
           'statusUuid': visit.statusUuid,
         }))
         .then((res) => res);
-    print(response.body);
 
-    return true;
+    return jsonDecode(response.body);
   }
 
   updateVisit(UpdateVisitDto visit) async {
     var response = await http
         .patch(UPDATE_VISIT_HTTP_ROUTE, headers: header ,body: jsonEncode({'userUuid': visit.userUuid,'teamUuid':visit.teamUuid,'zoneUuid':visit.zoneUuid,'visitUuid':visit.visitUuid,'name': visit.name, 'address': visit.address,'phoneNumber':visit.phoneNumber,'statusUuid': visit.statusUuid}))
         .then((res) => res);
+
+    print('after server response...');
 
     return jsonDecode(response.body);
   }

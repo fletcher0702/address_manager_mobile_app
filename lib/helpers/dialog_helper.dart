@@ -1,3 +1,6 @@
+import '../tools/actions.dart';
+import '../tools/messages.dart';
+import 'package:address_manager/screens/add_transition.dart';
 import 'package:flutter/material.dart';
 
 class DialogHelper extends StatefulWidget{
@@ -9,7 +12,7 @@ class DialogHelper extends StatefulWidget{
 class DialogHelperState extends State<DialogHelper> {
 
 
-  static Future<bool> showDialogBox(context, title, content, saveAction,saveBool) {
+  static Future<bool> showDialogBox(context, title, content, saveAction,saveBool,actionCallBackAfterProcess) {
     return showDialog(
       context: context,
       barrierDismissible: false,
@@ -36,7 +39,12 @@ class DialogHelperState extends State<DialogHelper> {
                 FlatButton(
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30)),
-                    onPressed: saveAction,
+                    onPressed: (){
+
+                      Navigator.pop(context);
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>AddTransition(saveBool?SUCCESS_CREATION:SUCCESS_UPDATE,saveBool?ERROR_CREATION:ERROR_UPDATE,saveAction,saveBool?CREATE_ACTION:UPDATE_ACTION,actionCallBackAfterProcess)));
+
+                    },
                     child: Text(
                       saveBool?'SAVE':'UPDATE',
                       style: TextStyle(

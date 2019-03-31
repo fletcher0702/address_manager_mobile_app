@@ -1,11 +1,12 @@
 import 'package:address_manager/components/edit_team_dialog.dart';
+import 'package:address_manager/components/hot_dialog_status.dart';
+import 'package:address_manager/components/hot_dialog_status_update.dart';
 import 'package:address_manager/controller/team_controller.dart';
 import 'package:address_manager/helpers/team_helper.dart';
 import 'package:address_manager/models/dto/status/delete_status_dto.dart';
 import 'package:address_manager/models/dto/status/update_status_dto.dart';
-import 'package:address_manager/models/status.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+
 import '../tools/colors.dart';
 
 
@@ -13,8 +14,9 @@ import '../tools/colors.dart';
 class TeamStatusScreen extends StatefulWidget {
 
   List<dynamic> teams;
+  Function callBackAfterProcess;
 
-  TeamStatusScreen(this.teams);
+  TeamStatusScreen(this.teams, this.callBackAfterProcess);
 
   @override
   _TeamStatusScreenState createState() => _TeamStatusScreenState();
@@ -30,13 +32,16 @@ class _TeamStatusScreenState extends State<TeamStatusScreen> {
   EditTeamDialogState editTeamDialogState = EditTeamDialogState();
   List<DropdownMenuItem<int>> teamsItems;
   List<Widget> selectedTeamStatus = [];
+  List<dynamic> teams = [];
   Color pickerColor = Color(0xff443a49);
   Color currentColor = Color(0xff443a49);
 
+  String _currentTeamUuidForRefresh = '';
+
   String selectedTeam = '';
 
-  int _selectedTeamIndex;
-  int _selectedStatusIndex;
+  int _selectedTeamIndex = -1;
+  int _selectedStatusIndex = -1;
 
 
   @override
@@ -60,201 +65,122 @@ class _TeamStatusScreenState extends State<TeamStatusScreen> {
     Navigator.of(context).pop();
   }
 
+  afterAction() async {
+    teamController.findAll().then((data) {
+      teams = data;
+
+      setState(() {
+        if (_currentTeamUuidForRefresh.isNotEmpty) {
+          print('it is not empty');
+          teams.forEach((t) {
+            if (t['uuid'].toString() == _currentTeamUuidForRefresh) {
+              print('found...');
+              selectedTeamStatus = buildStatusDescription(t);
+            }
+          });
+        }
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     this.context = context;
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text('Add Status',
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20
+    return SingleChildScrollView(
+      child: Container(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text('Add Status',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20
+                  ),
                 ),
-              ),
-              IconButton(
-                icon: Icon(Icons.add_circle,color: green_custom_color),
-                onPressed: (){
-                  List<DropdownMenuItem<int>> teamsItems = teamHelper.buildDropDownSelection(widget.teams);
-                  statusNameController.text = '';
-                  showDialog(
-                      context: context,
-                      child: AlertDialog(
-                        title: Center(child: Text('Add Status',style: TextStyle(
-                            fontWeight: FontWeight.bold
-                        ),)),
-                        content: SingleChildScrollView(
-                          child: Column(
-                            children: <Widget>[
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  Icon(Icons.group,color:Colors.brown),
-                                  SizedBox(width: 5,),
-                                  DropdownButtonHideUnderline(
-                                    child: DropdownButton(
-                                      items: teamsItems,
-                                      hint: Text(selectedTeam,
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                          textAlign: TextAlign.center),
-                                      onChanged: (value) {
-                                        selectedTeam = widget.teams[value]['name'];
-                                        _selectedTeamIndex= value;
-                                      },
-                                    ),
-                                  ),
-                                  IconButton(
-                                    icon: Icon(Icons.color_lens,color:pickerColor),
-                                    onPressed: (){
-                                      showDialog(
-                                          context: context,
-                                          child: AlertDialog(
-                                            title: Center(child: Text('Choose status color',style: TextStyle(
-                                                fontWeight: FontWeight.bold
-                                            ),)),
-                                            content: SingleChildScrollView(
-                                              child:  ColorPicker(
-                                                  pickerColor: Colors.blue,
-                                                  enableLabel: true,
-                                                  pickerAreaHeightPercent: 0.8,
-                                                  onColorChanged: changeColor
-                                              ),
-                                            ),
-                                            actions: <Widget>[
-                                              IconButton(icon: Icon(Icons.colorize,color: pickerColor,), onPressed: pickerAction)
-                                            ],
-                                          )
-                                      );
-                                    },
-                                  )
-                                ],
-                              ),
-                              Row(
-                                children: <Widget>[
-                                  Expanded(
-                                    child: TextField(
-                                      decoration: InputDecoration(
-                                          prefixIcon: Icon(
-                                            Icons.filter_list,
-                                            color: Colors.black,
-                                          ),
-                                          focusedBorder: UnderlineInputBorder(
-                                              borderSide: BorderSide(
-                                                  color: Colors.black)),
-                                          alignLabelWithHint: true,
-                                          hintText: 'New, Visit..',
-                                          hintStyle:
-                                          TextStyle(color: Colors.black)),
-                                      cursorColor: Colors.black,
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      controller: statusNameController,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 20,),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center
-                                ,
-                                children: <Widget>[
-                                  FlatButton(onPressed: (){Navigator.of(context).pop();}, child: Text('CANCEL',style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold
-                                  ),),color: green_custom_color,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),),
-                                  SizedBox(width: 10,),
-                                  FlatButton(onPressed: (){
+                IconButton(
+                  icon: Icon(Icons.add_circle,color: green_custom_color),
+                  onPressed: (){
+                    statusNameController.text = '';
+                    showDialog(
+                        context: context,
+                        child: AlertDialog(
+                          title: Center(child: Text('Add Status',style: TextStyle(
+                              fontWeight: FontWeight.bold
+                          ),)),
+                          content: SingleChildScrollView(
+                            child: HotDialogStatus(
+                                widget.teams, _selectedTeamIndex, afterAction),
 
-                                    if(statusNameController.text.isNotEmpty){
-                                      Status status = Status(widget.teams[_selectedTeamIndex]["uuid"],statusNameController.text,pickerColor.value);
-                                      teamController.createStatus(status);
-                                    }
-
-                                  }, child: Text('SAVE',style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold
-                                  )),color: green_custom_color,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),),
-
-                                ],
-                              )
-
-                            ],
                           ),
-
-                        ),
-                      )
-                  );
-                },
-              ),
-            ],
-          ),
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Icon(Icons.group,color: Colors.brown,),
-              SizedBox(width: 10,),
-              DropdownButtonHideUnderline(
-                child: DropdownButton(
-                  items: teamsItems,
-                  hint: Text(selectedTeam,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center),
-                  onChanged: (value) {
-                    selectedTeam = widget.teams[value]['name'];
-                    _selectedTeamIndex= value;
-                    selectedTeamStatus = [];
-                    setState(() {
-                      selectedTeamStatus = buildStatusDescription();
-                    });
+                        )
+                    );
                   },
                 ),
-              ),
-            ],
-          ),
-
-          Padding(
-            padding: EdgeInsets.only(left: 20,top: 20.0),
-            child: Text('Status',style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 30
-            ),),
-          ),
-          Padding(
-            padding: EdgeInsets.only(right: 20.0),
-            child: Divider(color: Colors.black,height: 3,indent: 20),
-          ),
-          Padding(
-            padding: EdgeInsets.all(20.0),
-            child: Column(
-              children: selectedTeamStatus.length==0?[Center(child: Text('Empty... Please create status...',style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18
-              ),),)]:selectedTeamStatus,
+              ],
             ),
-          )
 
-        ],
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Icon(Icons.group,color: Colors.brown,),
+                SizedBox(width: 10,),
+                DropdownButtonHideUnderline(
+                  child: DropdownButton(
+                    items: teamsItems,
+                    hint: Text(selectedTeam,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center),
+                    onChanged: (value) {
+                      selectedTeam = widget.teams[value]['name'];
+                      _selectedTeamIndex= value;
+                      _currentTeamUuidForRefresh = widget.teams[value]['uuid'];
+                      selectedTeamStatus = [];
+                      setState(() {
+                        selectedTeamStatus =
+                            buildStatusDescription(widget.teams[value]);
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
+
+            Padding(
+              padding: EdgeInsets.only(left: MediaQuery.of(context).size.width*0.05,top: 20.0),
+              child: Text('Status',style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 30
+              ),),
+            ),
+            Padding(
+              padding: EdgeInsets.only(right: 20.0),
+              child: Divider(color: Colors.black,height: 3,indent: MediaQuery.of(context).size.width*0.05),
+            ),
+            Padding(
+              padding: EdgeInsets.all(20.0),
+              child: Column(
+                children: selectedTeamStatus.length==0?[Center(child: Text('Empty... Please create status or select team...',style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18
+                ),),)]:selectedTeamStatus,
+              ),
+            )
+
+          ],
+        ),
       ),
     );
   }
 
-  buildStatusDescription(){
+  buildStatusDescription(team) {
 
     List<Widget> rows = [];
-    var team = widget.teams[_selectedTeamIndex];
     List<dynamic> status = team["status"];
 
     status.forEach((statusItem){
@@ -274,101 +200,34 @@ class _TeamStatusScreenState extends State<TeamStatusScreen> {
               fontWeight: FontWeight.bold,
               fontSize: 15
           ),),
-          IconButton(icon: Icon(Icons.edit,color: Colors.deepOrangeAccent,size: 18,), onPressed: (){
-            _selectedTeamIndex = widget.teams.indexOf(team);
-            _selectedStatusIndex = status.indexOf(statusItem);
-            statusNameController.text = widget.teams[_selectedTeamIndex]["status"][_selectedStatusIndex]['name'];
-            Color selectedStatusColor = Color(widget.teams[_selectedTeamIndex]["status"][_selectedStatusIndex]['color']);
-            pickerColor = selectedStatusColor;
-            showDialog(
-                context: context,
-                child: AlertDialog(
-                  title: Center(child: Text('Edit Status',style: TextStyle(
-                      fontWeight: FontWeight.bold
-                  ),)),
-                  content: SingleChildScrollView(
-                    child: Column(
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: TextField(
-                                decoration: InputDecoration(
-                                    prefixIcon: Icon(
-                                      Icons.filter_list,
-                                      color: Colors.black,
-                                    ),
-                                    focusedBorder: UnderlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Colors.black)),
-                                    alignLabelWithHint: true,
-                                    hintText: 'New, Visit..',
-                                    hintStyle:
-                                    TextStyle(color: Colors.black)),
-                                cursorColor: Colors.black,
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                controller: statusNameController,
-                              ),
-                            ),
-                            IconButton(
-                              icon: Icon(Icons.color_lens,color:selectedStatusColor),
-                              onPressed: (){
-                                showDialog(
-                                    context: context,
-                                    child: AlertDialog(
-                                      title: Center(child: Text('Choose status color',style: TextStyle(
-                                          fontWeight: FontWeight.bold
-                                      ),)),
-                                      content: SingleChildScrollView(
-                                        child:  ColorPicker(
-                                            pickerColor: Colors.blue,
-                                            enableLabel: true,
-                                            pickerAreaHeightPercent: 0.8,
-                                            onColorChanged: changeColor
-                                        ),
-                                      ),
-                                      actions: <Widget>[
-                                        IconButton(icon: Icon(Icons.colorize,color: pickerColor,), onPressed: pickerAction)
-                                      ],
-                                    )
-                                );
-                              },
-                            )
-                          ],
-                        ),
-                        SizedBox(height: 20,),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center
-                          ,
-                          children: <Widget>[
-                            FlatButton(onPressed: (){Navigator.of(context).pop();}, child: Text('CANCEL',style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold
-                            ),),color: orange_custom_color,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),),
-                            SizedBox(width: 10,),
-                            FlatButton(onPressed: updateStatus, child: Text('UPDATE',style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold
-                            )),color: orange_custom_color,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),),
+          team['admin']?Row(
+            children: <Widget>[
+              IconButton(icon: Icon(Icons.edit,color: Colors.deepOrangeAccent,size: 18,), onPressed: (){
+                _selectedTeamIndex = widget.teams.indexOf(team);
+                _selectedStatusIndex = status.indexOf(statusItem);
+                statusNameController.text = widget.teams[_selectedTeamIndex]["status"][_selectedStatusIndex]['name'];
+                Color selectedStatusColor = Color(widget.teams[_selectedTeamIndex]["status"][_selectedStatusIndex]['color']);
+                pickerColor = selectedStatusColor;
+                showDialog(
+                    context: context,
+                    child: AlertDialog(
+                      title: Center(child: Text('Edit Status',style: TextStyle(
+                          fontWeight: FontWeight.bold
+                      ),)),
+                      content: SingleChildScrollView(
+                        child: HotDialogStatusUpdate(widget.teams, _selectedTeamIndex,_selectedStatusIndex,(){}),
 
-                          ],
-                        )
-
-                      ],
-                    ),
-
-                  ),
-                )
-            );
-          }),
-          IconButton(icon: Icon(Icons.clear,color: Colors.red,size: 18), onPressed: (){
-            _selectedTeamIndex = widget.teams.indexOf(team);
-            _selectedStatusIndex = status.indexOf(statusItem);
-            editTeamDialogState.showDeleteDialog(context, statusItem, deleteStatus);
-          })
+                      ),
+                    )
+                );
+              }),
+              IconButton(icon: Icon(Icons.clear,color: Colors.red,size: 18), onPressed: (){
+                _selectedTeamIndex = widget.teams.indexOf(team);
+                _selectedStatusIndex = status.indexOf(statusItem);
+                editTeamDialogState.showDeleteDialog(context, statusItem, deleteStatus,(){});
+              })
+            ],
+          ):Row(),
         ],
 
       )

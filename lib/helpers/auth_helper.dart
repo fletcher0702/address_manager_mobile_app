@@ -10,4 +10,11 @@ class AuthHelper {
     return regExp.hasMatch(em);
   }
 
+  static bool passwordRule(String pwd) {
+    if (pwd.length >= 6)
+      return true;
+    else
+      return false;
+  }
+
 }

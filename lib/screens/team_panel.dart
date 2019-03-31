@@ -33,6 +33,10 @@ class TeamPanelScreenState extends State<TeamPanelScreen> {
   @override
   void initState() {
     super.initState();
+    loadTeams();
+  }
+
+  loadTeams(){
     teamController.findAll().then((res) {
       teams = res;
       setState(() {
@@ -49,8 +53,8 @@ class TeamPanelScreenState extends State<TeamPanelScreen> {
 
   saveAction() {
     Team team = Team(teamNameController.text);
-    teamController.createOne(team);
     teamNameController.clear();
+    return teamController.createOne(team);
   }
 
   createTeam(){
@@ -76,7 +80,7 @@ class TeamPanelScreenState extends State<TeamPanelScreen> {
       )
     ];
     DialogHelperState.showDialogBox(
-        this.context, 'Add Team', content, saveAction,true);
+        this.context, 'Add Team', content, saveAction,true,loadTeams);
   }
 
   @override
@@ -93,15 +97,15 @@ class TeamPanelScreenState extends State<TeamPanelScreen> {
                   Tab(icon: Icon(Icons.group, color: Colors.brown,)),
                   Tab(icon: Icon(Icons.person_outline,color: green_custom_color,)),
                   Tab(icon: Icon(Icons.filter_list,color: Colors.black,)),
-                ]),
-            preferredSize: Size(double.infinity, 80.0)
+                ],loadTeams),
+            preferredSize: Size(double.infinity, 90.0)
         ),
         body: TabBarView(children: [
           Padding(
-            child: teamToggle ? TeamDescription(teams) : ColorLoader(), padding: EdgeInsets.only(top: 30, left: 20),
+            child: teamToggle ? TeamDescription(teams,loadTeams) : ColorLoader(), padding: EdgeInsets.only(top: 30, left: 20),
           ),
           teamToggle ?TeamInvitationScreen(teams):Container(),
-          teamToggle ?TeamStatusScreen(teams):Container(),
+          teamToggle ?TeamStatusScreen(teams,loadTeams):Container(),
         ])
       ),
     );

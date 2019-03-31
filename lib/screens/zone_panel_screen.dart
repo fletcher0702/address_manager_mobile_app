@@ -1,18 +1,15 @@
 import 'package:address_manager/components/edit_team_dialog.dart';
+import 'package:address_manager/components/hot_dialog_zone_add.dart';
+import 'package:address_manager/components/hot_dialog_zone_edit.dart';
 import 'package:address_manager/controller/team_controller.dart';
 import 'package:address_manager/helpers/team_helper.dart';
 import 'package:address_manager/models/dto/zone/delete_zone_dto.dart';
-import 'package:address_manager/models/dto/zone/update_zone_dto.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_places/flutter_google_places.dart';
-import 'package:google_maps_webservice/places.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../components/loader.dart';
 import '../components/panel_app_bar.dart';
 import '../components/side_menu.dart';
 import '../controller/zone_controller.dart';
-import '../helpers/dialog_helper.dart';
 import '../models/zone.dart';
 
 class ZonePanelScreen extends StatefulWidget {
@@ -37,24 +34,14 @@ class ZonePanelScreenState extends State<ZonePanelScreen> {
   var teamsData = [];
   List<DropdownMenuItem> teams = [];
   List<Widget> _zoneDescription = List<Widget>();
-  bool zoneToggle = false;
   bool teamToggle = false;
+  String _currentTeamUuidAfterCallBackReload = '';
 
 
   @override
   void initState() {
     super.initState();
-
-    teamController.findAll().then((data) {
-
-      setState(() {
-        teamsData = data;
-        teams = teamHelper.buildDropDownSelection(teamsData);
-        teamToggle = true;
-      });
-
-    });
-
+    loadTeamsData();
   }
 
   @override
@@ -63,222 +50,38 @@ class ZonePanelScreenState extends State<ZonePanelScreen> {
     zoneAddressController.dispose();
     super.dispose();
   }
-
-  void loadTeams() async {
-    if (!teamToggle) {
-      List<DropdownMenuItem> tmpList = [];
-      teamController.findAll().then((res) {
+  loadTeamsData() async {
+    teamController.findAll().then((data) {
+      setState(() {
+        teamsData = teamHelper.getAllowTeams(data);
         teamToggle = true;
-        teamsElements = res;
-
-        teamsElements.forEach((team) {
-          DropdownMenuItem dropdownMenuItem = DropdownMenuItem(
-            child: Text(
-              team['name'],
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15
-              ),
-              textAlign: TextAlign.center,
-            ),
-            value: teamsElements.indexOf(team),
-          );
-          tmpList.add(dropdownMenuItem);
-          setState(() {
-            teams = tmpList;
-          });
-        });
+        teams = teamHelper.buildDropDownSelection(teamsData);
+        if(_currentTeamUuidAfterCallBackReload.isNotEmpty){
+          _refreshZones();
+        }
       });
-    }
-  }
-
-  saveAction() {
-    Zone zone = Zone(zoneNameController.text,teamsData[_selectedTeamIndex]["uuid"],zoneAddressController.text);
-    zoneController.createOne(zone);
-  }
-
-  editAction(){
-    UpdateZoneDto updateZoneDto = UpdateZoneDto();
-    updateZoneDto.name = zoneNameController.text;
-    updateZoneDto.teamUuid = teamsData[_selectedTeamIndex]["uuid"];
-    updateZoneDto.zoneUuid = selectedZone['uuid'];
-    updateZoneDto.address = zoneAddressController.text;
-    zoneController.updateOne(updateZoneDto);
-
+    });
   }
 
   addZone() {
-    teamToAddInto = selectedTeam;
-    List<Widget> content = [
-      Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  'Team : ',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                DropdownButtonHideUnderline(
-                  child: DropdownButton(
-                    items: teamToggle ? teams : [],
-                    hint: teamToAddInto != null
-                        ? Text(teamToAddInto,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center)
-                        : Text(''),
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedTeamIndex = value;
-                        teamToAddInto = teamsData[value]['name'];
-                      });
-                    },
-                  ),
-                ),
-              ],
-            ),
-            TextField(
-              controller: zoneNameController,
-              decoration: InputDecoration(
-                prefixIcon: Icon(Icons.place, color: Colors.blue),
-                focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Colors.black)),
-                alignLabelWithHint: true,
-                hintText: 'Name',
-              ),
-              cursorColor: Colors.black,
-            ),
-            TextField(
-              decoration: InputDecoration(
-                prefixIcon: Icon(Icons.find_replace, color: Colors.green),
-                focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Colors.black)),
-                alignLabelWithHint: true,
-                hintText: 'Location',
-              ),
-              cursorColor: Colors.black,
-              controller: zoneAddressController,
-              onTap: () async {
-                Prediction p = await PlacesAutocomplete.show(
-                    context: context,
-                    apiKey: DotEnv().env['GApiKey'],
-                    mode: Mode.fullscreen,
-                    logo: Text(''),
-                    hint: "Location...",
-                    language: "fr",
-                    components: [Component(Component.country, "fr")]);
-                zoneAddressController.text =
-                p != null ? p.description : '';
-              },
-            )
-          ],
-        ),
-      )
-    ];
+    showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (context){
+          return SimpleDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            children: <Widget>[
+              HotDialogZoneAdd(teamsData,_selectedTeamIndex,loadTeamsData),
+            ],
 
-    DialogHelperState.showDialogBox(
-        this.context, 'Add Zone', content, saveAction,true);
+          );
+        }
+    );
   }
 
-  editZone(zone){
-    selectedZone  = zone;
-    teamToAddInto = selectedTeam;
-    zoneNameController.text = selectedZone['name'];
-    zoneAddressController.text = selectedZone['address'];
-    List<Widget> content = [
-      Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  'Team : ',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                DropdownButtonHideUnderline(
-                  child: DropdownButton(
-                    items: teamToggle ? teams : [],
-                    hint: teamToAddInto != null
-                        ? Text(teamToAddInto,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center)
-                        : Text(''),
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedTeamIndex = value;
-                        teamToAddInto = teamsData[value]['name'];
-                      });
-                    },
-                  ),
-                ),
-              ],
-            ),
-            TextField(
-              controller: zoneNameController,
-              decoration: InputDecoration(
-                prefixIcon: Icon(Icons.place, color: Colors.blue),
-                focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Colors.black)),
-                alignLabelWithHint: true,
-                hintText: 'Name',
-              ),
-              cursorColor: Colors.black,
-            ),
-            TextField(
-              decoration: InputDecoration(
-                prefixIcon: Icon(Icons.find_replace, color: Colors.green),
-                focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Colors.black)),
-                alignLabelWithHint: true,
-                hintText: 'Location',
-              ),
-              cursorColor: Colors.black,
-              controller: zoneAddressController,
-              onTap: () async {
-                Prediction p = await PlacesAutocomplete.show(
-                    context: context,
-                    apiKey: DotEnv().env['GApiKey'],
-                    mode: Mode.fullscreen,
-                    logo: Text(''),
-                    hint: "Location...",
-                    language: "fr",
-                    components: [Component(Component.country, "fr")]);
-                zoneAddressController.text =
-                p != null ? p.description : '';
-              },
-            )
-          ],
-        ),
-      )
-    ];
-
-    DialogHelperState.showDialogBox(
-        this.context, 'Edit Zone', content, editAction,false);
-  }
-
-  deleteZoneAction(){
+  deleteZoneAction() async{
     DeleteZoneDto deleteZoneDto = DeleteZoneDto(teamsData[_selectedTeamIndex]['uuid'],selectedZone['uuid']);
-    zoneController.deleteOne(deleteZoneDto);
+    return zoneController.deleteOne(deleteZoneDto);
   }
 
   @override
@@ -287,48 +90,52 @@ class ZonePanelScreenState extends State<ZonePanelScreen> {
     return Scaffold(
       drawer: SideMenu(),
       appBar: PreferredSize(
-        child: PanelAppBar('Zone Panel', Icons.add_location, addZone),
+        child: PanelAppBar('Zone Panel', Icons.add_location, addZone,loadTeamsData),
         preferredSize: Size(double.infinity, 100.0),
       ),
-      body: teamToggle ? Column(
-        children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Icon(Icons.group,color: Colors.brown,),
-              SizedBox(width: 5,),
-              DropdownButtonHideUnderline(
-                child: DropdownButton(
-                  items: teamToggle?teams:[],
-                  hint: selectedTeam != null
-                      ? Text(selectedTeam,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center)
-                      : Text(''),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedTeamIndex = value;
-                      selectedTeam = teamsData[value]['name'];
-                      selectedTeamDescription(teamsData[value]);
-                    });
-                  },
+      body: teamToggle ? SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Icon(Icons.group,color: Colors.brown,),
+                SizedBox(width: 5,),
+                DropdownButtonHideUnderline(
+                  child: DropdownButton(
+                    items: teams,
+                    hint: selectedTeam != null
+                        ? Text(selectedTeam,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center)
+                        : Text(''),
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedTeamIndex = value;
+                        selectedTeam = teamsData[value]['name'];
+                        _currentTeamUuidAfterCallBackReload =
+                        teamsData[value]['uuid'];
+                        selectedTeamDescription(teamsData[value]);
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
+            Padding(
+              padding: EdgeInsets.only(left: 20,right: 20),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: _zoneDescription,
                 ),
               ),
-            ],
-          ),
-          Padding(
-            padding: EdgeInsets.only(left: 20,right: 20),
-            child: SingleChildScrollView(
-              child: Column(
-                children: _zoneDescription,
-              ),
-            ),
-          )
+            )
 
-        ],
+          ],
+        ),
       ) : ColorLoader(),
     );
   }
@@ -371,21 +178,33 @@ class ZonePanelScreenState extends State<ZonePanelScreen> {
                 ),)
             ],
           ),
-          Row(
+          team['admin']?Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: <Widget>[
               IconButton(
                   icon: Icon(Icons.edit, color: Colors.orange, size: 18,),
                   onPressed: () {
-                    editZone(zone);
+                    showDialog(
+                        context: context,
+                      barrierDismissible: true,
+                      builder: (context){
+                          return SimpleDialog(
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                            children: <Widget>[
+                              HotDialogZoneEdit(teamsData,_selectedTeamIndex,zone,loadTeamsData),
+                            ],
+
+                          );
+                      }
+                    );
                   }),
               IconButton(icon: Icon(Icons.close, color: Colors.red, size: 18,),
                   onPressed: () {
                     selectedZone = zone;
-                    editTeamDialogState.showDeleteDialog(context, selectedZone, deleteZoneAction);
+                    editTeamDialogState.showDeleteDialog(context, selectedZone, deleteZoneAction,loadTeamsData);
                   }),
             ],
-          )
+          ):Row(),
         ],
       ));
       rows.add(row);
@@ -400,4 +219,14 @@ class ZonePanelScreenState extends State<ZonePanelScreen> {
     content.add(wrapper);
     _zoneDescription = content;
   }
+
+   _refreshZones() {
+      teamsData.forEach((t){
+        if(t['uuid'].toString()==_currentTeamUuidAfterCallBackReload){
+          setState(() {
+            selectedTeamDescription(t);
+          });
+        }
+      });
+    }
 }

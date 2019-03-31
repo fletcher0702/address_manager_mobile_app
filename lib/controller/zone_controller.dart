@@ -65,7 +65,7 @@ class ZoneController {
       rq.body = jsonEncode({'userUuid': zone.userUuid,'teamUuid':zone.teamUuid, 'zoneUuid':zone.zoneUuid});
 
       var response = await http.Client().send(rq).then((response)=> response);
-      return response.stream;
+      return response.stream.bytesToString().then((body)=>jsonDecode(body));
 
     }catch(e){
       print(e);

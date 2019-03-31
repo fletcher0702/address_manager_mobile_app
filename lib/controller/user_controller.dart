@@ -19,12 +19,16 @@ class UserController {
     if (response.body.toString().isNotEmpty) {
       var jsonResponse = jsonDecode(response.body);
       if (jsonResponse != null) {
-        var jwt = jsonResponse["jwt"].toString();
-        var uuid = jsonResponse["uuid"].toString();
-//        await userService
-//            .createUserCredentialsCache(jwt);
-        await userService.createUserCredentialsPreferences(uuid,jwt);
-        return true;
+        try{
+          if(jsonResponse['created']){
+            var jwt = jsonResponse["jwt"].toString();
+            var uuid = jsonResponse["uuid"].toString();
+            await userService.createUserCredentialsPreferences(uuid, jwt);
+            return true;
+          }
+        }catch(e){
+          return false;
+        }
       }
     }
 
@@ -40,9 +44,15 @@ class UserController {
     if (response.body.toString().isNotEmpty) {
       var jsonResponse = jsonDecode(response.body);
       if (jsonResponse != null) {
-        await userService
-            .createUserCredentialsCache(jsonResponse["jwt"].toString());
-        return true;
+        try{
+          if(jsonResponse['created']){
+            await userService
+                .createUserCredentialsCache(jsonResponse["jwt"].toString());
+            return true;
+          }
+        }catch(e){
+          return false;
+        }
       }
     }
     return false;

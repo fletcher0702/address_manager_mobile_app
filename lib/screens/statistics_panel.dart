@@ -19,7 +19,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       new GlobalKey<AnimatedCircularChartState>();
   List<CircularStackEntry> data = <CircularStackEntry>[];
   String _holeLabel = '';
-  Row _legend = Row();
+  SingleChildScrollView _legend = SingleChildScrollView();
   Column _legendNumber = Column();
   int _selectedTeamIndex;
   String selectedTeam = '';
@@ -27,6 +27,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   @override
   void initState() {
     super.initState();
+    loadTeams();
+  }
+  loadTeams(){
     teamController.findAll().then((res) {
       setState(() {
         teams = res;
@@ -165,9 +168,12 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       list.add(r);
     });
 
-    Row description = Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: list,
+    SingleChildScrollView description = SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: list,
+      ),
     );
     setState(() {
       _legend = description;
@@ -188,6 +194,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
           elevation: 0,
           backgroundColor: Colors.transparent, 
           iconTheme: IconThemeData(color: Colors.grey),
+          actions: <Widget>[
+            IconButton(icon: Icon(Icons.refresh,color: Colors.orangeAccent,), onPressed: loadTeams)
+          ],
         ),
         body: Column(
             mainAxisAlignment: MainAxisAlignment.center,

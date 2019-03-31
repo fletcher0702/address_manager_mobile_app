@@ -1,4 +1,4 @@
-const HOST = 'http://10.0.2.2:3000';
+const HOST = 'http://68.183.78.0:3000';
 Map<String,String> header = {"Content-Type": "application/json;charset=utf-8"};
 
 // APP ROUTES
@@ -26,7 +26,7 @@ const DELETE_ZONE_HTTP_ROUTE = HOST+'/users/teams/zones/delete';
 
 // Visit Routes
 
-const CREATE_VISIT_HTTP_ROUTE = HOST+'/users/teams/visits/create';
+const CREATE_VISIT_HTTP_ROUTE = HOST+'/users/teams/zones/visits/create';
 const UPDATE_VISIT_HTTP_ROUTE = HOST + '/users/teams/zones/visits/update';
 const DELETE_VISIT_HTTP_ROUTE = HOST + '/users/teams/zones/visits/delete';
 

@@ -6,13 +6,13 @@ import 'package:address_manager/helpers/team_helper.dart';
 import 'package:address_manager/models/dto/team/delete_team_dto.dart';
 import 'package:address_manager/models/dto/team/update_team_dto.dart';
 import 'package:flutter/material.dart';
-import '../tools/colors.dart';
 
 class TeamDescription extends StatefulWidget {
 
-  final List<dynamic> teams;
+  List<dynamic> teams;
+  Function callBackAfterProcess;
 
-  TeamDescription(this.teams);
+  TeamDescription(this.teams,this.callBackAfterProcess);
 
   @override
   TeamDescriptionState createState() => TeamDescriptionState();
@@ -28,7 +28,6 @@ class TeamDescriptionState extends State<TeamDescription> {
   EditTeamDialogState editTeamDialogState = EditTeamDialogState();
 
   String selectedTeam = '';
-
   int _selectedTeamIndex;
 
 
@@ -70,7 +69,7 @@ class TeamDescriptionState extends State<TeamDescription> {
               fontSize: 20
             ),
           ),
-          Row(
+          team['admin']?Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: <Widget>[
               IconButton(icon: Icon(Icons.edit, color: Colors.orange,size: 18,), onPressed: (){
@@ -83,7 +82,7 @@ class TeamDescriptionState extends State<TeamDescription> {
 
               }),
             ],
-          )
+          ):Row()
         ],
       );
       Divider divider = Divider(color: Colors.black,height: 5,);
@@ -148,21 +147,21 @@ class TeamDescriptionState extends State<TeamDescription> {
       )
     ];
     DialogHelperState.showDialogBox(
-        this.context, 'Edit Team', content, editAction,false);
+        this.context, 'Edit Team', content, editAction,false,widget.callBackAfterProcess);
   }
 
   deleteTeam(){
-    editTeamDialogState.showDeleteDialog(context, widget.teams[_selectedTeamIndex], deleteAction);
+    editTeamDialogState.showDeleteDialog(context, widget.teams[_selectedTeamIndex], deleteAction,widget.callBackAfterProcess);
   }
 
   editAction(){
     UpdateTeamDto team = UpdateTeamDto(widget.teams[_selectedTeamIndex]['uuid'],teamEditNameController.text);
-    teamController.updateOne(team);
     teamEditNameController.clear();
+    return teamController.updateOne(team);
   }
 
-  deleteAction(){
+  deleteAction() async {
     DeleteTeamDto team = DeleteTeamDto(widget.teams[_selectedTeamIndex]['uuid']);
-    teamController.deleteOne(team);
+    return teamController.deleteOne(team);
   }
 }
