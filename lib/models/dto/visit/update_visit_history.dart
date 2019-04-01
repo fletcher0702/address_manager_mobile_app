@@ -7,9 +7,16 @@ class UpdateVisitHistoryDto {
   String _visitUuid;
   String _date;
 
-  UpdateVisitHistoryDto(this._teamUuid, this._zoneUuid, this._visitUuid,
-      this._date);
+  UpdateVisitHistoryDto(this._teamUuid, this._zoneUuid);
 
+
+  set date(String value) {
+    _date = value;
+  }
+
+  set visitUuid(String value) {
+    _visitUuid = value;
+  }
 
   String get userUuid => _userUuid;
 

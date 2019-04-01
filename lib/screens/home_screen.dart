@@ -1,3 +1,4 @@
+import 'package:address_manager/components/hot_dialog_generic.dart';
 import 'package:address_manager/components/map_widget.dart';
 import 'package:address_manager/helpers/dialog_helper.dart';
 import 'package:address_manager/helpers/team_helper.dart';
@@ -43,12 +44,14 @@ class HomeState extends State<Home> {
   List<dynamic> zonesElements = [];
   List<dynamic> statusElements = [];
   List<DropdownMenuItem<int>> teams = [];
+  List<DropdownMenuItem<int>> visitsDropDown = [];
   List<DropdownMenuItem<int>> locations = [];
   List<DropdownMenuItem<int>> status = [];
   List<Marker> markersList = [];
   String selectedZone;
   String selectedStatus;
   String selectedTeam;
+  String selectedVisitName = '';
   int _selectedZoneIndex=-1;
   int _selectedStatusIndex = -1;
   int _selectedTeamIndex=-1;
@@ -69,7 +72,7 @@ class HomeState extends State<Home> {
   DateTime date;
 
 
-  void loadTeams() {
+  loadTeams() {
     teamController.findAll().then((data){
       setState(() {
         teamsElements = data;
@@ -92,37 +95,13 @@ class HomeState extends State<Home> {
   }
 
   saveAction() {
-    UpdateVisitHistoryDto visitDto = UpdateVisitHistoryDto(teamsElements[_selectedTeamIndex]['uuid'],teamsElements[_selectedTeamIndex]['zones'][_selectedZoneIndex]['uuid'],_selectedVisit['uuid'],date.toString());
-    return visitController.updateVisitHistory(visitDto);
+//    return visitController.updateVisitHistory(visitDto);
   }
-  updateHistory(){
-    List<Widget> content = [
-      Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: <Widget>[
-            DateTimePickerFormField(
-              inputType: inputType,
-              format: formats[inputType],
-              editable: editable,
-              decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.calendar_today),
-                  focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(
-                          color: Colors.black)),
-                  alignLabelWithHint: true,
-                  hintText: 'date',
-                  hintStyle:
-                  TextStyle(color: Colors.black)
-              ),
-              onChanged: (dt) => setState(() => date = dt),
-            ),
-          ],
-        ),
-      )
-    ];
-    DialogHelperState.showDialogBox(
-        this.context, 'Add Date', content, saveAction,false,loadTeams);
+  updateHistory(visits){
+    showDialog(context: context,builder: (context){
+      UpdateVisitHistoryDto visitDto = UpdateVisitHistoryDto(teamsElements[_selectedTeamIndex]['uuid'],teamsElements[_selectedTeamIndex]['zones'][_selectedZoneIndex]['uuid']);
+      return HotDialogGeneric(visitDto,visits,loadTeams);
+    });
   }
 
   loadMarkers(visitsElements) async {
@@ -299,7 +278,7 @@ class HomeState extends State<Home> {
                                            Positioned(child: IconButton(icon: Icon(Icons.calendar_today,color: Colors.white,size: 12,), onPressed: (){
 
                                              _selectedVisit = visit;
-                                             updateHistory();
+                                             updateHistory(conflicts);
                                            }))
                                          ],
                                        ),
