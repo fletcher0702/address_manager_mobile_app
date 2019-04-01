@@ -51,6 +51,7 @@ class _HotDialogAddState extends State<HotDialogAdd> {
 
   final visitNameController = TextEditingController();
   final visitAddressController = TextEditingController();
+  final visitObservationController = TextEditingController();
   final visitPhoneNumberController = TextEditingController();
   final teamHelper = TeamHelper();
 
@@ -74,12 +75,17 @@ class _HotDialogAddState extends State<HotDialogAdd> {
     String name = visitNameController.text;
     String address = visitAddressController.text;
     String phoneNumber = visitPhoneNumberController.text;
+    String visitDate = date.toString();
+    String observation = visitObservationController.text;
     String teamUuid = widget.teams[_selectedTeamIndex]["uuid"];
     String zoneUuid = widget.teams[_selectedTeamIndex]["zones"][_selectedZoneIndex]["uuid"];
     String statusUuid = widget.teams[_selectedTeamIndex]["status"][_selectedStatusIndex]["uuid"];
     Visit visit = Visit(teamUuid,name, address, zoneUuid, statusUuid);
     if (phoneNumber.isNotEmpty)
       visit.phoneNumber = phoneNumber;
+    if(observation.isNotEmpty) visit.observation = observation;
+
+    visit.date = visitDate;
 
     return visitController.createVisit(visit);
   }
@@ -163,6 +169,21 @@ class _HotDialogAddState extends State<HotDialogAdd> {
                 p != null ? p.description : '';
               },
             ),
+            TextField(
+              decoration: InputDecoration(
+                prefixIcon: Icon(Icons.note_add,color:Colors.green,),
+                  focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                          color: Colors.black)),
+                  alignLabelWithHint: true,
+                  hintText: 'observation',
+                  hintStyle:
+                  TextStyle(color: Colors.black),
+              ),
+              cursorColor: Colors.black,
+
+              controller: visitObservationController,
+            ),
             DateTimePickerFormField(
               inputType: inputType,
               format: formats[inputType],
@@ -179,6 +200,7 @@ class _HotDialogAddState extends State<HotDialogAdd> {
               ),
               onChanged: (dt) => setState(() => date = dt),
             ),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
@@ -284,7 +306,7 @@ class _HotDialogAddState extends State<HotDialogAdd> {
                         borderRadius: BorderRadius.circular(30)),
                     onPressed: ()  {
 
-                      if(_selectedTeamIndex==-1 || _selectedZoneIndex ==-1 || _selectedStatusIndex ==-1 || visitNameController.text.isEmpty || visitAddressController.text.isEmpty){
+                      if(_selectedTeamIndex==-1 || _selectedZoneIndex ==-1 || _selectedStatusIndex ==-1 || visitNameController.text.isEmpty || visitAddressController.text.isEmpty || date.toString().isEmpty){
 
                         setState(() {
                           errorMessage = 'Please make sure no field is empty...';
