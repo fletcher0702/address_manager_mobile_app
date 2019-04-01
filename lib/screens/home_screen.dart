@@ -232,7 +232,23 @@ class HomeState extends State<Home> {
                                                 ),
                                               )
                                             ],
-                                          )
+                                          ),
+                                          Row(
+                                            children: <Widget>[
+                                              Icon(Icons.note,
+                                                  color:visit['observation']!=null? Colors.green:Colors.redAccent),
+                                              SizedBox(
+                                                width: 10,
+                                              ),
+                                              Text(
+                                                visit['observation']!=null?visit['observation']:'',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              )
+                                            ],
+                                          ),
+
                                         ],
                                       ),
                                     ),
@@ -943,6 +959,21 @@ class HomeState extends State<Home> {
                   ),
                   Text(
                     v['status']['name'],
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )
+                ],
+              ),
+              Row(
+                children: <Widget>[
+                  Icon(Icons.note,
+                      color: v['observation']!=null?Colors.green:Colors.redAccent),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Text(
+                    v['observation']!=null?v['observation']:'No observation',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                     ),
