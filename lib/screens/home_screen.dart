@@ -1,9 +1,12 @@
-import 'package:address_manager/components/hot_dialog_generic.dart';
+import 'package:address_manager/components/hot_dialog_history.dart';
 import 'package:address_manager/components/map_widget.dart';
-import 'package:address_manager/helpers/dialog_helper.dart';
 import 'package:address_manager/helpers/team_helper.dart';
+import 'package:address_manager/models/dto/visit/delete_history_date_dto.dart';
 import 'package:address_manager/models/dto/visit/update_visit_history.dart';
 import 'package:address_manager/screens/add_person_dialog.dart';
+import 'package:address_manager/screens/add_transition.dart';
+import 'package:address_manager/tools/actions.dart';
+import 'package:address_manager/tools/messages.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -55,9 +58,12 @@ class HomeState extends State<Home> {
   int _selectedZoneIndex=-1;
   int _selectedStatusIndex = -1;
   int _selectedTeamIndex=-1;
-  var _selectedVisit ;
+  var _selectedDate;
+  String _selectedVisitUuid = '';
   String _currentTeamUuidAfterCallBackReload = '';
   String _currentZoneUuidAfterCallBackReload = '';
+
+  DeleteHistoryDateDto historyDto;
   List<double> currentLocation = [48.864716, 2.349014];
 
   final formats = {
@@ -100,7 +106,7 @@ class HomeState extends State<Home> {
   updateHistory(visits){
     showDialog(context: context,builder: (context){
       UpdateVisitHistoryDto visitDto = UpdateVisitHistoryDto(teamsElements[_selectedTeamIndex]['uuid'],teamsElements[_selectedTeamIndex]['zones'][_selectedZoneIndex]['uuid']);
-      return HotDialogGeneric(visitDto,visits,loadTeams);
+      return HotDialogAddHistory(visitDto,visits,loadTeams);
     });
   }
 
@@ -232,7 +238,23 @@ class HomeState extends State<Home> {
                                                 ),
                                               )
                                             ],
-                                          )
+                                          ),
+                                          Row(
+                                            children: <Widget>[
+                                              Icon(Icons.note,
+                                                  color:visit['observation']!=null? Colors.green:Colors.redAccent),
+                                              SizedBox(
+                                                width: 10,
+                                              ),
+                                              Text(
+                                                visit['observation']!=null?visit['observation']:'No Observation',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              )
+                                            ],
+                                          ),
+
                                         ],
                                       ),
                                     ),
@@ -276,8 +298,6 @@ class HomeState extends State<Home> {
                                          children: <Widget>[
                                            Positioned(child: Icon(Icons.add,size: 15,color: Colors.white,),left: 19,top: 2,),
                                            Positioned(child: IconButton(icon: Icon(Icons.calendar_today,color: Colors.white,size: 12,), onPressed: (){
-
-                                             _selectedVisit = visit;
                                              updateHistory(conflicts);
                                            }))
                                          ],
@@ -949,6 +969,21 @@ class HomeState extends State<Home> {
                   )
                 ],
               ),
+              Row(
+                children: <Widget>[
+                  Icon(Icons.note,
+                      color: v['observation']!=null?Colors.green:Colors.redAccent),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Text(
+                    v['observation']!=null?v['observation']:'No observation',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )
+                ],
+              ),
               Divider(color: Colors.black, indent: 20, height: 10,)
             ],
           ),
@@ -997,7 +1032,73 @@ class HomeState extends State<Home> {
                   fontWeight: FontWeight.bold,
                   fontSize: 16
               ),),
-              IconButton(icon: Icon(Icons.clear, color: Colors.red,), onPressed: (){}),
+              IconButton(icon: Icon(Icons.clear, color: Colors.red,), onPressed: (){
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return SimpleDialog(
+                        title: Center(
+                            child: Text(
+                              d,
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                            )),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        children: <Widget>[
+                          Center(
+                              child: Text(
+                                'Are you sure ?',
+                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                              )),
+                          Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                FlatButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text(
+                                    'CANCEL',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold, color: Colors.white),
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30)),
+                                  color: Colors.red,
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                FlatButton(
+                                  onPressed: () async {
+                                    historyDto = DeleteHistoryDateDto(teamsElements[_selectedTeamIndex]['uuid'],teamsElements[_selectedTeamIndex]['zones'][_selectedZoneIndex]['uuid'],visit['uuid'],d);
+
+                                    Navigator.pop(context);
+                                    Navigator.pop(context);
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                AddTransition(SUCCESS_DELETE,ERROR_DELETE,_deleteDateInHistory,DELETE_ACTION,loadTeams)));
+                                  },
+                                  child: Text(
+                                    'DELETE',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold, color: Colors.white),
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30)),
+                                  color: Colors.red,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      );
+                    });
+              }),
             ],
           );
           datesWidget.add(r);
@@ -1023,6 +1124,9 @@ class HomeState extends State<Home> {
     return c;
   }
 
+  _deleteDateInHistory() async {
+    return visitController.deleteHistoryDate(historyDto);
+  }
 
 
 }

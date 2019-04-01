@@ -55,6 +55,7 @@ class HotDialogEditState extends State<HotDialogEdit> {
   final visitNameController = TextEditingController();
   final visitAddressController = TextEditingController();
   final visitPhoneNumberController = TextEditingController();
+  final visitObservationController = TextEditingController();
   final teamHelper = TeamHelper();
 
   List<DropdownMenuItem<int>> teamsItems = [];
@@ -104,7 +105,7 @@ class HotDialogEditState extends State<HotDialogEdit> {
                       fontSize: 30.0, fontWeight: FontWeight.bold),
                 ),
                 errorBox,
-                TextField(
+                widget.teams[_selectedTeamIndex]['admin']?TextField(
                   decoration: InputDecoration(
                     prefixIcon: Icon(Icons.person,color: green_custom_color,
                     ),
@@ -118,7 +119,7 @@ class HotDialogEditState extends State<HotDialogEdit> {
                   ),
                   cursorColor: Colors.black,
                   controller: visitNameController,
-                ),
+                ):Container(),
                 TextField(
                   decoration: InputDecoration(
                       prefixIcon: Icon(Icons.phone,color: Colors.orangeAccent,),focusedBorder: UnderlineInputBorder(
@@ -132,7 +133,7 @@ class HotDialogEditState extends State<HotDialogEdit> {
                   cursorColor: Colors.black,
                   controller: visitPhoneNumberController,
                 ),
-                TextField(
+                widget.teams[_selectedTeamIndex]['admin']?TextField(
                   decoration: InputDecoration(
                     prefixIcon: Icon(Icons.place,color:Colors.blue,),
                     focusedBorder: UnderlineInputBorder(
@@ -156,7 +157,7 @@ class HotDialogEditState extends State<HotDialogEdit> {
                     visitAddressController.text =
                     p != null ? p.description : '';
                   },
-                ),
+                ):Container(),
                 DateTimePickerFormField(
                   inputType: inputType,
                   format: formats[inputType],
@@ -173,7 +174,22 @@ class HotDialogEditState extends State<HotDialogEdit> {
                   ),
                   onChanged: (dt) => setState(() => date = dt),
                 ),
-                Row(
+                TextField(
+                  decoration: InputDecoration(
+                    prefixIcon: Icon(Icons.note_add,color:Colors.green,),
+                    focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Colors.black)),
+                    alignLabelWithHint: true,
+                    hintText: 'observation',
+                    hintStyle:
+                    TextStyle(color: Colors.black),
+                  ),
+                  cursorColor: Colors.black,
+
+                  controller: visitObservationController,
+                ),
+                widget.teams[_selectedTeamIndex]['admin']?Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Icon(Icons.group,color:Colors.brown),
@@ -198,8 +214,8 @@ class HotDialogEditState extends State<HotDialogEdit> {
                       ),
                     ),
                   ],
-                ),
-                Row(
+                ):Container(),
+                widget.teams[_selectedTeamIndex]['admin']?Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Icon(Icons.place,color:Colors.blue),
@@ -223,7 +239,7 @@ class HotDialogEditState extends State<HotDialogEdit> {
                       ),
                     ),
                   ],
-                ),
+                ):Container(),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
@@ -311,6 +327,8 @@ class HotDialogEditState extends State<HotDialogEdit> {
     String zoneUuid = widget.teams[_selectedTeamIndex]["zones"][_selectedZoneIndex]["uuid"];
     String statusUuid = _selectedStatusIndex!=-1?widget.teams[_selectedTeamIndex]["status"][_selectedStatusIndex]["uuid"]:widget.person['status']['uuid'];
     UpdateVisitDto visitDto = UpdateVisitDto(userUuid,teamUuid,zoneUuid,visitUuid,statusUuid,name,address,phoneNumber);
+    visitDto.date = date.toString();
+    visitDto.observation = visitObservationController.text;
 
     print('Before update request');
     return visitController.updateVisit(visitDto);

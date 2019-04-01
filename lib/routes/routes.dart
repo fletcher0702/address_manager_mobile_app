@@ -29,6 +29,7 @@ const DELETE_ZONE_HTTP_ROUTE = HOST+'/users/teams/zones/delete';
 const CREATE_VISIT_HTTP_ROUTE = HOST+'/users/teams/zones/visits/create';
 const UPDATE_VISIT_HTTP_ROUTE = HOST + '/users/teams/zones/visits/update';
 const UPDATE_VISIT_HISTORY_HTTP_ROUTE = HOST + '/users/teams/zones/visits/update/history';
+const DELETE_VISIT_HISTORY_DATE_HTTP_ROUTE = HOST + '/users/teams/zones/visits/history/delete';
 const DELETE_VISIT_HTTP_ROUTE = HOST + '/users/teams/zones/visits/delete';
 
 // Team Routes

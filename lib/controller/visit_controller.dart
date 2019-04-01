@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:address_manager/controller/user_controller.dart';
+import 'package:address_manager/models/dto/visit/delete_history_date_dto.dart';
 import 'package:address_manager/models/dto/visit/delete_visit_dto.dart';
 import 'package:address_manager/models/dto/visit/update_visit_dto.dart';
 import 'package:address_manager/models/dto/visit/update_visit_history.dart';
@@ -46,7 +47,7 @@ class VisitController {
 
   updateVisit(UpdateVisitDto visit) async {
     var response = await http
-        .patch(UPDATE_VISIT_HTTP_ROUTE, headers: header ,body: jsonEncode({'userUuid': visit.userUuid,'teamUuid':visit.teamUuid,'zoneUuid':visit.zoneUuid,'visitUuid':visit.visitUuid,'name': visit.name, 'address': visit.address,'phoneNumber':visit.phoneNumber,'statusUuid': visit.statusUuid}))
+        .patch(UPDATE_VISIT_HTTP_ROUTE, headers: header ,body: jsonEncode({'userUuid': visit.userUuid,'teamUuid':visit.teamUuid,'zoneUuid':visit.zoneUuid,'visitUuid':visit.visitUuid,'name': visit.name, 'address': visit.address,'phoneNumber':visit.phoneNumber,'statusUuid': visit.statusUuid, 'date':visit.date,'observation':visit.observation}))
         .then((res) => res);
 
     print('after server response...');
@@ -81,6 +82,25 @@ class VisitController {
 
       var response = await http.Client().send(rq).then((response)=> response);
       return response.stream;
+
+    }catch(e){
+      print(e);
+    }
+
+  }
+
+  deleteHistoryDate(DeleteHistoryDateDto date) async {
+
+    try{
+      var credentials = await userController.getCredentials();
+      date.userUuid = credentials['uuid'];
+
+      var rq = http.Request('DELETE', Uri.parse(DELETE_VISIT_HISTORY_DATE_HTTP_ROUTE));
+      rq.headers.putIfAbsent('Content-Type', ()=>header['Content-Type']);
+      rq.body = jsonEncode({'userUuid': date.userUuid,'zoneUuid':date.zoneUuid,'visitUuid':date.visitUuid, 'teamUuid':date.teamUuid, 'date':date.date });
+
+      var response = await http.Client().send(rq).then((response)=> response);
+      return response.stream.bytesToString().then((body)=>jsonDecode(body));
 
     }catch(e){
       print(e);
