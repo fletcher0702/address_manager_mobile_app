@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:address_manager/controller/user_controller.dart';
 import 'package:address_manager/models/dto/visit/delete_visit_dto.dart';
 import 'package:address_manager/models/dto/visit/update_visit_dto.dart';
+import 'package:address_manager/models/dto/visit/update_visit_history.dart';
 import 'package:address_manager/services/user_service.dart';
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
@@ -14,6 +16,7 @@ import '../services/visit_service.dart';
 class VisitController {
   VisitService visitService = VisitService();
   UserService userService = UserService();
+  UserController userController = UserController();
   Dio dio = Dio();
 
   createVisit(Visit visit) async {
@@ -47,6 +50,19 @@ class VisitController {
         .then((res) => res);
 
     print('after server response...');
+
+    return jsonDecode(response.body);
+  }
+
+  updateVisitHistory(UpdateVisitHistoryDto visit) async {
+
+    var credentials = await userController.getCredentials();
+    visit.userUuid = credentials['uuid'];
+    var response = await http
+        .patch(UPDATE_VISIT_HISTORY_HTTP_ROUTE, headers: header ,body: jsonEncode({'userUuid': visit.userUuid,'teamUuid':visit.teamUuid,'zoneUuid':visit.zoneUuid,'visitUuid':visit.visitUuid,'date':visit.date}))
+        .then((res) => res);
+
+    print('response : '+jsonDecode(response.body).toString());
 
     return jsonDecode(response.body);
   }

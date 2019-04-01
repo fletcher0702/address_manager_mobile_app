@@ -1,8 +1,12 @@
 import 'package:address_manager/components/map_widget.dart';
+import 'package:address_manager/helpers/dialog_helper.dart';
 import 'package:address_manager/helpers/team_helper.dart';
+import 'package:address_manager/models/dto/visit/update_visit_history.dart';
 import 'package:address_manager/screens/add_person_dialog.dart';
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:intl/intl.dart';
 import 'package:latlong/latlong.dart';
 
 import '../components/edit_person_dialog.dart';
@@ -48,9 +52,21 @@ class HomeState extends State<Home> {
   int _selectedZoneIndex=-1;
   int _selectedStatusIndex = -1;
   int _selectedTeamIndex=-1;
+  var _selectedVisit ;
   String _currentTeamUuidAfterCallBackReload = '';
   String _currentZoneUuidAfterCallBackReload = '';
   List<double> currentLocation = [48.864716, 2.349014];
+
+  final formats = {
+    InputType.both: DateFormat("EEEE, MMMM d, yyyy 'at' h:mma"),
+    InputType.date: DateFormat('yyyy-MM-dd'),
+    InputType.time: DateFormat("HH:mm"),
+  };
+
+  // Changeable in demo
+  InputType inputType = InputType.both;
+  bool editable = true;
+  DateTime date;
 
 
   void loadTeams() {
@@ -73,6 +89,40 @@ class HomeState extends State<Home> {
         locations.clear();
         locations = teamHelper.buildDropDownSelection(zones);
     });
+  }
+
+  saveAction() {
+    UpdateVisitHistoryDto visitDto = UpdateVisitHistoryDto(teamsElements[_selectedTeamIndex]['uuid'],teamsElements[_selectedTeamIndex]['zones'][_selectedZoneIndex]['uuid'],_selectedVisit['uuid'],date.toString());
+    return visitController.updateVisitHistory(visitDto);
+  }
+  updateHistory(){
+    List<Widget> content = [
+      Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          children: <Widget>[
+            DateTimePickerFormField(
+              inputType: inputType,
+              format: formats[inputType],
+              editable: editable,
+              decoration: InputDecoration(
+                  prefixIcon: Icon(Icons.calendar_today),
+                  focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                          color: Colors.black)),
+                  alignLabelWithHint: true,
+                  hintText: 'date',
+                  hintStyle:
+                  TextStyle(color: Colors.black)
+              ),
+              onChanged: (dt) => setState(() => date = dt),
+            ),
+          ],
+        ),
+      )
+    ];
+    DialogHelperState.showDialogBox(
+        this.context, 'Add Date', content, saveAction,false,loadTeams);
   }
 
   loadMarkers(visitsElements) async {
@@ -221,32 +271,45 @@ class HomeState extends State<Home> {
                               ),
                             ),
                           ),
-                          Column(
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: <Widget>[
-                                   Container(
-                                     height: 40,
-                                     width: 40,
-                                     decoration: BoxDecoration(
-                                       color: Colors.green,
-                                       shape: BoxShape.circle,
-                                     ),
-                                     child: Stack(
-                                       children: <Widget>[
-                                         Positioned(child: Icon(Icons.add,size: 17,color: Colors.white,),left: 21,top: 2,),
-                                         Positioned(child: IconButton(icon: Icon(Icons.calendar_today,color: Colors.white,size: 17,), onPressed: (){}))
-                                       ],
-                                     ),
-                                   )
-                                  ],
+                          SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      Text('History',style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 25
+                                      ),
+                                      ),
+                                     SizedBox(width: 20,),
+                                     Container(
+                                       height: 35,
+                                       width: 35,
+                                       decoration: BoxDecoration(
+                                         color: Colors.green,
+                                         shape: BoxShape.circle,
+                                       ),
+                                       child: Stack(
+                                         children: <Widget>[
+                                           Positioned(child: Icon(Icons.add,size: 15,color: Colors.white,),left: 19,top: 2,),
+                                           Positioned(child: IconButton(icon: Icon(Icons.calendar_today,color: Colors.white,size: 12,), onPressed: (){
+
+                                             _selectedVisit = visit;
+                                             updateHistory();
+                                           }))
+                                         ],
+                                       ),
+                                     )
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              _buildHistory(visit)
-                            ],
+                                _buildHistory(conflicts)
+                              ],
+                            ),
                           ),
 
                         ]));
@@ -923,47 +986,64 @@ class HomeState extends State<Home> {
     return visitsDescription;
   }
 
-  _buildHistory(visit) {
+  _buildHistory(List<dynamic>visits) {
 
+    List<Widget> datesWidget = [];
 
-    if(visit['history']!=null){
+    visits.forEach((visit){
 
-      Padding title = Padding(padding: EdgeInsets.all(20),child: Text('History',style: TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 25
-      ),
-      ),);
-
-      List<dynamic> dates = visit['history']['history'];
-      List<Widget> datesWidget = [];
-      datesWidget.add(title);
-      dates.forEach((d){
-        Row r = Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(d,style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16
+      Row name = Row(
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.only(left:8.0),
+            child: Text(visit['name']+ ' :',style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
             ),),
-            IconButton(icon: Icon(Icons.edit,color: Colors.orangeAccent,), onPressed: (){}),
-            IconButton(icon: Icon(Icons.clear, color: Colors.red,), onPressed: (){}),
-          ],
-        );
-        datesWidget.add(r);
-      });
+          ),
 
-      Column c = Column(
-        children: datesWidget,
+        ],
       );
-      return c;
-    }else return Center(
-      child: Text('Empty...',style: TextStyle(
-        fontWeight: FontWeight.bold,
-        fontSize: 25
-      ),),
-    );
+      datesWidget.add(name);
+      if(visit['history']!=null && visit['history']['dates']!=null){
 
+        List<dynamic> dates = visit['history']['dates'];
+
+
+        dates.forEach((d){
+          Row r = Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(d,style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16
+              ),),
+              IconButton(icon: Icon(Icons.clear, color: Colors.red,), onPressed: (){}),
+            ],
+          );
+          datesWidget.add(r);
+        });
+        Padding d = Padding(padding: EdgeInsets.only(left: MediaQuery.of(context).size.width*0.15,right:  MediaQuery.of(context).size.width*0.02),child: Divider(
+          color: Colors.black,
+          height: 2,
+        ));
+        datesWidget.add(d);
+
+      }else datesWidget.add(Center(
+        child: Text('Empty...',style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 25
+        ),),
+      ));
+    });
+
+    Column c =  Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: datesWidget,
+    );
+    return c;
   }
+
 
 
 }
