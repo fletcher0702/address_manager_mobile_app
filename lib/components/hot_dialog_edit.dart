@@ -105,7 +105,7 @@ class HotDialogEditState extends State<HotDialogEdit> {
                       fontSize: 30.0, fontWeight: FontWeight.bold),
                 ),
                 errorBox,
-                TextField(
+                widget.teams[_selectedTeamIndex]['admin']?TextField(
                   decoration: InputDecoration(
                     prefixIcon: Icon(Icons.person,color: green_custom_color,
                     ),
@@ -119,7 +119,7 @@ class HotDialogEditState extends State<HotDialogEdit> {
                   ),
                   cursorColor: Colors.black,
                   controller: visitNameController,
-                ),
+                ):Container(),
                 TextField(
                   decoration: InputDecoration(
                       prefixIcon: Icon(Icons.phone,color: Colors.orangeAccent,),focusedBorder: UnderlineInputBorder(

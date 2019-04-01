@@ -14,19 +14,19 @@ import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:intl/intl.dart';
 
-class HotDialogGeneric extends StatefulWidget {
+class HotDialogAddHistory extends StatefulWidget {
 
   UpdateVisitHistoryDto visitHistoryDto;
   List<dynamic> visitsElements;
   Function _actionCallBackAfter;
 
-  HotDialogGeneric(this.visitHistoryDto,this.visitsElements,this._actionCallBackAfter);
+  HotDialogAddHistory(this.visitHistoryDto,this.visitsElements,this._actionCallBackAfter);
 
   @override
-  _HotDialogGenericState createState() => _HotDialogGenericState();
+  _HotDialogAddHistoryState createState() => _HotDialogAddHistoryState();
 }
 
-class _HotDialogGenericState extends State<HotDialogGeneric> {
+class _HotDialogAddHistoryState extends State<HotDialogAddHistory> {
 
   final formats = {
     InputType.both: DateFormat("EEEE, MMMM d, yyyy 'at' h:mma"),
@@ -156,6 +156,7 @@ class _HotDialogGenericState extends State<HotDialogGeneric> {
                     borderRadius: BorderRadius.circular(30)),
                 onPressed: (){
 
+                  Navigator.pop(context);
                   Navigator.pop(context);
                   Navigator.push(context, MaterialPageRoute(builder: (context)=>AddTransition(SUCCESS_UPDATE,ERROR_UPDATE,updateAction,UPDATE_ACTION,widget._actionCallBackAfter)));
 
