@@ -114,11 +114,6 @@ class TeamController {
     var credentials = await userController.getCredentials();
     status.userUuid = credentials["uuid"];
 
-    print("userUuid" + status.userUuid);
-    print("teamUuid" + status.teamUuid);
-    print("statusUuid" + status.statusUuid);
-    print("name" + status.name);
-    print("color" + status.color.toString());
     var response = await http
         .patch(UPDATE_TEAM_STATUS_HTTP_ROUTE, headers: header ,body: jsonEncode({'status': {'name': status.name, 'color': status.color},'statusUuid':status.statusUuid, 'teamUuid': status.teamUuid ,'userUuid': status.userUuid}))
         .then((res) => res);

@@ -105,7 +105,7 @@ class TeamPanelScreenState extends State<TeamPanelScreen> {
             child: teamToggle ? TeamDescription(teams,loadTeams) : ColorLoader(), padding: EdgeInsets.only(top: 30, left: 20),
           ),
           teamToggle ?TeamInvitationScreen(teams):Container(),
-          teamToggle ?TeamStatusScreen(teams,loadTeams):Container(),
+          teamToggle ?TeamStatusScreen():Container(),
         ])
       ),
     );

@@ -13,11 +13,6 @@ import '../tools/colors.dart';
 // ignore: must_be_immutable
 class TeamStatusScreen extends StatefulWidget {
 
-  List<dynamic> teams;
-  Function callBackAfterProcess;
-
-  TeamStatusScreen(this.teams, this.callBackAfterProcess);
-
   @override
   _TeamStatusScreenState createState() => _TeamStatusScreenState();
 }
@@ -47,8 +42,12 @@ class _TeamStatusScreenState extends State<TeamStatusScreen> {
   @override
   void initState() {
     super.initState();
-    setState(() {
-      teamsItems = teamHelper.buildDropDownSelection(widget.teams);
+
+    teamController.findAll().then((data) {
+      teams = data;
+      setState(() {
+        teamsItems = teamHelper.buildDropDownSelection(teams);
+      });
     });
   }
 
@@ -71,10 +70,8 @@ class _TeamStatusScreenState extends State<TeamStatusScreen> {
 
       setState(() {
         if (_currentTeamUuidForRefresh.isNotEmpty) {
-          print('it is not empty');
           teams.forEach((t) {
             if (t['uuid'].toString() == _currentTeamUuidForRefresh) {
-              print('found...');
               selectedTeamStatus = buildStatusDescription(t);
             }
           });
@@ -112,7 +109,7 @@ class _TeamStatusScreenState extends State<TeamStatusScreen> {
                           ),)),
                           content: SingleChildScrollView(
                             child: HotDialogStatus(
-                                widget.teams, _selectedTeamIndex, afterAction),
+                                teams, _selectedTeamIndex, afterAction),
 
                           ),
                         )
@@ -137,13 +134,13 @@ class _TeamStatusScreenState extends State<TeamStatusScreen> {
                         ),
                         textAlign: TextAlign.center),
                     onChanged: (value) {
-                      selectedTeam = widget.teams[value]['name'];
+                      selectedTeam = teams[value]['name'];
                       _selectedTeamIndex= value;
-                      _currentTeamUuidForRefresh = widget.teams[value]['uuid'];
+                      _currentTeamUuidForRefresh = teams[value]['uuid'];
                       selectedTeamStatus = [];
                       setState(() {
                         selectedTeamStatus =
-                            buildStatusDescription(widget.teams[value]);
+                            buildStatusDescription(teams[value]);
                       });
                     },
                   ),
@@ -203,10 +200,10 @@ class _TeamStatusScreenState extends State<TeamStatusScreen> {
           team['admin']?Row(
             children: <Widget>[
               IconButton(icon: Icon(Icons.edit,color: Colors.deepOrangeAccent,size: 18,), onPressed: (){
-                _selectedTeamIndex = widget.teams.indexOf(team);
+                _selectedTeamIndex = teams.indexOf(team);
                 _selectedStatusIndex = status.indexOf(statusItem);
-                statusNameController.text = widget.teams[_selectedTeamIndex]["status"][_selectedStatusIndex]['name'];
-                Color selectedStatusColor = Color(widget.teams[_selectedTeamIndex]["status"][_selectedStatusIndex]['color']);
+                statusNameController.text = teams[_selectedTeamIndex]["status"][_selectedStatusIndex]['name'];
+                Color selectedStatusColor = Color(teams[_selectedTeamIndex]["status"][_selectedStatusIndex]['color']);
                 pickerColor = selectedStatusColor;
                 showDialog(
                     context: context,
@@ -215,16 +212,16 @@ class _TeamStatusScreenState extends State<TeamStatusScreen> {
                           fontWeight: FontWeight.bold
                       ),)),
                       content: SingleChildScrollView(
-                        child: HotDialogStatusUpdate(widget.teams, _selectedTeamIndex,_selectedStatusIndex,(){}),
+                        child: HotDialogStatusUpdate(teams, _selectedTeamIndex,_selectedStatusIndex,afterAction),
 
                       ),
                     )
                 );
               }),
               IconButton(icon: Icon(Icons.clear,color: Colors.red,size: 18), onPressed: (){
-                _selectedTeamIndex = widget.teams.indexOf(team);
+                _selectedTeamIndex = teams.indexOf(team);
                 _selectedStatusIndex = status.indexOf(statusItem);
-                editTeamDialogState.showDeleteDialog(context, statusItem, deleteStatus,(){});
+                editTeamDialogState.showDeleteDialog(context, statusItem, deleteStatus,afterAction);
               })
             ],
           ):Row(),
@@ -239,20 +236,10 @@ class _TeamStatusScreenState extends State<TeamStatusScreen> {
     return rows;
   }
 
-  updateStatus(){
-    String teamUuid = widget.teams[_selectedTeamIndex]['uuid'];
-    String statusUuid = widget.teams[_selectedTeamIndex]["status"][_selectedStatusIndex]['uuid'];
-
-    UpdateStatusDto updateStatusDto = UpdateStatusDto(teamUuid,statusUuid);
-    updateStatusDto.name = statusNameController.text;
-    updateStatusDto.color = pickerColor.value;
-    teamController.updateStatus(updateStatusDto);
-  }
-
   deleteStatus(){
-    String teamUuid = widget.teams[_selectedTeamIndex]['uuid'];
-    String statusUuid = widget.teams[_selectedTeamIndex]["status"][_selectedStatusIndex]['uuid'];
+    String teamUuid = teams[_selectedTeamIndex]['uuid'];
+    String statusUuid = teams[_selectedTeamIndex]["status"][_selectedStatusIndex]['uuid'];
     DeleteStatusDto deleteStatusDto = DeleteStatusDto(teamUuid,statusUuid);
-    teamController.deleteStatus(deleteStatusDto);
+    return teamController.deleteStatus(deleteStatusDto);
   }
 }
