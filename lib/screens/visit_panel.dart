@@ -1,5 +1,6 @@
 import 'package:address_manager/controller/team_controller.dart';
 import 'package:address_manager/helpers/team_helper.dart';
+import 'package:address_manager/models/dto/visit/delete_visit_dto.dart';
 import 'package:flutter/material.dart';
 
 import '../components/edit_person_dialog.dart';
@@ -27,6 +28,7 @@ class VisitPanelScreenState extends State<VisitPanelScreen> {
   AddPersonDialogState addPersonDialog = AddPersonDialogState();
   var visits;
   var zones;
+  var currentVisit;
   List<dynamic> teams;
 
   var selectedZone;
@@ -184,7 +186,7 @@ class VisitPanelScreenState extends State<VisitPanelScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     SingleChildScrollView(
-                      child: Row(
+                      child:  Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: <Widget>[
                           Text(
@@ -196,7 +198,11 @@ class VisitPanelScreenState extends State<VisitPanelScreen> {
                             editPersonDialog.dialog(context, teams,_selectedTeamIndex,
                                 _selectedZoneIndex,element, loadTeams);
                           }),
-                          IconButton(icon: Icon(Icons.delete, color: Colors.red,size: 15), onPressed: (){editPersonDialog.showDeleteDialog(context,element,teams[_selectedTeamIndex]["zones"][_selectedZoneIndex]["uuid"]);})
+                          teams[_selectedTeamIndex]['admin']?IconButton(icon: Icon(Icons.delete, color: Colors.red,size: 15), onPressed: (){
+
+                            currentVisit = element;
+                            editPersonDialog.showDeleteDialog(context,element,deletePerson,loadTeams);}):Container(),
+
                         ],
                       ),
                     ),
@@ -236,5 +242,10 @@ class VisitPanelScreenState extends State<VisitPanelScreen> {
       }
 
     });
+  }
+
+  deletePerson()async{
+    DeleteVisitDto visitDto = DeleteVisitDto(_currentZoneUuidForReload, currentVisit['uuid']);
+    return visitController.deleteOne(visitDto);
   }
 }
