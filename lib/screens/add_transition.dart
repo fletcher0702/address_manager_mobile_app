@@ -60,7 +60,7 @@ class _AddTransitionState extends State<AddTransition> {
         }catch(e){
           result = false;
           print(e);
-          print('Unable to get server response...');
+          print('Please retry within few minutes...We currently working on our server...');
         }
 
         Container container = Container(
