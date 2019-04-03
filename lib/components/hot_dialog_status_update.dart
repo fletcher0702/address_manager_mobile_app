@@ -108,11 +108,14 @@ class _HotDialogStatusUpdateState extends State<HotDialogStatusUpdate> {
                             fontWeight: FontWeight.bold
                         ),)),
                         content: SingleChildScrollView(
-                          child:  ColorPicker(
-                              pickerColor: pickerColor,
-                              enableLabel: true,
-                              pickerAreaHeightPercent: 0.8,
-                              onColorChanged: changeColor
+                          child:  SizedBox(
+                            width: MediaQuery.of(context).size.width*0.5,
+                            child: ColorPicker(
+                                pickerColor: pickerColor,
+                                enableLabel: true,
+                                pickerAreaHeightPercent: 0.9,
+                                onColorChanged: changeColor,
+                            ),
                           ),
                         ),
                         actions: <Widget>[
