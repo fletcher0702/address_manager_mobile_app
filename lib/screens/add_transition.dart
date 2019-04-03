@@ -4,11 +4,11 @@ import '../components/loader.dart';
 
 class AddTransition extends StatefulWidget {
 
-  String _success;
-  String _error;
-  Function _action;
-  String _typeOfAction;
-  Function _actionCallBackAfterProcess;
+  final String _success;
+  final String _error;
+  final Function _action;
+  final String _typeOfAction;
+  final Function _actionCallBackAfterProcess;
 
 
   AddTransition(this._success, this._error, this._action,this._typeOfAction,this._actionCallBackAfterProcess);
@@ -60,18 +60,26 @@ class _AddTransitionState extends State<AddTransition> {
         }catch(e){
           result = false;
           print(e);
-          print('Unable to get server response...');
+          print('Please retry within few minutes...We currently working on our server...');
         }
 
         Container container = Container(
           child: Padding(
             padding: EdgeInsets.all(20.0),
             child: Center(
-              child: Text(result?widget._success:widget._error,
-                style: TextStyle(
-                    color: result?Colors.green:Colors.red,
-                    fontSize: 25
-                ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(result?widget._success:widget._error,
+                    style: TextStyle(
+                        color: result?Colors.green:Colors.red,
+                        fontSize: 25
+                    ),
+                  ),
+                  IconButton(icon: Icon(Icons.close,size: 30,), onPressed: (){
+                    Navigator.pop(context);
+                  },color: Colors.blueGrey,)
+                ]
               ),
             ),
           ),
