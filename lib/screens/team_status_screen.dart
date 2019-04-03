@@ -5,6 +5,9 @@ import 'package:address_manager/controller/team_controller.dart';
 import 'package:address_manager/helpers/team_helper.dart';
 import 'package:address_manager/models/dto/status/delete_status_dto.dart';
 import 'package:address_manager/models/dto/status/update_status_dto.dart';
+import 'package:address_manager/screens/add_transition.dart';
+import '../tools/messages.dart';
+import '../tools/actions.dart';
 import 'package:flutter/material.dart';
 
 import '../tools/colors.dart';
@@ -221,7 +224,63 @@ class _TeamStatusScreenState extends State<TeamStatusScreen> {
               IconButton(icon: Icon(Icons.clear,color: Colors.red,size: 18), onPressed: (){
                 _selectedTeamIndex = teams.indexOf(team);
                 _selectedStatusIndex = status.indexOf(statusItem);
-                editTeamDialogState.showDeleteDialog(context, statusItem, deleteStatus,afterAction);
+
+                showDialog(context: (context),builder: (context){
+                  return SimpleDialog(
+                    title: Center(
+                        child: Text(
+                          statusItem['name'],
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                        )),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    children: <Widget>[
+                      Center(
+                          child: Text(
+                            'Are you sure ?',
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                          )),
+                      Center(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            FlatButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: Text(
+                                'CANCEL',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, color: Colors.white),
+                              ),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30)),
+                              color: Colors.red,
+                            ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            FlatButton(
+                              onPressed: () async {
+                                Navigator.pop(context);
+                                Navigator.push(context, MaterialPageRoute(builder: (context)=>AddTransition(SUCCESS_DELETE,ERROR_DELETE,deleteStatus,DELETE_ACTION,afterAction)));
+                              },
+                              child: Text(
+                                'DELETE',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, color: Colors.white),
+                              ),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30)),
+                              color: Colors.red,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
+                },barrierDismissible: true);
               })
             ],
           ):Row(),
@@ -236,7 +295,7 @@ class _TeamStatusScreenState extends State<TeamStatusScreen> {
     return rows;
   }
 
-  deleteStatus(){
+  deleteStatus() async{
     String teamUuid = teams[_selectedTeamIndex]['uuid'];
     String statusUuid = teams[_selectedTeamIndex]["status"][_selectedStatusIndex]['uuid'];
     DeleteStatusDto deleteStatusDto = DeleteStatusDto(teamUuid,statusUuid);

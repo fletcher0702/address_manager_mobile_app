@@ -97,12 +97,7 @@ class TeamController {
       rq.body = jsonEncode({'userUuid': status.userUuid,'teamUuid':status.teamUuid, 'statusUuid':status.statusUuid});
 
       var response = await http.Client().send(rq).then((response)=> response);
-      return response.stream.bytesToString().then((body){
-
-        print('deleted try : '+jsonDecode(body));
-
-        return jsonDecode(body);
-      });
+      return response.stream.bytesToString().then((body)=>jsonDecode(body));
 
     }catch(e){
       print(e);
