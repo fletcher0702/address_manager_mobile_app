@@ -11,8 +11,9 @@ import 'package:flutter_tags/input_tags.dart';
 
 class HotDialogInvitation extends StatefulWidget {
 
-  final List<dynamic> teams;
-  HotDialogInvitation(this.teams);
+  List<dynamic> teams;
+  Function _afterProcessCallBack;
+  HotDialogInvitation(this.teams,this._afterProcessCallBack);
 
   @override
   _HotDialogInvitationState createState() => _HotDialogInvitationState();
@@ -97,7 +98,7 @@ class _HotDialogInvitationState extends State<HotDialogInvitation> {
               if(_selectedTeamIndex!=-1){
                 if(validTags && _selectedTeamIndex!=-1){
                   Navigator.pop(context);
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=> AddTransition(SUCCESS_INVITATION_CREATION,ERROR_INVITATION_CREATION,_sendInvitation,INVITE_ACTION,(){})) );
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=> AddTransition(SUCCESS_INVITATION_CREATION,ERROR_INVITATION_CREATION,_sendInvitation,INVITE_ACTION,widget._afterProcessCallBack)) );
                 }else{
                   setState(() {
                     errorMessage = 'Error bad email syntax...';

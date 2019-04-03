@@ -1,19 +1,14 @@
 import 'package:address_manager/components/hot_dialog_edit.dart';
 import 'package:address_manager/controller/user_controller.dart';
 import 'package:address_manager/helpers/team_helper.dart';
-import 'package:address_manager/models/dto/visit/delete_visit_dto.dart';
-import 'package:address_manager/models/dto/visit/update_visit_dto.dart';
+import 'package:address_manager/screens/add_transition.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
-import 'package:google_maps_webservice/places.dart';
-import 'package:flutter_google_places/flutter_google_places.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 
 import '../controller/visit_controller.dart';
-import '../models/visit.dart';
-import '../screens/delete_person_validation.dart';
-import '../screens/edit_person_validation.dart';
+import '../tools/actions.dart';
+import '../tools/messages.dart';
 
 class EditPersonDialog extends StatefulWidget {
   @override
@@ -70,7 +65,7 @@ class EditPersonDialogState extends State<EditPersonDialog> {
     );
   }
 
-  showDeleteDialog(context, element,zoneUuid) {
+  showDeleteDialog(context, element,action,callBackActionAfterProcess) {
     return showDialog(
         context: context,
         builder: (context) {
@@ -110,16 +105,13 @@ class EditPersonDialogState extends State<EditPersonDialog> {
                       width: 10,
                     ),
                     FlatButton(
-                      onPressed: () async {
-                        var userCredentials = await userController.getCredentials();
-                        DeleteVisitDto visitDto = DeleteVisitDto(userCredentials['uuid'],zoneUuid,element['uuid']);
+                      onPressed: () {
                         Navigator.pop(context);
                         Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) =>
-                                    DeletePersonValidationScreen(
-                                        visitDto)));
+                                    AddTransition(SUCCESS_DELETE,ERROR_DELETE,action,DELETE_ACTION,callBackActionAfterProcess)));
                       },
                       child: Text(
                         'DELETE',

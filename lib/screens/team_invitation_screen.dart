@@ -25,6 +25,7 @@ class _TeamInvitationScreenState extends State<TeamInvitationScreen> {
   List<dynamic> selectedTeamMembers = [];
   List<dynamic> teamsAllowed = [];
   String selectedTeam = '';
+  String _selectedTeamUuid ='';
   int _selectedTeamIndex;
   int _selectedMemberIndex;
 
@@ -61,11 +62,11 @@ class _TeamInvitationScreenState extends State<TeamInvitationScreen> {
                       context: context,
                       barrierDismissible: false,
                       child: AlertDialog(
-                        title: Center(child: Text('Add People',style: TextStyle(
+                        title: Center(child: Text('Invite People',style: TextStyle(
                             fontWeight: FontWeight.bold
                         ),)),
                         content: SingleChildScrollView(
-                          child: HotDialogInvitation(widget.teams),
+                          child: HotDialogInvitation(widget.teams,refreshMembers),
 
                         ),
                       )
@@ -90,10 +91,11 @@ class _TeamInvitationScreenState extends State<TeamInvitationScreen> {
                       textAlign: TextAlign.center),
                   onChanged: (value) {
                     selectedTeam = teamsAllowed[value]['name'];
+                    _selectedTeamUuid = teamsAllowed[value]['uuid'];
                     _selectedTeamIndex= value;
                     selectedTeamMembers = [];
                     setState(() {
-                      selectedTeamMembers = buildMembersDescription();
+                      selectedTeamMembers = buildMembersDescription(teamsAllowed);
                     });
                   },
                 ),
@@ -126,10 +128,10 @@ class _TeamInvitationScreenState extends State<TeamInvitationScreen> {
     );
   }
 
-  buildMembersDescription(){
+  buildMembersDescription(teams){
 
     List<Widget> rows = [];
-    var team = widget.teams[_selectedTeamIndex];
+    var team = getCurrentTeam(teams);
     List<dynamic> users = team["emails"];
 
     users.forEach((user){
@@ -166,5 +168,31 @@ class _TeamInvitationScreenState extends State<TeamInvitationScreen> {
     });
 
     return rows;
+  }
+
+  getCurrentTeam(List<dynamic>teams){
+
+    var currentTeam;
+    Iterator it = teams.iterator;
+    while(it.moveNext()){
+      var t = it.current;
+      if(t['uuid'].toString() == _selectedTeamUuid){
+        currentTeam = t;
+        break;
+      }
+    }
+    return currentTeam;
+
+  }
+
+  refreshMembers(){
+
+    teamController.findAll().then((res) {
+      teamsAllowed = teamHelper.getAllowTeams(res);
+      setState(() {
+        print('setState end : ');
+        selectedTeamMembers=buildMembersDescription(teamsAllowed);
+      });
+    });
   }
 }

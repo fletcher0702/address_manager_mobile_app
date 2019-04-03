@@ -1,7 +1,9 @@
 import 'package:address_manager/controller/team_controller.dart';
 import 'package:address_manager/helpers/team_helper.dart';
 import 'package:address_manager/models/dto/status/update_status_dto.dart';
-import 'package:address_manager/models/status.dart';
+import 'package:address_manager/tools/actions.dart';
+import 'package:address_manager/tools/messages.dart';
+import 'package:address_manager/screens/add_transition.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import '../tools/colors.dart';
@@ -106,11 +108,14 @@ class _HotDialogStatusUpdateState extends State<HotDialogStatusUpdate> {
                             fontWeight: FontWeight.bold
                         ),)),
                         content: SingleChildScrollView(
-                          child:  ColorPicker(
-                              pickerColor: pickerColor,
-                              enableLabel: true,
-                              pickerAreaHeightPercent: 0.8,
-                              onColorChanged: changeColor
+                          child:  SizedBox(
+                            width: MediaQuery.of(context).size.width*0.5,
+                            child: ColorPicker(
+                                pickerColor: pickerColor,
+                                enableLabel: true,
+                                pickerAreaHeightPercent: 0.9,
+                                onColorChanged: changeColor,
+                            ),
                           ),
                         ),
                         actions: <Widget>[
@@ -132,7 +137,12 @@ class _HotDialogStatusUpdateState extends State<HotDialogStatusUpdate> {
                   fontWeight: FontWeight.bold
               ),),color: orange_custom_color,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),),
               SizedBox(width: 10,),
-              FlatButton(onPressed: updateStatus, child: Text('UPDATE',style: TextStyle(
+              FlatButton(onPressed: (){
+
+                Navigator.pop(context);
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>AddTransition(SUCCESS_UPDATE,ERROR_UPDATE,updateStatus,UPDATE_ACTION,widget.actionCallBackAfter)));
+
+              }, child: Text('UPDATE',style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold
               )),color: orange_custom_color,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),),
@@ -158,6 +168,6 @@ class _HotDialogStatusUpdateState extends State<HotDialogStatusUpdate> {
     UpdateStatusDto updateStatusDto = UpdateStatusDto(teamUuid,statusUuid);
     updateStatusDto.name = statusNameController.text;
     updateStatusDto.color = pickerColor.value;
-    teamController.updateStatus(updateStatusDto);
+    return teamController.updateStatus(updateStatusDto);
   }
 }

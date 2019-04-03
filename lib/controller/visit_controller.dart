@@ -76,12 +76,15 @@ class VisitController {
 
     try{
 
+      var credentials = await userController.getCredentials();
+      visitDto.userUuid = credentials['uuid'];
+
       var rq = http.Request('DELETE', Uri.parse(DELETE_VISIT_HTTP_ROUTE));
       rq.headers.putIfAbsent('Content-Type', ()=>header['Content-Type']);
       rq.body = jsonEncode({'userUuid': visitDto.userUuid,'zoneUuid':visitDto.zoneUuid,'visitUuid':visitDto.visitUuid });
 
       var response = await http.Client().send(rq).then((response)=> response);
-      return response.stream;
+      return response.stream.bytesToString().then((body)=>jsonDecode(body));
 
     }catch(e){
       print(e);
