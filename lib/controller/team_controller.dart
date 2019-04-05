@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:address_manager/models/dto/status/delete_status_dto.dart';
 import 'package:address_manager/models/dto/status/update_status_dto.dart';
 import 'package:address_manager/models/dto/team/delete_team_dto.dart';
+import 'package:address_manager/models/dto/team/uninvite_user_dto.dart';
 import 'package:address_manager/models/dto/team/update_team_dto.dart';
 import 'package:address_manager/models/status.dart';
 import 'package:address_manager/models/team.dart';
@@ -80,6 +81,17 @@ class TeamController {
     var credentials = await userController.getCredentials();
     var response = await http
         .post(INVITE_USERS_TEAM_HTTP_ROUTE, headers: header ,body: jsonEncode({'emails': tags,'teamUuid': teamUuid ,'userUuid': credentials['uuid']}))
+        .then((res) => res);
+
+    return jsonDecode(response.body);
+
+  }
+
+  Future<dynamic> unInvitePeople(UnInviteUserDto userDto) async {
+    var credentials = await userController.getCredentials();
+    userDto.userUuid = credentials['uuid'];
+    var response = await http
+        .post(UNINVITE_USERS_TEAM_HTTP_ROUTE, headers: header ,body: jsonEncode({'email': userDto.email,'teamUuid': userDto.teamUuid,'userUuid': userDto.userUuid}))
         .then((res) => res);
 
     return jsonDecode(response.body);

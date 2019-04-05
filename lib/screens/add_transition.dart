@@ -38,6 +38,9 @@ class _AddTransitionState extends State<AddTransition> {
           case 'invite':
             type = 'email';
             break;
+          case 'uninvite':
+            type = 'present';
+            break;
           case 'update':
             type = 'updated';
             break;

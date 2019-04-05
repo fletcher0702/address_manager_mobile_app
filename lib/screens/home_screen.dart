@@ -100,9 +100,6 @@ class HomeState extends State<Home> {
     });
   }
 
-  saveAction() {
-//    return visitController.updateVisitHistory(visitDto);
-  }
   updateHistory(visits){
     showDialog(context: context,builder: (context){
       UpdateVisitHistoryDto visitDto = UpdateVisitHistoryDto(teamsElements[_selectedTeamIndex]['uuid'],teamsElements[_selectedTeamIndex]['zones'][_selectedZoneIndex]['uuid']);
@@ -374,132 +371,193 @@ class HomeState extends State<Home> {
               return Center(
                 child: IconButton(
                   onPressed: () {
-
+                    visitsElements =
+                    teamsElements[_selectedTeamIndex]['zones'][_selectedZoneIndex]['visits'];
                     showModalBottomSheet(
                         context: context,
                         builder: (context) {
-                          return  SizedBox(
-                            height: conflicts.length > 1 ? MediaQuery
-                                .of(context)
-                                .size
-                                .height * 0.90 : MediaQuery
-                                .of(context)
-                                .size
-                                .height * 0.40,
-                            width: double.infinity,
-                            child: SingleChildScrollView(
-                              child: conflicts.length > 1 ? _visitsDescription(
-                                  conflicts) : Column(
-                                children: <Widget>[
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 15.0),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: <Widget>[
-                                        Icon(
-                                          Icons.person_pin,
-                                          color: color,
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Text(
-                                            visit['name'],
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 25,
-                                            ),
-                                          ),
-                                        ),
-                                        IconButton(
-                                          icon: Icon(Icons.edit),
-                                          onPressed: () {
-                                            editPersonDialog.dialog(
-                                                context, teamsElements,
-                                                _selectedTeamIndex,
-                                                _selectedZoneIndex, visit,
-                                                loadTeams);
-                                          },
-                                          color: orange_custom_color,
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                  Container(
-                                    child: Padding(
-                                      padding: EdgeInsets.only(
-                                          left: 20, right: 20, top: 40),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment
-                                            .start,
-                                        mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                          return DefaultTabController(length: 2, child: TabBarView(children: [
+                            SizedBox(
+                              height: 400,
+                              width: double.infinity,
+                              child: SingleChildScrollView(
+                                child: conflicts.length > 1 ? _visitsDescription(
+                                    conflicts) : Column(
+                                  children: <Widget>[
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 15.0),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
                                         children: <Widget>[
-                                          SingleChildScrollView(
-                                            scrollDirection: Axis.horizontal,
-                                            child: SingleChildScrollView(
-                                              child: Row(
-                                                children: <Widget>[
-                                                  Icon(
-                                                    Icons.place,
-                                                    color: color,
-                                                  ),
-                                                  SizedBox(
-                                                    width: 10,
-                                                  ),
-                                                  Text(
-                                                    visit['address'],
-                                                    style: TextStyle(
-                                                      fontWeight: FontWeight.bold,
-                                                      fontSize: 14,
-                                                    ),
-                                                  ),
-                                                ],
+                                          Icon(
+                                            Icons.person_pin,
+                                            color: color,
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Text(
+                                              visit['name'],
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 25,
                                               ),
                                             ),
                                           ),
-                                          Row(
-                                            children: <Widget>[
-                                              Icon(
-                                                Icons.phone,
-                                                color:
-                                                Color.fromRGBO(46, 204, 113, 1),
-                                              ),
-                                              SizedBox(
-                                                width: 10,
-                                              ),
-                                              Text(
-                                                visit['phoneNumber'] != null
-                                                    ? visit['phoneNumber']
-                                                    : 'Not provided',
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                          Row(
-                                            children: <Widget>[
-                                              Icon(Icons.filter_list,
-                                                  color: Colors.black),
-                                              SizedBox(
-                                                width: 10,
-                                              ),
-                                              Text(
-                                                visit['status']['name'],
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              )
-                                            ],
+                                          IconButton(
+                                            icon: Icon(Icons.edit),
+                                            onPressed: () {
+                                              editPersonDialog.dialog(
+                                                  context, teamsElements,
+                                                  _selectedTeamIndex,
+                                                  _selectedZoneIndex, visit,
+                                                  loadTeams);
+                                            },
+                                            color: orange_custom_color,
                                           )
                                         ],
                                       ),
                                     ),
-                                  )
+                                    Container(
+                                      child: Padding(
+                                        padding: EdgeInsets.only(
+                                            left: 20, right: 20, top: 40),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment
+                                              .start,
+                                          mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                          children: <Widget>[
+                                            SingleChildScrollView(
+                                              scrollDirection: Axis.horizontal,
+                                              child: SingleChildScrollView(
+                                                child: Row(
+                                                  children: <Widget>[
+                                                    Icon(
+                                                      Icons.place,
+                                                      color: color,
+                                                    ),
+                                                    SizedBox(
+                                                      width: 10,
+                                                    ),
+                                                    Text(
+                                                      visit['address'],
+                                                      style: TextStyle(
+                                                        fontWeight: FontWeight.bold,
+                                                        fontSize: 14,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                            Row(
+                                              children: <Widget>[
+                                                Icon(
+                                                  Icons.phone,
+                                                  color:
+                                                  Color.fromRGBO(46, 204, 113, 1),
+                                                ),
+                                                SizedBox(
+                                                  width: 10,
+                                                ),
+                                                Text(
+                                                  visit['phoneNumber'] != null
+                                                      ? visit['phoneNumber']
+                                                      : 'Not provided',
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                            Row(
+                                              children: <Widget>[
+                                                Icon(Icons.filter_list,
+                                                    color: Colors.black),
+                                                SizedBox(
+                                                  width: 10,
+                                                ),
+                                                Text(
+                                                  visit['status']['name'],
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                            Row(
+                                              children: <Widget>[
+                                                Icon(Icons.note,
+                                                    color:visit['observation']!=null? Colors.green:Colors.redAccent),
+                                                SizedBox(
+                                                  width: 10,
+                                                ),
+                                                Text(
+                                                  visit['observation']!=null?visit['observation']:'No Observation',
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.only(top:50.0),
+                                      child: Container(
+                                        child: Text('Swipe to see history',style: TextStyle(
+                                            fontSize: 25,
+                                            fontWeight: FontWeight.bold
+                                        ),),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                            SingleChildScrollView(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        Text('History',style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 25
+                                        ),
+                                        ),
+                                        SizedBox(width: 20,),
+                                        Container(
+                                          height: 35,
+                                          width: 35,
+                                          decoration: BoxDecoration(
+                                            color: Colors.green,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: Stack(
+                                            children: <Widget>[
+                                              Positioned(child: Icon(Icons.add,size: 15,color: Colors.white,),left: 19,top: 2,),
+                                              Positioned(child: IconButton(icon: Icon(Icons.calendar_today,color: Colors.white,size: 12,), onPressed: (){
+                                                updateHistory(conflicts);
+                                              }))
+                                            ],
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                  _buildHistory(conflicts)
                                 ],
                               ),
                             ),
-                          );
+
+                          ]));
                         });
                   },
                   icon: Stack(
@@ -521,7 +579,7 @@ class HomeState extends State<Home> {
                       Positioned(
                         top: 8,
                         left: 15,
-                        child: Text(_conflictsAddressByTypeSize(conflicts, type).toString()
+                        child: Text(conflicts.length.toString()
                           ,
                           style: TextStyle(
                             color: Colors.white,
@@ -587,16 +645,6 @@ class HomeState extends State<Home> {
     return visitsConflicts;
   }
 
-  _conflictsAddressByTypeSize(List<dynamic>address,type){
-
-    int counter = 0;
-
-    address.forEach((a){
-
-      if(a['status']['uuid'].toString()==type) counter+=1;
-    });
-    return counter;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -611,9 +659,8 @@ class HomeState extends State<Home> {
           title: SizedBox(
             width: double.infinity,
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
-                Row(),
                 Row(
                   children: <Widget>[
                     Icon(
