@@ -16,7 +16,7 @@ main() async{
     debugShowCheckedModeBanner: false,
     title: 'Address Manager',
     initialRoute: LOGIN_ROUTE,
-    theme: ThemeData(fontFamily: 'Montserrat'),
+    theme: ThemeData(fontFamily: 'Vagrounded'),
     routes: {
       LOGIN_ROUTE: (context) => LoginScreen(),
       SIGN_UP_ROUTE: (context) => SignUpScreen(),
