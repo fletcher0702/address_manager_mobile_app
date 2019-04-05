@@ -1,8 +1,10 @@
 import 'package:address_manager/components/hot_dialog_invitation.dart';
 import 'package:address_manager/controller/team_controller.dart';
-import 'package:address_manager/helpers/auth_helper.dart';
 import 'package:address_manager/helpers/team_helper.dart';
-import 'package:flutter_tags/input_tags.dart';
+import 'package:address_manager/models/dto/team/uninvite_user_dto.dart';
+import 'package:address_manager/screens/add_transition.dart';
+import 'package:address_manager/tools/messages.dart';
+import 'package:address_manager/tools/actions.dart';
 import 'package:flutter/material.dart';
 import '../tools/colors.dart';
 
@@ -26,6 +28,7 @@ class _TeamInvitationScreenState extends State<TeamInvitationScreen> {
   List<dynamic> teamsAllowed = [];
   String selectedTeam = '';
   String _selectedTeamUuid ='';
+  String _selectedEmail = '';
   int _selectedTeamIndex;
   int _selectedMemberIndex;
 
@@ -156,7 +159,65 @@ class _TeamInvitationScreenState extends State<TeamInvitationScreen> {
             IconButton(icon: Icon(Icons.clear,color: Colors.red,size: 18), onPressed: (){
               _selectedTeamIndex = widget.teams.indexOf(team);
               _selectedMemberIndex = users.indexOf(user);
-//            editTeamDialogState.showDeleteDialog(context, statusItem, deleteStatus);
+
+              showDialog(context: (context),builder: (context){
+                return SimpleDialog(
+                  title: Center(
+                      child: Text(
+                        'Are you sure ?',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                      )),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  children: <Widget>[
+                    Center(
+                        child: Text(
+                          user,
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                        )),
+                    Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          FlatButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: Text(
+                              'CANCEL',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, color: Colors.white),
+                            ),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30)),
+                            color: Colors.red,
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          FlatButton(
+                            onPressed: () async {
+                              _selectedEmail = user;
+                              Navigator.pop(context);
+                              Navigator.push(context, MaterialPageRoute(builder: (context)=>AddTransition(SUCCESS_DELETE,ERROR_DELETE,uninviteUser,UN_INVITE_ACTION,refreshMembers)));
+                            },
+                            child: Text(
+                              'DELETE',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, color: Colors.white),
+                            ),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30)),
+                            color: Colors.red,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              },barrierDismissible: true);
+
             })
           ],
 
@@ -190,9 +251,18 @@ class _TeamInvitationScreenState extends State<TeamInvitationScreen> {
     teamController.findAll().then((res) {
       teamsAllowed = teamHelper.getAllowTeams(res);
       setState(() {
-        print('setState end : ');
         selectedTeamMembers=buildMembersDescription(teamsAllowed);
       });
     });
+  }
+
+  uninviteUser() async {
+    UnInviteUserDto userDto = UnInviteUserDto();
+
+    userDto.teamUuid = widget.teams[_selectedTeamIndex]['uuid'];
+    userDto.email = _selectedEmail;
+
+    return teamController.unInvitePeople(userDto);
+
   }
 }
