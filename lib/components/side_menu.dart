@@ -39,32 +39,22 @@ class _SideMenuState extends State<SideMenu> {
             width: double.infinity,
             color: Colors.grey,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Column(
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+
                   children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.only(top: 25.0),
-                      child: Container(
-                        height: 60,
-                        width: 60,
-                        decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.white,
-                        ),
-                        child: Icon(Icons.image),
-                      ),
-                    ),
+                    SizedBox(width: 8,),
+                    Icon(Icons.person_outline, size: 25,color: Colors.white,),
+                    SizedBox(width: 15,),
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
-                      child: Padding(
-                        padding: EdgeInsets.only(top:8.0),
-                        child: Text(_userEmail,style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold
-                        ),),
-                      ),
+                      child: Text(_userEmail,style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold
+                      ),),
                     ),
                   ],
                 )
@@ -97,7 +87,10 @@ class _SideMenuState extends State<SideMenu> {
                 ],
               ),
             ),
-            Container(color: Colors.grey,height: 1,width: double.infinity,),
+            Padding(
+              padding: EdgeInsets.only(left:8.0),
+              child: Container(color: Colors.grey,height: 1,width: double.infinity,),
+            ),
             Padding(
               padding: EdgeInsets.all(8.0),
               child: Column(
@@ -152,7 +145,10 @@ class _SideMenuState extends State<SideMenu> {
                 ],
               ),
             ),
-            Container(color: Colors.grey,height: 1,width: double.infinity,),
+            Padding(
+              padding: EdgeInsets.only(left:8.0),
+              child: Container(color: Colors.grey,height: 1,width: double.infinity,),
+            ),
             Padding(
               padding: EdgeInsets.all(8.0),
               child: Column(
@@ -190,7 +186,10 @@ class _SideMenuState extends State<SideMenu> {
                 ],
               ),
             ),
-            Container(color: Colors.grey,height: 1,width: double.infinity,),
+            Padding(
+              padding:EdgeInsets.only(left:8.0),
+              child: Container(color: Colors.grey,height: 1,width: double.infinity,),
+            ),
             Padding(
               padding: EdgeInsets.all(8.0),
               child: Row(

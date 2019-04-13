@@ -79,6 +79,10 @@ flutter:
   - family: Montserrat
     fonts:
     - asset: fonts/Montserrat-Regular.ttf
+
+  - family: Vagrounded
+    fonts:
+    - asset: fonts/VAGRounded-Black.otf
   #         style: italic
   #   - family: Trajan Pro
   #     fonts:

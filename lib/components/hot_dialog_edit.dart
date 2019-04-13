@@ -113,7 +113,7 @@ class HotDialogEditState extends State<HotDialogEdit> {
                         borderSide: BorderSide(
                             color: Colors.black)),
                     alignLabelWithHint: true,
-                    hintText: 'name',
+                    hintText: 'label',
                     hintStyle:
                     TextStyle(color: Colors.black),
                   ),
