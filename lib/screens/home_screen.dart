@@ -1,4 +1,5 @@
 import 'package:address_manager/components/hot_dialog_history.dart';
+import 'package:address_manager/components/input_tag.dart';
 import 'package:address_manager/components/map_widget.dart';
 import 'package:address_manager/helpers/team_helper.dart';
 import 'package:address_manager/models/dto/visit/delete_history_date_dto.dart';
@@ -26,6 +27,8 @@ class Home extends StatefulWidget {
 }
 
 class HomeState extends State<Home> {
+
+  List<Widget> _zonesTagsWidget = [];
   BuildContext context;
   ZoneController zoneController = ZoneController();
   VisitController visitController = VisitController();
@@ -358,245 +361,252 @@ class HomeState extends State<Home> {
 
       markersList.clear();
       List<Marker> tmpMarkers = [];
-      visitsElements.forEach((visit) {
-        if(visit['status']['uuid'].toString()==type.toString()){
-          Marker marker = Marker(
-            height: 80.0,
-            width: 80.0,
-            point: LatLng(visit['latitude'], visit['longitude']),
-            builder: (context) {
-              Color color = colorType(visit);
-              List<dynamic> conflicts = _conflictsAddress(
-                  visit['address'], visitsElements);
-              return Center(
-                child: IconButton(
-                  onPressed: () {
-                    visitsElements =
-                    teamsElements[_selectedTeamIndex]['zones'][_selectedZoneIndex]['visits'];
-                    showModalBottomSheet(
-                        context: context,
-                        builder: (context) {
-                          return DefaultTabController(length: 2, child: TabBarView(children: [
-                            SizedBox(
-                              height: 400,
-                              width: double.infinity,
-                              child: SingleChildScrollView(
-                                child: conflicts.length > 1 ? _visitsDescription(
-                                    conflicts) : Column(
+
+      _zonesTagsWidget.forEach((zoneTag){
+
+        Tag t = zoneTag as Tag;
+        List<dynamic> visitsElements = t.content['visits'];
+        visitsElements.forEach((visit) {
+          if(visit['status']['uuid'].toString()==type.toString()){
+            Marker marker = Marker(
+              height: 80.0,
+              width: 80.0,
+              point: LatLng(visit['latitude'], visit['longitude']),
+              builder: (context) {
+                Color color = colorType(visit);
+                List<dynamic> conflicts = _conflictsAddress(
+                    visit['address'], visitsElements);
+                return Center(
+                  child: IconButton(
+                    onPressed: () {
+                      visitsElements =
+                      teamsElements[_selectedTeamIndex]['zones'][_selectedZoneIndex]['visits'];
+                      showModalBottomSheet(
+                          context: context,
+                          builder: (context) {
+                            return DefaultTabController(length: 2, child: TabBarView(children: [
+                              SizedBox(
+                                height: 400,
+                                width: double.infinity,
+                                child: SingleChildScrollView(
+                                  child: conflicts.length > 1 ? _visitsDescription(
+                                      conflicts) : Column(
+                                    children: <Widget>[
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 15.0),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: <Widget>[
+                                            Icon(
+                                              Icons.person_pin,
+                                              color: color,
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Text(
+                                                visit['name'],
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 25,
+                                                ),
+                                              ),
+                                            ),
+                                            IconButton(
+                                              icon: Icon(Icons.edit),
+                                              onPressed: () {
+                                                editPersonDialog.dialog(
+                                                    context, teamsElements,
+                                                    _selectedTeamIndex,
+                                                    _selectedZoneIndex, visit,
+                                                    loadTeams);
+                                              },
+                                              color: orange_custom_color,
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                      Container(
+                                        child: Padding(
+                                          padding: EdgeInsets.only(
+                                              left: 20, right: 20, top: 40),
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment
+                                                .start,
+                                            mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                            children: <Widget>[
+                                              SingleChildScrollView(
+                                                scrollDirection: Axis.horizontal,
+                                                child: SingleChildScrollView(
+                                                  child: Row(
+                                                    children: <Widget>[
+                                                      Icon(
+                                                        Icons.place,
+                                                        color: color,
+                                                      ),
+                                                      SizedBox(
+                                                        width: 10,
+                                                      ),
+                                                      Text(
+                                                        visit['address'],
+                                                        style: TextStyle(
+                                                          fontWeight: FontWeight.bold,
+                                                          fontSize: 14,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                              Row(
+                                                children: <Widget>[
+                                                  Icon(
+                                                    Icons.phone,
+                                                    color:
+                                                    Color.fromRGBO(46, 204, 113, 1),
+                                                  ),
+                                                  SizedBox(
+                                                    width: 10,
+                                                  ),
+                                                  Text(
+                                                    visit['phoneNumber'] != null
+                                                        ? visit['phoneNumber']
+                                                        : 'Not provided',
+                                                    style: TextStyle(
+                                                      fontWeight: FontWeight.bold,
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                              Row(
+                                                children: <Widget>[
+                                                  Icon(Icons.filter_list,
+                                                      color: Colors.black),
+                                                  SizedBox(
+                                                    width: 10,
+                                                  ),
+                                                  Text(
+                                                    visit['status']['name'],
+                                                    style: TextStyle(
+                                                      fontWeight: FontWeight.bold,
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                              Row(
+                                                children: <Widget>[
+                                                  Icon(Icons.note,
+                                                      color:visit['observation']!=null? Colors.green:Colors.redAccent),
+                                                  SizedBox(
+                                                    width: 10,
+                                                  ),
+                                                  Text(
+                                                    visit['observation']!=null?visit['observation']:'No Observation',
+                                                    style: TextStyle(
+                                                      fontWeight: FontWeight.bold,
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.only(top:50.0),
+                                        child: Container(
+                                          child: Text('Swipe to see history',style: TextStyle(
+                                              fontSize: 25,
+                                              fontWeight: FontWeight.bold
+                                          ),),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              SingleChildScrollView(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
                                     Padding(
-                                      padding: const EdgeInsets.only(top: 15.0),
+                                      padding: const EdgeInsets.all(10.0),
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: <Widget>[
-                                          Icon(
-                                            Icons.person_pin,
-                                            color: color,
+                                          Text('History',style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 25
                                           ),
-                                          Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Text(
-                                              visit['name'],
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 25,
-                                              ),
+                                          ),
+                                          SizedBox(width: 20,),
+                                          Container(
+                                            height: 35,
+                                            width: 35,
+                                            decoration: BoxDecoration(
+                                              color: Colors.green,
+                                              shape: BoxShape.circle,
                                             ),
-                                          ),
-                                          IconButton(
-                                            icon: Icon(Icons.edit),
-                                            onPressed: () {
-                                              editPersonDialog.dialog(
-                                                  context, teamsElements,
-                                                  _selectedTeamIndex,
-                                                  _selectedZoneIndex, visit,
-                                                  loadTeams);
-                                            },
-                                            color: orange_custom_color,
+                                            child: Stack(
+                                              children: <Widget>[
+                                                Positioned(child: Icon(Icons.add,size: 15,color: Colors.white,),left: 19,top: 2,),
+                                                Positioned(child: IconButton(icon: Icon(Icons.calendar_today,color: Colors.white,size: 12,), onPressed: (){
+                                                  updateHistory(conflicts);
+                                                }))
+                                              ],
+                                            ),
                                           )
                                         ],
                                       ),
                                     ),
-                                    Container(
-                                      child: Padding(
-                                        padding: EdgeInsets.only(
-                                            left: 20, right: 20, top: 40),
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment
-                                              .start,
-                                          mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                          children: <Widget>[
-                                            SingleChildScrollView(
-                                              scrollDirection: Axis.horizontal,
-                                              child: SingleChildScrollView(
-                                                child: Row(
-                                                  children: <Widget>[
-                                                    Icon(
-                                                      Icons.place,
-                                                      color: color,
-                                                    ),
-                                                    SizedBox(
-                                                      width: 10,
-                                                    ),
-                                                    Text(
-                                                      visit['address'],
-                                                      style: TextStyle(
-                                                        fontWeight: FontWeight.bold,
-                                                        fontSize: 14,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                            Row(
-                                              children: <Widget>[
-                                                Icon(
-                                                  Icons.phone,
-                                                  color:
-                                                  Color.fromRGBO(46, 204, 113, 1),
-                                                ),
-                                                SizedBox(
-                                                  width: 10,
-                                                ),
-                                                Text(
-                                                  visit['phoneNumber'] != null
-                                                      ? visit['phoneNumber']
-                                                      : 'Not provided',
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                            Row(
-                                              children: <Widget>[
-                                                Icon(Icons.filter_list,
-                                                    color: Colors.black),
-                                                SizedBox(
-                                                  width: 10,
-                                                ),
-                                                Text(
-                                                  visit['status']['name'],
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                            Row(
-                                              children: <Widget>[
-                                                Icon(Icons.note,
-                                                    color:visit['observation']!=null? Colors.green:Colors.redAccent),
-                                                SizedBox(
-                                                  width: 10,
-                                                ),
-                                                Text(
-                                                  visit['observation']!=null?visit['observation']:'No Observation',
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.only(top:50.0),
-                                      child: Container(
-                                        child: Text('Swipe to see history',style: TextStyle(
-                                            fontSize: 25,
-                                            fontWeight: FontWeight.bold
-                                        ),),
-                                      ),
-                                    )
+                                    _buildHistory(conflicts)
                                   ],
                                 ),
                               ),
-                            ),
-                            SingleChildScrollView(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Padding(
-                                    padding: const EdgeInsets.all(10.0),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: <Widget>[
-                                        Text('History',style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 25
-                                        ),
-                                        ),
-                                        SizedBox(width: 20,),
-                                        Container(
-                                          height: 35,
-                                          width: 35,
-                                          decoration: BoxDecoration(
-                                            color: Colors.green,
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: Stack(
-                                            children: <Widget>[
-                                              Positioned(child: Icon(Icons.add,size: 15,color: Colors.white,),left: 19,top: 2,),
-                                              Positioned(child: IconButton(icon: Icon(Icons.calendar_today,color: Colors.white,size: 12,), onPressed: (){
-                                                updateHistory(conflicts);
-                                              }))
-                                            ],
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                  _buildHistory(conflicts)
-                                ],
-                              ),
-                            ),
 
-                          ]));
-                        });
-                  },
-                  icon: Stack(
-                    children: <Widget>[
-                      Positioned(
-                        top: 10,
-                        left: 15,
-                        child: Container(
-                          width: 10,
-                          height: 10,
-                          color: color,
-                        ),
-                      ),
-                      Icon(
-                        Icons.place,
-                        color: color,
-                        size: 40,
-                      ),
-                      Positioned(
-                        top: 8,
-                        left: 15,
-                        child: Text(_currentConflictsSize(conflicts).toString()
-                          ,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
+                            ]));
+                          });
+                    },
+                    icon: Stack(
+                      children: <Widget>[
+                        Positioned(
+                          top: 10,
+                          left: 15,
+                          child: Container(
+                            width: 10,
+                            height: 10,
+                            color: color,
                           ),
                         ),
-                      )
-                    ],
+                        Icon(
+                          Icons.place,
+                          color: color,
+                          size: 40,
+                        ),
+                        Positioned(
+                          top: 8,
+                          left: 15,
+                          child: Text(_currentConflictsSize(conflicts).toString()
+                            ,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
                   ),
-                ),
-              );
-            },
-          );
+                );
+              },
+            );
 
-          tmpMarkers.add(marker);
-        }else print('Not Equals');
+            tmpMarkers.add(marker);
+          }else print('Not Equals');
+
+        });
 
       });
 
@@ -604,6 +614,260 @@ class HomeState extends State<Home> {
         markersList = tmpMarkers;
         flutterMapWidget.state.updateMarkers(markersList, LatLng(currentLocation[0],currentLocation[1]), 13.0);
       });
+  }
+
+  loadMarkersWithMultipleZones(){
+    List<Marker> tmpMarkers = [];
+
+    _zonesTagsWidget.forEach((z){
+
+      Tag t = z as Tag;
+      List<dynamic> visitsElements = t.content['visits'];
+      visitsElements.forEach((visit) {
+        Marker marker = Marker(
+          height: 80.0,
+          width: 80.0,
+          point: LatLng(visit['latitude'], visit['longitude']),
+          builder: (context) {
+            Color color = colorType(visit);
+            List<dynamic> conflicts = _conflictsAddress(
+                visit['address'], visitsElements);
+            return Center(
+              child: IconButton(
+                onPressed: () {
+                  visitsElements =
+                  teamsElements[_selectedTeamIndex]['zones'][_selectedZoneIndex]['visits'];
+                  showModalBottomSheet(
+                      context: context,
+                      builder: (context) {
+                        return DefaultTabController(length: 2, child: TabBarView(children: [
+                          SizedBox(
+                            height: 400,
+                            width: double.infinity,
+                            child: SingleChildScrollView(
+                              child: conflicts.length > 1 ? _visitsDescription(
+                                  conflicts) : Column(
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 15.0),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        Icon(
+                                          Icons.person_pin,
+                                          color: color,
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Text(
+                                            visit['name'],
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 25,
+                                            ),
+                                          ),
+                                        ),
+                                        IconButton(
+                                          icon: Icon(Icons.edit),
+                                          onPressed: () {
+                                            editPersonDialog.dialog(
+                                                context, teamsElements,
+                                                _selectedTeamIndex,
+                                                _selectedZoneIndex, visit,
+                                                loadTeams);
+                                          },
+                                          color: orange_custom_color,
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
+                                    child: Padding(
+                                      padding: EdgeInsets.only(
+                                          left: 20, right: 20, top: 40),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment
+                                            .start,
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                        children: <Widget>[
+                                          SingleChildScrollView(
+                                            scrollDirection: Axis.horizontal,
+                                            child: SingleChildScrollView(
+                                              child: Row(
+                                                children: <Widget>[
+                                                  Icon(
+                                                    Icons.place,
+                                                    color: color,
+                                                  ),
+                                                  SizedBox(
+                                                    width: 10,
+                                                  ),
+                                                  Text(
+                                                    visit['address'],
+                                                    style: TextStyle(
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 14,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          Row(
+                                            children: <Widget>[
+                                              Icon(
+                                                Icons.phone,
+                                                color:
+                                                Color.fromRGBO(46, 204, 113, 1),
+                                              ),
+                                              SizedBox(
+                                                width: 10,
+                                              ),
+                                              Text(
+                                                visit['phoneNumber'] != null
+                                                    ? visit['phoneNumber']
+                                                    : 'Not provided',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                          Row(
+                                            children: <Widget>[
+                                              Icon(Icons.filter_list,
+                                                  color: Colors.black),
+                                              SizedBox(
+                                                width: 10,
+                                              ),
+                                              Text(
+                                                visit['status']['name'],
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                          Row(
+                                            children: <Widget>[
+                                              Icon(Icons.note,
+                                                  color:visit['observation']!=null? Colors.green:Colors.redAccent),
+                                              SizedBox(
+                                                width: 10,
+                                              ),
+                                              Text(
+                                                visit['observation']!=null?visit['observation']:'No Observation',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              )
+                                            ],
+                                          ),
+
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.only(top:50.0),
+                                    child: Container(
+                                      child: Text('Swipe to see history',style: TextStyle(
+                                          fontSize: 25,
+                                          fontWeight: FontWeight.bold
+                                      ),),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                          SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      Text('History',style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 25
+                                      ),
+                                      ),
+                                      SizedBox(width: 20,),
+                                      Container(
+                                        height: 35,
+                                        width: 35,
+                                        decoration: BoxDecoration(
+                                          color: Colors.green,
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: Stack(
+                                          children: <Widget>[
+                                            Positioned(child: Icon(Icons.add,size: 15,color: Colors.white,),left: 19,top: 2,),
+                                            Positioned(child: IconButton(icon: Icon(Icons.calendar_today,color: Colors.white,size: 12,), onPressed: (){
+                                              updateHistory(conflicts);
+                                            }))
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                _buildHistory(conflicts)
+                              ],
+                            ),
+                          ),
+
+                        ]));
+                      });
+                },
+                icon: Stack(
+                  children: <Widget>[
+                    Positioned(
+                      top: 10,
+                      left: 15,
+                      child: Container(
+                        width: 10,
+                        height: 10,
+                        color: color,
+                      ),
+                    ),
+                    Icon(
+                      Icons.place,
+                      color: color,
+                      size: 40,
+                    ),
+                    Positioned(
+                      top: 8,
+                      left: 15,
+                      child: Text(conflicts.length.toString()
+                        ,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+
+        tmpMarkers.add(marker);
+      });
+
+      setState(() {
+        markersList = tmpMarkers;
+      });
+    });
+
+
   }
 
   void initState() {
@@ -619,17 +883,25 @@ class HomeState extends State<Home> {
       if(team['uuid'].toString()==_currentTeamUuidAfterCallBackReload){
         List<dynamic> tmpZones = team["zones"];
         tmpZones.forEach((z){
-          if(z['uuid'].toString()==_currentZoneUuidAfterCallBackReload){
+          _zonesTagsWidget.forEach((zoTag){
+
+            Tag t = zoTag as Tag;
+            if(z['uuid'].toString()==t.content['uuid'].toString()){
+              t.content = z;
+            }
+          });
            setState(() {
              _selectedTeamIndex = teamsElements.indexOf(team);
              _selectedZoneIndex = tmpZones.indexOf(z);
              zones = team['zones'];
              visitsElements = zones[_selectedZoneIndex]['visits'];
              loadZones();
-             loadMarkers(z['visits']);
-             flutterMapWidget.state.updateMarkers(markersList, LatLng(currentLocation[0], currentLocation[1]), 12.0);
            });
-          }
+        });
+
+        setState(() {
+          loadMarkersWithMultipleZones();
+          flutterMapWidget.state.updateMarkers(markersList, LatLng(currentLocation[0], currentLocation[1]), 12.0);
         });
       }
     });
@@ -704,6 +976,7 @@ class HomeState extends State<Home> {
                             zones = teamsElements[value]["zones"];
                             statusElements = teamsElements[value]["status"];
                             status.clear();
+                            _zonesTagsWidget.clear();
                             markersList.clear();
                             flutterMapWidget.state.updateMarkers(markersList, LatLng(currentLocation[0],currentLocation[1]), 13.0);
                             loadZones();
@@ -847,7 +1120,8 @@ class HomeState extends State<Home> {
                           currentLocation[1] = zones[value]['longitude'];
                           visitsElements = zones[value]["visits"];
                           status = teamHelper.buildDropDownSelection(statusElements);
-                          loadMarkers(zones[value]["visits"]);
+                          _buildZoneTag(zones[value]);
+                          loadMarkersWithMultipleZones();
                           flutterMapWidget.state.updateMarkers(markersList,LatLng(currentLocation[0], currentLocation[1]),13.0);
                         });
 
@@ -886,6 +1160,14 @@ class HomeState extends State<Home> {
               ),
             ),
             SizedBox(height: 25,),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: _zonesTagsWidget,
+              ),
+            ),
+            SizedBox(height: 10,),
             SingleChildScrollView(
               child: SizedBox(
                 height: MediaQuery
@@ -1185,6 +1467,48 @@ class HomeState extends State<Home> {
 
   _deleteDateInHistory() async {
     return visitController.deleteHistoryDate(historyDto);
+  }
+
+  _buildZoneTag(zoneEl){
+    if(!stillPresent(zoneEl)){
+      Tag t = Tag(Colors.blue,zoneEl,_removeTag);
+      _zonesTagsWidget.add(t);
+    }
+  }
+  _removeTag(Tag t){
+    setState(() {
+      selectedStatus ='';
+      String tmpDeletedZoneName = t.content['name'];
+      _zonesTagsWidget.remove(t);
+      if(_zonesTagsWidget.length==0){
+        selectedZone = '';
+        markersList = [];
+        status.clear();
+        currentLocation[0] =48.864716;
+        currentLocation[1] = 2.349014;
+      }else{
+        if(tmpDeletedZoneName.toString()==selectedZone){
+          Tag tmp = _zonesTagsWidget[0];
+          currentLocation[0] = tmp.content['latitude'];
+          currentLocation[1] = tmp.content['longitude'];
+          selectedZone = tmp.content['name'];
+        }
+      }
+    });
+    loadMarkersWithMultipleZones();
+    flutterMapWidget.state.updateMarkers(markersList,LatLng(currentLocation[0], currentLocation[1]),13.0);
+  }
+
+  stillPresent(zoneEl){
+
+    bool res = false;
+    _zonesTagsWidget.forEach((z){
+      Tag t = z as Tag;
+
+      if(t.content['uuid'].toString()==zoneEl['uuid'].toString()) res =true;
+    });
+
+    return res;
   }
 
 
