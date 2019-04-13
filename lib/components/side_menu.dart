@@ -97,7 +97,10 @@ class _SideMenuState extends State<SideMenu> {
                 ],
               ),
             ),
-            Container(color: Colors.grey,height: 1,width: double.infinity,),
+            Padding(
+              padding: EdgeInsets.only(left:8.0),
+              child: Container(color: Colors.grey,height: 1,width: double.infinity,),
+            ),
             Padding(
               padding: EdgeInsets.all(8.0),
               child: Column(
@@ -152,7 +155,10 @@ class _SideMenuState extends State<SideMenu> {
                 ],
               ),
             ),
-            Container(color: Colors.grey,height: 1,width: double.infinity,),
+            Padding(
+              padding: EdgeInsets.only(left:8.0),
+              child: Container(color: Colors.grey,height: 1,width: double.infinity,),
+            ),
             Padding(
               padding: EdgeInsets.all(8.0),
               child: Column(
@@ -190,7 +196,10 @@ class _SideMenuState extends State<SideMenu> {
                 ],
               ),
             ),
-            Container(color: Colors.grey,height: 1,width: double.infinity,),
+            Padding(
+              padding:EdgeInsets.only(left:8.0),
+              child: Container(color: Colors.grey,height: 1,width: double.infinity,),
+            ),
             Padding(
               padding: EdgeInsets.all(8.0),
               child: Row(

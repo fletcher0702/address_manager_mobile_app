@@ -579,7 +579,7 @@ class HomeState extends State<Home> {
                       Positioned(
                         top: 8,
                         left: 15,
-                        child: Text(conflicts.length.toString()
+                        child: Text(_currentConflictsSize(conflicts).toString()
                           ,
                           style: TextStyle(
                             color: Colors.white,
@@ -643,6 +643,18 @@ class HomeState extends State<Home> {
     });
 
     return visitsConflicts;
+  }
+
+  _currentConflictsSize(List<dynamic>visits){
+    int counter = 0 ;
+
+    visits.forEach((v){
+
+      if(v['status']['uuid']==teamsElements[_selectedTeamIndex]['status'][_selectedStatusIndex]['uuid']) counter+=1;
+
+    });
+
+    return counter;
   }
 
 

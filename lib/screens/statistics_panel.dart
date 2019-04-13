@@ -88,6 +88,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       });
 
       Column legendNumberRef = Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: tmpLegendNumber,
       );
 
