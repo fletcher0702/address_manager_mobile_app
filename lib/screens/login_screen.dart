@@ -35,7 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     if (!alreadySignedToggle) {
-      Future.delayed(Duration(seconds: 2), () async {
+      Future.delayed(Duration(seconds: 1), () async {
         _userController.checkSignIn().then((res) {
           alreadySignedToggle = true;
           setState(() {
@@ -171,15 +171,17 @@ class _LoginScreenState extends State<LoginScreen> {
                                         errorMessage, updateErrorMessage);
                                   });
                                 }else{
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => ColorLoader()));
                                   bool res = await _loginRequest(
                                       emailController.text,
                                       passwordController.text);
                                   if (res){
-                                    print('valid credentials...');
+                                    Navigator.pop(context);
                                     Navigator.pushReplacementNamed(
                                         context, HOME_ROUTE);
                                   }
                                   else {
+                                    Navigator.pop(context);
                                     setState(() {
                                       errorMessage = 'Invalid email or password...';
                                       errorBox = UIHelper.errorMessageWidget(

@@ -1,3 +1,4 @@
+import 'package:address_manager/components/loader.dart';
 import 'package:address_manager/helpers/auth_helper.dart';
 import 'package:address_manager/helpers/ui_helper.dart';
 import 'package:flutter/material.dart';
@@ -176,11 +177,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                                       if(AuthHelper.passwordRule(password)){
 
+                                        Navigator.push(context, MaterialPageRoute(builder: (context) => ColorLoader()));
                                         bool res = await _registerRequest(email, password);
 
                                         if(res){
+                                          Navigator.pop(context);
                                           Navigator.pushReplacementNamed(context, HOME_ROUTE);
                                         }else{
+                                          Navigator.pop(context);
                                           setState(() {
                                             errorMessage = 'Please try another email...';
                                             errorBox = UIHelper.errorMessageWidget(errorMessage, updateErrorMessage);
