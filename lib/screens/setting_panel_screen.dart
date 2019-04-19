@@ -1,8 +1,15 @@
+import 'package:address_manager/controller/team_controller.dart';
+import 'package:address_manager/controller/user_controller.dart';
 import 'package:address_manager/helpers/auth_helper.dart';
+import 'package:address_manager/helpers/team_helper.dart';
+import 'package:address_manager/models/dto/user/update_user_password_dto.dart';
+import 'package:address_manager/screens/add_transition.dart';
 import 'package:flutter/material.dart';
 import 'package:address_manager/components/side_menu.dart';
 import 'package:address_manager/tools/colors.dart';
 import 'package:address_manager/helpers/ui_helper.dart';
+import 'package:address_manager/tools/actions.dart';
+import 'package:address_manager/tools/messages.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -11,14 +18,36 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
 
+  final userController = UserController();
+  final teamController = TeamController();
+  final teamHelper = TeamHelper();
   final oldPasswordController = TextEditingController();
   final newPasswordController = TextEditingController();
   final confirmNewPasswordController = TextEditingController();
+
+  // Teams data
+  List<dynamic> teams = [];
+  bool teamToggle = false;
 
   // Error Message
   String errorMessage = '';
   Container errorBox = Container();
 
+
+  @override
+  void initState() {
+    super.initState();
+    loadTeams();
+  }
+
+  loadTeams(){
+    teamController.findAll().then((res) {
+      teams = res;
+      setState(() {
+        teamToggle = true;
+      });
+    });
+  }
 
   @override
   void dispose() {
@@ -158,6 +187,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                             if(AuthHelper.passwordRule(newPasswordController.text)){
 
+                              Navigator.push(context, MaterialPageRoute(
+                                  builder: (context) =>
+                                      AddTransition(SUCCESS_UPDATE,ERROR_UPDATE,updatePasswordAction,UPDATE_ACTION,afterPasswordUpdateAction)));
 
                             }else{
                               errorMessage = 'Password length should be greater than 6...';
@@ -222,5 +254,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
     setState(() {
       errorBox = Container();
     });
+  }
+
+  updatePasswordAction() async {
+    UpdateUserPasswordDto userPasswordDto = UpdateUserPasswordDto(oldPasswordController.text,newPasswordController.text);
+    return userController.updatePassword(userPasswordDto);
+  }
+
+  afterPasswordUpdateAction(){
+    oldPasswordController.text = '';
+    newPasswordController.text = '';
+    confirmNewPasswordController.text = '';
   }
 }

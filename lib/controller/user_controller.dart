@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:address_manager/models/dto/user/update_user_password_dto.dart';
 import 'package:http/http.dart' as http;
 
 import '../routes/routes.dart';
@@ -87,6 +88,23 @@ class UserController {
       return json["valid"] as bool;
     }
     return false;
+  }
+
+  Future<dynamic> updatePassword(UpdateUserPasswordDto userPasswordDto) async {
+    Map credentials = await userService.getPreferences();
+
+    userPasswordDto.userUuid = credentials['uuid'];
+    var response = await http
+        .patch(UPDATED_PASSWORD_HTTP_ROUTE,
+        headers: header,
+        body: json.encode({
+          "userUuid": userPasswordDto.userUuid,
+          "oldPassword": userPasswordDto.oldPassword,
+          "newPassword": userPasswordDto.newPassword
+        }))
+        .then((res) => res);
+
+    return jsonDecode(response.body);
   }
 
   getCredentials(){
