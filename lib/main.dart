@@ -8,6 +8,7 @@ import 'screens/team_panel.dart';
 import 'screens/visit_panel.dart';
 import 'screens/zone_panel_screen.dart';
 import 'screens/home_screen.dart';
+import 'screens/setting_panel_screen.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 main() async{
@@ -25,6 +26,7 @@ main() async{
       TEAM_PANEL_ROUTE: (context) => TeamPanelScreen(),
       VISITS_PANEL_ROUTE: (context) => VisitPanelScreen(),
       STATISTICS_PANEL_ROUTE: (context) => StatisticsScreen(),
+      SETTINGS_PANEL_ROUTE: (context) => SettingsScreen(),
     },
   ));
 }

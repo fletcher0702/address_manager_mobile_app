@@ -9,6 +9,7 @@ const ZONE_PANEL_ROUTE = '/zonepanel';
 const TEAM_PANEL_ROUTE = '/teampanel';
 const VISITS_PANEL_ROUTE = '/visitpanel';
 const STATISTICS_PANEL_ROUTE = '/statisticspanel';
+const SETTINGS_PANEL_ROUTE = '/settingspanel';
 
 // HTTP ROUTES
 
@@ -17,6 +18,7 @@ const USER_BASE_URL = HOST+'/users/';
 const LOGIN_HTTP_ROUTE = HOST +'/users/login';
 const SIGN_UP_HTTP_ROUTE = HOST+ '/users/register';
 const ALREADY_SIGNED_HTTP_ROUTE = HOST + '/users/checktoken';
+const UPDATED_PASSWORD_HTTP_ROUTE = HOST + '/users/password/update';
 
 // Zone Routes
 
