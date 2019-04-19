@@ -57,7 +57,7 @@ class HomeState extends State<Home> {
   List<DropdownMenuItem<int>> locations = [];
   List<DropdownMenuItem<int>> status = [];
   List<Marker> markersList = [];
-  String selectedZone;
+  String selectedZone = '';
   String selectedStatus;
   String selectedTeam ='';
   String selectedVisitName = '';
@@ -66,7 +66,6 @@ class HomeState extends State<Home> {
   int _selectedTeamIndex=-1;
   var _selectedDate;
   String _selectedVisitUuid = '';
-  var defaultTeam;
   String _currentTeamUuidAfterCallBackReload = '';
   String _currentZoneUuidAfterCallBackReload = '';
 
@@ -98,8 +97,8 @@ class HomeState extends State<Home> {
     teamsElements.forEach((t) {
       if (t['uuid'] == userCredentials['teamUuid']) {
         setState(() {
-          defaultTeam = t;
           _currentTeamUuidAfterCallBackReload = t['uuid'];
+          _selectedTeamIndex = teamsElements.indexOf(t);
           selectedTeam = t['name'];
           zones = t['zones'];
           statusElements = t['status'];
@@ -1123,14 +1122,12 @@ class HomeState extends State<Home> {
                   ),
                   DropdownButtonHideUnderline(
                     child: DropdownButton(
-                      hint: selectedZone != null
-                          ? Text(selectedZone,
+                      hint: Text(selectedZone,
                           style: TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.bold,
                           ),
-                          textAlign: TextAlign.center)
-                          : Text(''),
+                          textAlign: TextAlign.center),
                       elevation: 0,
                       items: locations,
                       onChanged: (value) {
