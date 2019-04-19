@@ -172,7 +172,7 @@ class _SideMenuState extends State<SideMenu> {
                     children: <Widget>[
                       Icon(Icons.settings,color:Colors.grey),
                       FlatButton(
-                        onPressed: () => {},
+                        onPressed: () {Navigator.pushNamed(context, SETTINGS_PANEL_ROUTE);},
                         child: Text('Settings',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
