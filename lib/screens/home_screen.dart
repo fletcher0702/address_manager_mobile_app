@@ -1,6 +1,7 @@
 import 'package:address_manager/components/hot_dialog_history.dart';
 import 'package:address_manager/components/input_tag.dart';
 import 'package:address_manager/components/map_widget.dart';
+import 'package:address_manager/controller/user_controller.dart';
 import 'package:address_manager/helpers/team_helper.dart';
 import 'package:address_manager/models/dto/visit/delete_history_date_dto.dart';
 import 'package:address_manager/models/dto/visit/update_visit_history.dart';
@@ -30,6 +31,7 @@ class HomeState extends State<Home> {
 
   List<Widget> _zonesTagsWidget = [];
   BuildContext context;
+  final userController = UserController();
   ZoneController zoneController = ZoneController();
   VisitController visitController = VisitController();
   TeamController teamController = TeamController();
@@ -40,6 +42,7 @@ class HomeState extends State<Home> {
   FlutterMapWidget flutterMapWidget;
 
   // Toggles trackers
+  bool firstLaunch = true;
   bool mapToggle = false;
   bool teamToggle = false;
 
@@ -56,13 +59,14 @@ class HomeState extends State<Home> {
   List<Marker> markersList = [];
   String selectedZone;
   String selectedStatus;
-  String selectedTeam;
+  String selectedTeam ='';
   String selectedVisitName = '';
   int _selectedZoneIndex=-1;
   int _selectedStatusIndex = -1;
   int _selectedTeamIndex=-1;
   var _selectedDate;
   String _selectedVisitUuid = '';
+  var defaultTeam;
   String _currentTeamUuidAfterCallBackReload = '';
   String _currentZoneUuidAfterCallBackReload = '';
 
@@ -80,11 +84,39 @@ class HomeState extends State<Home> {
   bool editable = true;
   DateTime date;
 
+  void initState() {
+    super.initState();
+    loadTeams();
+    mapController = MapController();
+    flutterMapWidget = FlutterMapWidget();
+    mapToggle = true;
+  }
+
+  loadDefaultTeam() async {
+
+    var userCredentials = await userController.getCredentials();
+    teamsElements.forEach((t) {
+      if (t['uuid'] == userCredentials['teamUuid']) {
+        setState(() {
+          defaultTeam = t;
+          _currentTeamUuidAfterCallBackReload = t['uuid'];
+          selectedTeam = t['name'];
+          zones = t['zones'];
+          statusElements = t['status'];
+          loadZones();
+          firstLaunch = false;
+        });
+      }
+    }
+    );
+  }
+
 
   loadTeams() {
     teamController.findAll().then((data){
       setState(() {
         teamsElements = data;
+        if(firstLaunch) loadDefaultTeam();
         teamToggle = true;
         teams = teamHelper.buildDropDownSelection(teamsElements);
         if(_currentTeamUuidAfterCallBackReload.isNotEmpty && _currentZoneUuidAfterCallBackReload.isNotEmpty){
@@ -870,14 +902,6 @@ class HomeState extends State<Home> {
 
   }
 
-  void initState() {
-    super.initState();
-    loadTeams();
-    mapController = MapController();
-    flutterMapWidget = FlutterMapWidget();
-    mapToggle = true;
-  }
-
   _refreshMarkersAfterAdd(){
     teamsElements.forEach((team){
       if(team['uuid'].toString()==_currentTeamUuidAfterCallBackReload){
@@ -954,14 +978,13 @@ class HomeState extends State<Home> {
                     SizedBox(width: 5),
                     DropdownButtonHideUnderline(
                       child: DropdownButton(
-                        hint: selectedTeam != null
-                            ? Text(selectedTeam,
+                        hint:Text(selectedTeam,
                             style: TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.bold,
                             ),
                             textAlign: TextAlign.center)
-                            : Text(''),
+                        ,
                         elevation: 0,
                         items: teams,
                         onChanged: (value) {
