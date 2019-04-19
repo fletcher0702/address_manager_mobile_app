@@ -18,11 +18,16 @@ class TeamController {
 
   Future<dynamic>findAll() async {
     var credentials = await userController.getCredentials();
-    var response = await http
-        .get(USER_BASE_URL+credentials["uuid"]+'/teams')
-        .then((res) => res);
+    try{
+      var response = await http
+          .get(USER_BASE_URL+credentials["uuid"]+'/teams')
+          .then((res) => res);
 
-    return jsonDecode(response.body);
+      return jsonDecode(response.body);
+    }catch(e){
+      print(e.toString());
+      return [];
+    }
   }
 
   Future<dynamic> createOne(Team team) async {
