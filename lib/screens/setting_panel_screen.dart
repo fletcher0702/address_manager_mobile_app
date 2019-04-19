@@ -25,6 +25,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final newPasswordController = TextEditingController();
   final confirmNewPasswordController = TextEditingController();
 
+  bool firstLaunch =true;
   // Teams data
   List<dynamic> teams = [];
   String selectedTeam = '';
@@ -47,11 +48,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
   loadTeams(){
     teamController.findAll().then((res) {
       teams = res;
+      if(firstLaunch) loadDefaultTeam();
       teamsItems = teamHelper.buildDropDownSelection(teams);
       setState(() {
         teamToggle = true;
       });
     });
+  }
+
+  loadDefaultTeam() async {
+
+    var userCredentials = await userController.getCredentials();
+    teams.forEach((t) {
+      if (t['uuid'] == userCredentials['teamUuid']) {
+        setState(() {
+
+          selectedTeam = t['name'];
+          firstLaunch = false;
+        });
+      }
+    }
+    );
+
   }
 
   @override
