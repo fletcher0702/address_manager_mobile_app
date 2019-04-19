@@ -85,7 +85,9 @@ class _HotDialogAddState extends State<HotDialogAdd> {
       visit.phoneNumber = phoneNumber;
     if(observation.isNotEmpty) visit.observation = observation;
 
-    visit.date = visitDate;
+    if(date!=null){
+      visit.date = visitDate;
+    }else visit.date = '';
 
     return visitController.createVisit(visit);
   }

@@ -1001,10 +1001,11 @@ class HomeState extends State<Home> {
                         icon: Icon(Icons.person_add, size: 25,),
                         color: green_custom_color,
                         onPressed: () {
+
                           addPersonDialog
                               .dialog(
-                              this.context, teamsElements, _selectedTeamIndex,
-                              _selectedZoneIndex, loadTeams);
+                              this.context, teamsElements, -1,
+                              -1, loadTeams);
                         }
                     )
                   ],
@@ -1366,83 +1367,87 @@ class HomeState extends State<Home> {
 
 
         dates.forEach((d){
-          Row r = Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(d,style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16
-              ),),
-              IconButton(icon: Icon(Icons.clear, color: Colors.red,), onPressed: (){
-                showDialog(
-                    context: context,
-                    builder: (context) {
-                      return SimpleDialog(
-                        title: Center(
-                            child: Text(
-                              d,
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
-                            )),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        children: <Widget>[
-                          Center(
-                              child: Text(
-                                'Are you sure ?',
-                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                              )),
-                          Center(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                FlatButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                  child: Text(
-                                    'CANCEL',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold, color: Colors.white),
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(30)),
-                                  color: Colors.red,
-                                ),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                FlatButton(
-                                  onPressed: () async {
-                                    historyDto = DeleteHistoryDateDto(teamsElements[_selectedTeamIndex]['uuid'],teamsElements[_selectedTeamIndex]['zones'][_selectedZoneIndex]['uuid'],visit['uuid'],d);
 
-                                    Navigator.pop(context);
-                                    Navigator.pop(context);
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                AddTransition(SUCCESS_DELETE,ERROR_DELETE,_deleteDateInHistory,DELETE_ACTION,loadTeams)));
-                                  },
-                                  child: Text(
-                                    'DELETE',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold, color: Colors.white),
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(30)),
-                                  color: Colors.red,
-                                ),
-                              ],
-                            ),
+          if(d.toString().isNotEmpty){
+            Row r = Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(d,style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16
+                ),),
+                IconButton(icon: Icon(Icons.clear, color: Colors.red,), onPressed: (){
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return SimpleDialog(
+                          title: Center(
+                              child: Text(
+                                d,
+                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                              )),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
                           ),
-                        ],
-                      );
-                    });
-              }),
-            ],
-          );
-          datesWidget.add(r);
+                          children: <Widget>[
+                            Center(
+                                child: Text(
+                                  'Are you sure ?',
+                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                                )),
+                            Center(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  FlatButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text(
+                                      'CANCEL',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold, color: Colors.white),
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(30)),
+                                    color: Colors.red,
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  FlatButton(
+                                    onPressed: () async {
+                                      historyDto = DeleteHistoryDateDto(teamsElements[_selectedTeamIndex]['uuid'],teamsElements[_selectedTeamIndex]['zones'][_selectedZoneIndex]['uuid'],visit['uuid'],d);
+
+                                      Navigator.pop(context);
+                                      Navigator.pop(context);
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  AddTransition(SUCCESS_DELETE,ERROR_DELETE,_deleteDateInHistory,DELETE_ACTION,loadTeams)));
+                                    },
+                                    child: Text(
+                                      'DELETE',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold, color: Colors.white),
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(30)),
+                                    color: Colors.red,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        );
+                      });
+                }),
+              ],
+            );
+            datesWidget.add(r);
+          }
+
         });
         Padding d = Padding(padding: EdgeInsets.only(left: MediaQuery.of(context).size.width*0.15,right:  MediaQuery.of(context).size.width*0.02),child: Divider(
           color: Colors.black,

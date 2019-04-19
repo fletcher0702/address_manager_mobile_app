@@ -327,7 +327,9 @@ class HotDialogEditState extends State<HotDialogEdit> {
     String zoneUuid = widget.teams[_selectedTeamIndex]["zones"][_selectedZoneIndex]["uuid"];
     String statusUuid = _selectedStatusIndex!=-1?widget.teams[_selectedTeamIndex]["status"][_selectedStatusIndex]["uuid"]:widget.person['status']['uuid'];
     UpdateVisitDto visitDto = UpdateVisitDto(userUuid,teamUuid,zoneUuid,visitUuid,statusUuid,name,address,phoneNumber);
-    visitDto.date = date.toString();
+    if(date!=null){
+      visitDto.date = date.toString();
+    }else visitDto.date = '';
     visitDto.observation = visitObservationController.text;
 
     print('Before update request');
