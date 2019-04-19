@@ -107,6 +107,10 @@ class UserController {
     return jsonDecode(response.body);
   }
 
+  setDefaultTeam(teamUuid){
+    return userService.createDefaultTeamCredentialPreferences(teamUuid);
+  }
+
   getCredentials(){
     return userService.getPreferences();
   }
