@@ -1,4 +1,6 @@
 
+import 'package:address_manager/screens/copyright_screen.dart';
+import 'package:address_manager/screens/policy_screen.dart';
 import 'package:address_manager/screens/statistics_panel.dart';
 import 'package:flutter/material.dart';
 import 'routes/routes.dart';
@@ -27,6 +29,8 @@ main() async{
       VISITS_PANEL_ROUTE: (context) => VisitPanelScreen(),
       STATISTICS_PANEL_ROUTE: (context) => StatisticsScreen(),
       SETTINGS_PANEL_ROUTE: (context) => SettingsScreen(),
+      COPYRIGHT_ROUTE: (context) => CopyrightScreen(),
+      POLICY_ROUTE: (context) => PolicyScreen(),
     },
   ));
 }

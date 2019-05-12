@@ -10,6 +10,8 @@ const TEAM_PANEL_ROUTE = '/teampanel';
 const VISITS_PANEL_ROUTE = '/visitpanel';
 const STATISTICS_PANEL_ROUTE = '/statisticspanel';
 const SETTINGS_PANEL_ROUTE = '/settingspanel';
+const COPYRIGHT_ROUTE = '/copyright';
+const POLICY_ROUTE = '/policy';
 
 // HTTP ROUTES
 

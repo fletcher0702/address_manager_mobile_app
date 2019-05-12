@@ -244,11 +244,39 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     ))
                               ],
                             ),
-                          )
+                          ),
                         ],
                       ),
                     ),
                   ),
+                  Container(
+
+
+                    child: Stack(
+                      alignment: Alignment.bottomCenter,
+                      children:[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            FlatButton(onPressed: (){
+                              Navigator.pushNamed(context, COPYRIGHT_ROUTE);
+                            }, child: Text('TERMS OF USE',style:
+                            TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),),),
+                            Container(height: 10,color: Colors.black,width: 1,),
+                            FlatButton(onPressed: (){
+                              Navigator.pushNamed(context, POLICY_ROUTE);
+                            }, child: Text('PRIVACY POLICY',style:
+                            TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),),
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                  )
                 ],
               ),
             ),
