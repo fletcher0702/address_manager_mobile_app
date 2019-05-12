@@ -21,40 +21,42 @@ class PolicyScreen extends StatelessWidget {
         height: MediaQuery.of(context).size.height,
         child: Padding(
           padding: EdgeInsets.all(30.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text('Updated May 12, 2019'),
-              SizedBox(height: 20,),
-              Text(PRIVACY,style: TextStyle(
-                fontWeight: FontWeight.bold,
-              ),),
-              SizedBox(height: 30,),
-              Text('RESPECTING YOUR PRIVACY',style: TextStyle(
-                fontSize: 30,
-                fontWeight: FontWeight.bold
-              ),),
-              SizedBox(height: 20,),
-              Text(RESPECTING_YOUR_PRIVACY,style: TextStyle(
-                fontWeight: FontWeight.bold
-              ),),
-              SizedBox(height: 30,),
-              Text('DATA SECURITY AND CONFIDENTIALITY',style: TextStyle(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text('Updated May 12, 2019'),
+                SizedBox(height: 20,),
+                Text(PRIVACY,style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),),
+                SizedBox(height: 30,),
+                Text('RESPECTING YOUR PRIVACY',style: TextStyle(
                   fontSize: 30,
                   fontWeight: FontWeight.bold
-              ),),
-              SizedBox(height: 20,),
-
-              Text(DATA_SECURITY_AND_CONFIDENTIALITY),
-              SizedBox(height: 30,),
-              Text('NOTIFICATION OF CHANGES TO THIS POLICY',style: TextStyle(
-                  fontSize: 30,
+                ),),
+                SizedBox(height: 20,),
+                Text(RESPECTING_YOUR_PRIVACY,style: TextStyle(
                   fontWeight: FontWeight.bold
-              ),),
-              SizedBox(height: 20,),
-              Text(POLICY_UPDATE)
+                ),),
+                SizedBox(height: 30,),
+                Text('DATA SECURITY AND CONFIDENTIALITY',style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold
+                ),),
+                SizedBox(height: 20,),
 
-            ],
+                Text(DATA_SECURITY_AND_CONFIDENTIALITY),
+                SizedBox(height: 30,),
+                Text('NOTIFICATION OF CHANGES TO THIS POLICY',style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold
+                ),),
+                SizedBox(height: 20,),
+                Text(POLICY_UPDATE)
+
+              ],
+            ),
           ),
         ),
       ),
