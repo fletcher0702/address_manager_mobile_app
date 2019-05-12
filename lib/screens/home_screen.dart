@@ -1,5 +1,6 @@
 import 'package:address_manager/components/hot_dialog_history.dart';
 import 'package:address_manager/components/input_tag.dart';
+import 'package:address_manager/components/loader.dart';
 import 'package:address_manager/components/map_widget.dart';
 import 'package:address_manager/controller/user_controller.dart';
 import 'package:address_manager/helpers/team_helper.dart';
@@ -64,8 +65,6 @@ class HomeState extends State<Home> {
   int _selectedZoneIndex=-1;
   int _selectedStatusIndex = -1;
   int _selectedTeamIndex=-1;
-  var _selectedDate;
-  String _selectedVisitUuid = '';
   String _currentTeamUuidAfterCallBackReload = '';
   String _currentZoneUuidAfterCallBackReload = '';
 
@@ -901,6 +900,19 @@ class HomeState extends State<Home> {
 
   }
 
+  _loadAllCurrentVisits(){
+
+    List<dynamic> currentVisits = [];
+
+    _zonesTagsWidget.forEach((z) {
+      Tag t = z as Tag;
+      List<dynamic> visitsElements = t.content['visits'];
+      currentVisits.addAll(visitsElements);
+    });
+
+    return currentVisits;
+  }
+
   _refreshMarkersAfterAdd(){
     teamsElements.forEach((team){
       if(team['uuid'].toString()==_currentTeamUuidAfterCallBackReload){
@@ -960,7 +972,7 @@ class HomeState extends State<Home> {
       backgroundColor: Colors.white,
       drawer: SideMenu(),
       appBar: PreferredSize(
-        preferredSize: Size(double.infinity, 50),
+        preferredSize: Size(double.infinity, 60),
         child: AppBar(
           iconTheme: IconThemeData(color: Colors.grey),
           title: SizedBox(
@@ -1040,172 +1052,198 @@ class HomeState extends State<Home> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton:  FlatButton(
-        child: Icon(
-          Icons.arrow_upward,
-          color: Colors.white,
-          size: 20,
+      floatingActionButton:  Padding(
+        padding: EdgeInsets.only(bottom:10),
+        child: FlatButton(
+          child: Container(
+            height: 55,
+            child: Icon(
+              Icons.arrow_upward,
+              color: Colors.white,
+              size: 25,
+            ),
+          ),
+          color: Color.fromRGBO(46, 204, 113, 1),
+          onPressed: () {
+            showModalBottomSheet(
+                context: context,
+                builder: (ctx) {
+
+                  List<dynamic> visits = _loadAllCurrentVisits();
+                  return Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Container(
+                      height: MediaQuery.of(context).size.height*0.9,
+                      child: visits.length == 0
+                          ? Center(
+                        child: Text(
+                            'Empty...Please add some persons or change the zone...'),
+                      )
+                          : ListView.builder(
+                          itemCount: visits.length,
+                          itemBuilder: (ctx, index) {
+                            return Padding(
+                              padding: EdgeInsets.only(
+                                  top: 10, bottom: 10),
+                              child: ListTile(
+                                leading: IconButton(
+                                    icon: Icon(
+                                      Icons.edit,
+                                      color: Color.fromRGBO(
+                                          255, 87, 0, 1),
+                                    ),
+                                    onPressed: () async {
+                                      editPersonDialog.dialog(
+                                          context, teamsElements,
+                                          _selectedTeamIndex,
+                                          _selectedZoneIndex,
+                                          visits[index], loadTeams);
+
+                                    }),
+                                title: Row(
+                                  children: <Widget>[
+                                    Text(
+                                      visits[index]['name'],
+                                      style: TextStyle(
+                                          fontWeight:
+                                          FontWeight.bold),
+                                    ),
+                                    SizedBox(width: 10,),
+                                    Container(
+                                      height: 20,
+                                      width: 20,
+                                      decoration: BoxDecoration(
+                                        color: Color(visits[index]['status']['color']),
+                                        shape: BoxShape.circle
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                subtitle: Column(
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text(visits[index]
+                                    ['address']),
+                                    Text(visits[index]
+                                    ['status']['name'])
+                                  ],
+                                ),
+                                onTap: () {},
+                              ),
+                            );
+                          }),
+                    ),
+                  );
+                });
+          },
+          shape: CircleBorder(side: BorderSide(color: Colors.white,width: 2)),
+
         ),
-        color: Color.fromRGBO(46, 204, 113, 1),
-        onPressed: () {
-          showModalBottomSheet(
-              context: context,
-              builder: (ctx) {
-                return Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Container(
-                    height: 800,
-                    child: visitsElements.length == 0
-                        ? Center(
-                      child: Text(
-                          'Empty...Please add some persons or change the zone...'),
-                    )
-                        : ListView.builder(
-                        itemCount: visitsElements.length,
-                        itemBuilder: (ctx, index) {
-                          return Padding(
-                            padding: EdgeInsets.only(
-                                top: 10, bottom: 10),
-                            child: ListTile(
-                              leading: IconButton(
-                                  icon: Icon(
-                                    Icons.edit,
-                                    color: Color.fromRGBO(
-                                        255, 87, 0, 1),
-                                  ),
-                                  onPressed: () async {
-                                    editPersonDialog.dialog(
-                                        context, teamsElements,
-                                        _selectedTeamIndex,
-                                        _selectedZoneIndex,
-                                        visitsElements[index], loadTeams);
-
-                                  }),
-                              title: Text(
-                                visitsElements[index]['name'],
-                                style: TextStyle(
-                                    fontWeight:
-                                    FontWeight.bold),
-                              ),
-                              subtitle: Column(
-                                crossAxisAlignment:
-                                CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Text(visitsElements[index]
-                                  ['address']),
-                                  Text(visitsElements[index]
-                                  ['status']['name'])
-                                ],
-                              ),
-                              onTap: () {},
-                            ),
-                          );
-                        }),
-                  ),
-                );
-              });
-        },
-        shape: CircleBorder(side: BorderSide(color: Colors.white,width: 2)),
-
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            SizedBox(
-              height: 20,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Icon(
-                    Icons.place,
-                    color: Color.fromRGBO(52, 152, 219, 1),
-                  ),
-                  DropdownButtonHideUnderline(
-                    child: DropdownButton(
-                      hint: Text(selectedZone,
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.center),
-                      elevation: 0,
-                      items: locations,
-                      onChanged: (value) {
-                        setState(() {
-
-                          _selectedZoneIndex = value;
-                          selectedZone = zones[value]['name'];
-                          selectedStatus ='';
-                          _currentZoneUuidAfterCallBackReload = zones[value]['uuid'];
-                          currentLocation[0] = zones[value]['latitude'];
-                          currentLocation[1] = zones[value]['longitude'];
-                          visitsElements = zones[value]["visits"];
-                          status = teamHelper.buildDropDownSelection(statusElements);
-                          _buildZoneTag(zones[value]);
-                          loadMarkersWithMultipleZones();
-                          flutterMapWidget.state.updateMarkers(markersList,LatLng(currentLocation[0], currentLocation[1]),13.0);
-                        });
-
-
-
-                      },
-                    ),
-                  ),
-                  SizedBox(width: 10,),
-                  Icon(Icons.filter_list),
-                  SizedBox(width: 5,),
-                  DropdownButtonHideUnderline(
-                    child: DropdownButton(
-                      hint: selectedStatus != null
-                          ? Text(selectedStatus,
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.center)
-                          : Text(''),
-                      elevation: 0,
-                      items: status,
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedStatusIndex = value;
-                          selectedStatus = statusElements[value]['name'];
-                          currentLocation[0] = zones[_selectedZoneIndex]['latitude'];
-                          currentLocation[1] = zones[_selectedZoneIndex]['longitude'];
-                          loadMarkersByStatus(zones[_selectedZoneIndex]["visits"],statusElements[_selectedStatusIndex]['uuid']);
-                        });
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 25,),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: _zonesTagsWidget,
-              ),
-            ),
-            SizedBox(height: 10,),
-            SingleChildScrollView(
-              child: SizedBox(
-                height: MediaQuery
-                    .of(context)
-                    .size
-                    .height - 120 ,
-                width: double.infinity,
-                child: mapToggle && teamToggle
-                    ? flutterMapWidget
-                    : Center(
-                  child: Text('Loading Map...Please Wait...'),
+      body: Stack(
+        alignment: Alignment.topCenter,
+        children: <Widget>[
+          (mapToggle && teamToggle)?flutterMapWidget:ColorLoader(),
+          Positioned(
+            height: 110,
+            width: MediaQuery.of(context).size.width*0.7,
+            child: Padding(
+              padding: EdgeInsets.only(top:10),
+              child: Card(
+                color: Colors.white,
+                elevation: 6,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20)
                 ),
-              )
-            )
-          ],
+                child: Column(
+                  children: <Widget>[
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          DropdownButtonHideUnderline(
+                            child: DropdownButton(
+                              icon: Icon(Icons.place,color: Colors.blue),
+                              hint: Text(selectedZone.isEmpty?'Select a zone':selectedZone,
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  textAlign: TextAlign.center),
+                              elevation: 0,
+                              items: locations,
+                              onChanged: (value) {
+                                setState(() {
+                                  _selectedZoneIndex = value;
+                                  selectedZone = zones[value]['name'];
+                                  selectedStatus = '';
+                                  _currentZoneUuidAfterCallBackReload =
+                                  zones[value]['uuid'];
+                                  currentLocation[0] = zones[value]['latitude'];
+                                  currentLocation[1] = zones[value]['longitude'];
+                                  visitsElements = zones[value]["visits"];
+                                  status =
+                                      teamHelper.buildDropDownSelection(statusElements);
+                                  _buildZoneTag(zones[value]);
+                                  loadMarkersWithMultipleZones();
+                                  flutterMapWidget.state.updateMarkers(markersList,
+                                      LatLng(currentLocation[0], currentLocation[1]),
+                                      13.0);
+                                });
+                              },
+                            ),
+                          ),
+                          SizedBox(width: 10,),
+
+                          DropdownButtonHideUnderline(
+                            child: DropdownButton(
+                              icon: Icon(Icons.filter_list,color: Colors.black,),
+                              hint: selectedStatus != null
+                                  ? Text(selectedStatus,
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  textAlign: TextAlign.center)
+                                  : Text(''),
+                              elevation: 0,
+                              items: status,
+                              onChanged: (value) {
+                                setState(() {
+                                  _selectedStatusIndex = value;
+                                  selectedStatus = statusElements[value]['name'];
+                                  currentLocation[0] =
+                                  zones[_selectedZoneIndex]['latitude'];
+                                  currentLocation[1] =
+                                  zones[_selectedZoneIndex]['longitude'];
+                                  loadMarkersByStatus(zones[_selectedZoneIndex]["visits"],
+                                      statusElements[_selectedStatusIndex]['uuid']);
+                                });
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Padding(
+                        padding:EdgeInsets.only(left: 8,right: 8),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: _zonesTagsWidget,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          )
+        ],
         ),
-      ),
     );
   }
 
